@@ -10,13 +10,15 @@
 
 Use the pre-seeded accounts from `ticket-masala/config/seed_data.json`:
 
-| Role | Username | Email | Password | Purpose |
-|------|----------|-------|----------|---------|
-| **Admin** | `admin` | `admin@localhost.dev` | `Admin123!` | Full system access |
-| **Manager** | `manager.john` | `john.manager@localhost.dev` | `Employee123!` | Assign tickets |
-| **Agent** | `agent.sarah` | `sarah.agent@localhost.dev` | `Employee123!` | Resolve tickets |
-| **Customer** | `customer.alice` | `alice@example.com` | `Customer123!` | Submit tickets |
-| **Specialist** | `specialist.mike` | `mike.specialist@localhost.dev` | `Employee123!` | Technical tickets |
+| Role | Username | Password | Purpose |
+|------|----------|----------|---------|
+| **Admin** | `admin` | `Admin123!` | Full system access |
+| **Manager** | `manager.john` | `Employee123!` | Assign tickets |
+| **Agent** | `agent.sarah` | `Employee123!` | Resolve tickets |
+| **Customer** | `customer.alice` | `Customer123!` | Submit tickets |
+| **Specialist** | `specialist.mike` | `Employee123!` | Technical tickets |
+
+> **Note:** The login page accepts either **Username** or **Email**. You can type `admin` or `admin@localhost.dev` — both work.
 
 **Seed tickets before demo** (use API or run `dotnet run --seed`):
 ```bash
