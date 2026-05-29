@@ -9,10 +9,12 @@
 #   make down      # Stop the full stack
 #   make test      # Run integration tests
 #   make update    # Pull latest from all submodules
+#   make pull      # Pull root repo and submodules
+#   make push      # Push root repo and submodule commits
 #   make status    # Show current submodule commits
 # ═══════════════════════════════════════════════════════════════════════════
 
-.PHONY: setup up down test update status logs lint
+.PHONY: setup up down test update pull push sync status logs lint
 
 # ─── Setup ─────────────────────────────────────────────────────────────────
 setup:
@@ -66,6 +68,17 @@ update:
 	@echo ""
 	@echo "⚠️  Review changes before committing!"
 
+pull:
+	@echo "⬇️  Pulling root repo and submodules..."
+	@scripts/pull.sh
+
+push:
+	@echo "⬆️  Pushing root repo and submodule commits..."
+	@scripts/push.sh
+
+sync: pull push
+	@echo "✅ Repo and submodules synced."
+
 status:
 	@echo "📊 Submodule status:"
 	@git submodule status
@@ -93,6 +106,9 @@ help:
 	@echo "  make test       Run integration tests in Docker"
 	@echo "  make test-local Run integration tests against local services"
 	@echo "  make update     Pull latest commits for all submodules"
+	@echo "  make pull       Pull root repo and submodules"
+	@echo "  make push       Push root repo and submodule commits"
+	@echo "  make sync       Pull then push root repo and submodules"
 	@echo "  make status     Show current submodule commits"
 	@echo "  make bump       Update submodules and commit the root repo"
 	@echo "  make lint       Run code quality checks"

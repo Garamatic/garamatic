@@ -78,7 +78,9 @@ garamatic/
 │   ├── setup.sh                    # One-time setup
 │   ├── test.sh                     # Test runner
 │   ├── bump.sh                     # Update submodules
-│   └── status.sh                   # Ecosystem dashboard
+│   ├── status.sh                   # Ecosystem dashboard
+│   ├── pull.sh                     # Pull root repo and submodules
+│   └── push.sh                     # Push root repo and submodule commits
 ├── ticket-masala/                  # [submodule]
 ├── mailing-service/                # [submodule]
 ├── event-planner/                  # [submodule]
@@ -113,6 +115,9 @@ make test-local  # Run tests against local services
 ```bash
 make status      # Show current submodule commits
 make update      # Pull latest from all submodules
+make pull        # Pull root repo and submodules
+make push        # Push root repo and submodule commits
+make sync        # Pull then push root repo and submodules
 make bump        # Update submodules and commit root repo
 ```
 
@@ -127,9 +132,31 @@ make bump        # Update submodules and commit root repo
 ./scripts/bump.sh ticket-masala      # Bump one submodule
 ./scripts/bump.sh --dry-run          # Preview changes
 ./scripts/status.sh                   # Full ecosystem dashboard
+./scripts/pull.sh                     # Pull root repo and submodules
+./scripts/push.sh                     # Push root repo and submodule commits
 ```
 
 ## Working with Submodules
+
+### Easy Git Workflow
+
+If you want Git to handle submodules more naturally, set this once:
+
+```bash
+git config --global submodule.recurse true
+git config --global fetch.recurseSubmodules on-demand
+git config --global push.recurseSubmodules on-demand
+```
+
+Then use:
+
+```bash
+make pull              # Pull the root repo and sync submodules
+make push              # Push the root repo and any referenced submodule commits
+# Or run the scripts directly:
+./scripts/pull.sh      # Pull root repo and submodules
+./scripts/push.sh      # Push root repo and submodule commits
+```
 
 ### The Golden Rule
 
@@ -195,7 +222,9 @@ Copy `.env.example` → `.env` and configure:
 
 ```bash
 # This usually means the submodule commit changed on the remote
-make update          # Pull latest
+make pull            # Pull root repo and submodules
+# Or, if you want the latest submodule branches:
+make update          # Pull latest submodule commits
 # Or
 ./scripts/bump.sh    # Update and commit
 ```
