@@ -249,6 +249,37 @@ services:
       retries: 5
 
   # ════════════════════════════════════════════════════════════
+  # ODOO BRIDGE - .NET Worker
+  # ════════════════════════════════════════════════════════════
+  odoo-bridge:
+    build:
+      context: ./odoo-integration
+      dockerfile: Dockerfile
+    container_name: garamatic_odoo_bridge
+    environment:
+      - Odoo__BaseUrl=http://odoo:8069
+      - Odoo__Database=odoo
+      - Odoo__Username=admin
+      - Odoo__Password=admin
+      - Odoo__DefaultIncomeAccountId=21
+      - Odoo__PollIntervalMinutes=5
+      - RabbitMQ__HostName=rabbitmq
+      - RabbitMQ__Port=5672
+      - RabbitMQ__UserName=guest
+      - RabbitMQ__Password=guest
+      - RabbitMQ__ExchangeName=event_exchange
+      - RabbitMQ__QueueName=odoo-bridge
+      - LiteDb__ConnectionString=Filename=/app/data/state.db;Connection=shared
+    volumes:
+      - odoo_bridge_data:/app/data
+    networks:
+      - garamatic-network
+    depends_on:
+      - odoo
+      - rabbitmq
+    restart: unless-stopped
+
+  # ════════════════════════════════════════════════════════════
   # MAILHOG - Test Email Capture
   # ════════════════════════════════════════════════════════════
   mailhog:
@@ -269,3 +300,4 @@ volumes:
   event_planner_db_data:
   odoo_data:
   odoo_db_data:
+  odoo_bridge_data:
