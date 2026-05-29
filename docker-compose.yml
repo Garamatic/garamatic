@@ -17,6 +17,7 @@
 #   - Garamatic Web : Static frontend (Nginx)          (port 8090)
 #   - Masala Web    : Marketing site (Nginx)           (port 8091)
 #   - Agentic       : MCP server (Python)              (port 3001)
+#   - Odoo          : ERP / CRM (Python)               (port 8092)
 #   - Mailhog       : Test email capture               (ports 1025, 8025)
 # ═══════════════════════════════════════════════════════════════════════════
 
@@ -209,6 +210,45 @@ services:
       - rabbitmq
 
   # ════════════════════════════════════════════════════════════
+  # ODOO - ERP / CRM
+  # ════════════════════════════════════════════════════════════
+  odoo:
+    image: odoo:17.0
+    container_name: garamatic_odoo
+    ports:
+      - "8092:8069"
+    environment:
+      - HOST=odoo-db
+      - USER=odoo
+      - PASSWORD=odoo
+      - DATABASE=odoo
+    volumes:
+      - odoo_data:/var/lib/odoo
+      - ./odoo/config:/etc/odoo:ro
+      - ./odoo/addons:/mnt/extra-addons:ro
+    networks:
+      - garamatic-network
+    depends_on:
+      - odoo-db
+
+  odoo-db:
+    image: postgres:15-alpine
+    container_name: garamatic_odoo_db
+    environment:
+      - POSTGRES_DB=odoo
+      - POSTGRES_USER=odoo
+      - POSTGRES_PASSWORD=odoo
+    volumes:
+      - odoo_db_data:/var/lib/postgresql/data
+    networks:
+      - garamatic-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U odoo -d odoo"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ════════════════════════════════════════════════════════════
   # MAILHOG - Test Email Capture
   # ════════════════════════════════════════════════════════════
   mailhog:
@@ -227,3 +267,5 @@ networks:
 volumes:
   ticket_masala_data:
   event_planner_db_data:
+  odoo_data:
+  odoo_db_data:
