@@ -57,6 +57,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Testing
       - ConnectionStrings__DefaultConnection=Data Source=/app/data/masala_test.db;Cache=Shared;Mode=ReadWriteCreate
+      - MASALA_CONFIG_PATH=/app/config
       - MasalaConfig__ConfigPath=/app/config
       - MASALA_TENANT=desgoffe
       - MASALA_DB_PATH=/app/data/masala_test.db
