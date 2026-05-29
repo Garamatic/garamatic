@@ -226,10 +226,13 @@ services:
       - odoo_data:/var/lib/odoo
       - ./odoo/config:/etc/odoo:ro
       - ./odoo/addons:/mnt/extra-addons:ro
+      - ./scripts/odoo-init.sh:/odoo-init.sh:ro
+    command: ["/bin/bash", "/odoo-init.sh"]
     networks:
       - garamatic-network
     depends_on:
-      - odoo-db
+      odoo-db:
+        condition: service_healthy
 
   odoo-db:
     image: postgres:15-alpine
