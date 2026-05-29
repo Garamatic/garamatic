@@ -1,0 +1,26 @@
+{
+  "name": "@garamatic/integration-tests",
+  "version": "1.0.0",
+  "description": "Integration test suite for all Garamatic services",
+  "type": "module",
+  "scripts": {
+    "test": "npm run test:contracts && npm run test:services && npm run test:e2e",
+    "test:contracts": "node tests/contract-compliance.test.js",
+    "test:services": "node tests/service-health.test.js",
+    "test:e2e": "node tests/e2e-workflows.test.js",
+    "test:integration": "docker compose -f docker/docker-compose.test.yml up --build --abort-on-container-exit",
+    "test:integration:ci": "docker compose -f docker/docker-compose.test.yml up --build --abort-on-container-exit --exit-code-from test-runner",
+    "services:up": "docker compose -f docker/docker-compose.test.yml up -d ticket-masala gatekeeper-api mailhog test-receiver",
+    "services:down": "docker compose -f docker/docker-compose.test.yml down -v",
+    "services:logs": "docker compose -f docker/docker-compose.test.yml logs -f",
+    "report": "node scripts/generate-report.js",
+    "validate:contracts": "cd ../integration-contracts && npm run validate && npm test"
+  },
+  "dependencies": {
+    "ajv": "^8.12.0",
+    "ajv-formats": "^2.1.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
