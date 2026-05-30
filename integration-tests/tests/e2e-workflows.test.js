@@ -43,7 +43,7 @@ async function main() {
       }, 10000);
       
       if (response.status === 401 || response.status === 403) {
-        runner.skip('Workflow test (auth required)', () => {});
+        runner.skip('Workflow test (auth required)');
         return;
       }
       
@@ -55,7 +55,7 @@ async function main() {
     
     await runner.it('Step 2: Ticket creation triggers notification email', async () => {
       if (!workflow.ticketId) {
-        runner.skip('Email notification (ticket creation failed)', () => {});
+        runner.skip('Email notification (ticket creation failed)');
         return;
       }
       
@@ -72,7 +72,7 @@ async function main() {
     
     await runner.it('Step 3: Support agent can view and update ticket', async () => {
       if (!workflow.ticketId) {
-        runner.skip('Agent update (ticket creation failed)', () => {});
+        runner.skip('Agent update (ticket creation failed)');
         return;
       }
       
@@ -99,7 +99,7 @@ async function main() {
     
     await runner.it('Step 4: Ticket resolution completes workflow', async () => {
       if (!workflow.ticketId) {
-        runner.skip('Resolution (ticket creation failed)', () => {});
+        runner.skip('Resolution (ticket creation failed)');
         return;
       }
       
@@ -134,7 +134,7 @@ async function main() {
   
   await runner.describe('Invoice and Payment Workflow', async () => {
     const invoiceFlow = {
-      invoiceId: `INV-${Date.now()}`,
+      invoiceId: crypto.randomUUID(),
       events: []
     };
     
@@ -242,7 +242,7 @@ async function main() {
       
       // If we couldn't create any tickets, skip this test
       if (Object.keys(tenantTickets).length === 0) {
-        runner.skip('Multi-tenant test (auth required)', () => {});
+        runner.skip('Multi-tenant test (auth required)');
         return;
       }
       
@@ -254,7 +254,7 @@ async function main() {
     
     await runner.it('tenant A should not access tenant B tickets', async () => {
       if (Object.keys(tenantTickets).length < 2) {
-        runner.skip('Tenant isolation (insufficient tickets created)', () => {});
+        runner.skip('Tenant isolation (insufficient tickets created)');
         return;
       }
       
@@ -333,7 +333,7 @@ async function main() {
       }, 10000);
 
       if (response.status === 401 || response.status === 403) {
-        runner.skip('Assignment workflow (auth required)', () => {});
+        runner.skip('Assignment workflow (auth required)');
         return;
       }
 
@@ -468,7 +468,7 @@ async function main() {
       }, 10000);
 
       if (response.status === 401 || response.status === 403) {
-        runner.skip('Ticket for new user (auth required)', () => {});
+        runner.skip('Ticket for new user (auth required)');
         return;
       }
 
@@ -502,12 +502,12 @@ async function main() {
         }, 10000);
 
         if (response.status === 401 || response.status === 403) {
-          runner.skip('Agentic workflow (auth required)', () => {});
+          runner.skip('Agentic workflow (auth required)');
           return;
         }
 
         if (response.status === 503) {
-          runner.skip('Agentic workflow (service unavailable)', () => {});
+          runner.skip('Agentic workflow (service unavailable)');
           return;
         }
 
@@ -516,13 +516,13 @@ async function main() {
         flow.ticketId = result.ticket_id;
         flow.events.push('agentic_ticket_created');
       } catch {
-        runner.skip('Agentic workflow (service not running)', () => {});
+        runner.skip('Agentic workflow (service not running)');
       }
     });
 
     await runner.it('Step 2: Retrieve ticket via agentic service', async () => {
       if (!flow.ticketId) {
-        runner.skip('Retrieve agentic ticket (creation failed)', () => {});
+        runner.skip('Retrieve agentic ticket (creation failed)');
         return;
       }
 
@@ -535,7 +535,7 @@ async function main() {
         runner.assertTrue(response.status < 500, 'Should retrieve ticket');
         flow.events.push('agentic_ticket_retrieved');
       } catch {
-        runner.skip('Retrieve agentic ticket (service not running)', () => {});
+        runner.skip('Retrieve agentic ticket (service not running)');
       }
     });
 
@@ -549,7 +549,7 @@ async function main() {
         runner.assertTrue(response.status < 500, 'Should retrieve customer context');
         flow.events.push('agentic_customer_context');
       } catch {
-        runner.skip('Customer context (service not running)', () => {});
+        runner.skip('Customer context (service not running)');
       }
     });
 

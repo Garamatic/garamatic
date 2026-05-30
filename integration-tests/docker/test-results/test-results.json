@@ -1,14 +1,19 @@
 {
-  "timestamp": "2026-05-26T21:02:32Z",
+  "timestamp": "2026-05-30T11:16:40Z",
   "summary": {
-    "passed": 4,
-    "failed": 0,
-    "total": 4
+    "passed": 10,
+    "failed": 1,
+    "skipped": 0,
+    "total": 11
   },
   "services": {
     "ticket_masala": "http://ticket-masala:8080",
     "gatekeeper": "http://gatekeeper-api:8080",
     "mailing": "http://mailing-service:8080",
-    "event_planner": "http://event-planner:80"
+    "event_planner": "http://event-planner:80",
+    "agentic": "http://agentic-service:3001",
+    "odoo_integration": "http://odoo-integration:8080",
+    "rabbitmq": "http://rabbitmq:15672",
+    "mailhog": "http://mailhog:8025"
   }
 }

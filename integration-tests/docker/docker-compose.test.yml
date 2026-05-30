@@ -1,22 +1,7 @@
-# ═══════════════════════════════════════════════════════════════════════════
 # Garamatic Integration Test Environment
-# ═══════════════════════════════════════════════════════════════════════════
-# 
-# Orchestrates all services for integration testing.
 # Run: docker compose -f docker-compose.test.yml up --build --abort-on-container-exit
-#
-# Services:
-#   - ticket-masala: Core ticket management API (.NET)
-#   - event-planner: Event planning service (PHP/Drupal)
-#   - mailing-service: Email delivery service (.NET)
-#   - integration-contracts-validator: Schema validation service
-#   - test-runner: Executes the integration test suite
-# ═══════════════════════════════════════════════════════════════════════════
 
 services:
-  # ════════════════════════════════════════════════════════════
-  # RABBITMQ - Message Broker
-  # ════════════════════════════════════════════════════════════
   rabbitmq:
     image: rabbitmq:3-management-alpine
     container_name: garamatic_rabbitmq_test
@@ -31,9 +16,6 @@ services:
       timeout: 5s
       retries: 5
 
-  # ════════════════════════════════════════════════════════════
-  # TICKET MASALA - Core Ticket Service
-  # ════════════════════════════════════════════════════════════
   ticket-masala:
     build:
       context: ../../ticket-masala
@@ -47,6 +29,7 @@ services:
       - MasalaConfig__ConfigPath=/app/config
       - TEST_MODE=true
       - RabbitMQ__HostName=rabbitmq
+      - Agentic__ApiKey=masala-test-key
     volumes:
       - ../../ticket-masala/config:/app/config:ro
       - ticket_masala_data:/app/data
@@ -56,9 +39,6 @@ services:
       rabbitmq:
         condition: service_healthy
 
-  # ════════════════════════════════════════════════════════════
-  # GATEKEEPER API - Ingestion Service
-  # ════════════════════════════════════════════════════════════
   gatekeeper-api:
     build:
       context: ../../ticket-masala
@@ -78,9 +58,6 @@ services:
       rabbitmq:
         condition: service_healthy
 
-  # ════════════════════════════════════════════════════════════
-  # MAILING SERVICE - Email Worker + API
-  # ════════════════════════════════════════════════════════════
   mailing-service:
     build:
       context: ../../mailing-service
@@ -105,9 +82,6 @@ services:
       mailhog:
         condition: service_started
 
-  # ════════════════════════════════════════════════════════════
-  # EVENT PLANNER - Event Management (PHP/Drupal)
-  # ════════════════════════════════════════════════════════════
   event-planner:
     build:
       context: ../../event-planner
@@ -121,7 +95,8 @@ services:
     networks:
       - garamatic_test_net
     depends_on:
-      - event-planner-db
+      event-planner-db:
+        condition: service_healthy
 
   event-planner-db:
     image: mariadb:10.11
@@ -141,9 +116,6 @@ services:
       timeout: 5s
       retries: 5
 
-  # ════════════════════════════════════════════════════════════
-  # AGENTIC SERVICE - AI Agent Service
-  # ════════════════════════════════════════════════════════════
   agentic-service:
     build:
       context: ../../agentic-service
@@ -155,17 +127,16 @@ services:
       - MCP_TRANSPORT=sse
       - ticket_api_url=http://ticket-masala:8080
       - rabbitmq_host=rabbitmq
+      - ticket_api_key=masala-test-key
     networks:
       - garamatic_test_net
+    command: ["python", "-m", "agentic_service.api"]
     depends_on:
       ticket-masala:
         condition: service_started
       rabbitmq:
         condition: service_healthy
 
-  # ════════════════════════════════════════════════════════════
-  # ODOO INTEGRATION - .NET Worker for Odoo Sync
-  # ════════════════════════════════════════════════════════════
   odoo-integration:
     build:
       context: ../../odoo-integration
@@ -180,22 +151,17 @@ services:
       - RabbitMQ__UserName=guest
       - RabbitMQ__Password=guest
       - HealthChecks__Port=8080
-      - OdooOptions__BaseUrl=${ODOO_URL:-http://localhost:8069}
-      - OdooOptions__Database=${ODOO_DB:-odoo}
-      - OdooOptions__Username=${ODOO_USER:-admin}
-      - OdooOptions__Password=${ODOO_PASS:-admin}
+      - Odoo__BaseUrl=${ODOO_URL:-http://localhost:8069}
+      - Odoo__Database=${ODOO_DB:-odoo}
+      - Odoo__Username=${ODOO_USER:-admin}
+      - Odoo__Password=${ODOO_PASS:-admin}
     networks:
       - garamatic_test_net
     depends_on:
       rabbitmq:
         condition: service_healthy
 
-  # ════════════════════════════════════════════════════════════
-  # CONTRACT VALIDATOR - Schema Validation Service (Placeholder)
-  # ════════════════════════════════════════════════════════════
-  # NOTE: This service requires a Dockerfile.test to be created in integration-contracts/
-  # Contract validation is done by the test-runner directly
-  # contract-validator:
+  # contract-validator:  # placeholder — validation done by test-runner
   #   build:
   #     context: ../../integration-contracts
   #     dockerfile: Dockerfile.test
@@ -205,9 +171,6 @@ services:
   #   networks:
   #     - garamatic_test_net
 
-  # ════════════════════════════════════════════════════════════
-  # TEST RECEIVER - Webhook/Event Capture
-  # ════════════════════════════════════════════════════════════
   test-receiver:
     image: nginx:alpine
     container_name: garamatic_test_receiver
@@ -217,9 +180,6 @@ services:
     networks:
       - garamatic_test_net
 
-  # ════════════════════════════════════════════════════════════
-  # MAILHOG - Email Capture for Testing
-  # ════════════════════════════════════════════════════════════
   mailhog:
     image: mailhog/mailhog:latest
     container_name: garamatic_mailhog
@@ -229,9 +189,6 @@ services:
     networks:
       - garamatic_test_net
 
-  # ════════════════════════════════════════════════════════════
-  # INTEGRATION TEST RUNNER
-  # ════════════════════════════════════════════════════════════
   test-runner:
     build:
       context: ..

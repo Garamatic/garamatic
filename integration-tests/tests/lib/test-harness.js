@@ -47,7 +47,7 @@ export class TestRunner {
     }
   }
 
-  skip(description, fn) {
+  skip(description) {
     this.skipped++;
     this.tests.push({ description, status: 'skipped' });
     console.log(`  ${COLORS.yellow}⊘${COLORS.reset} ${description} ${COLORS.yellow}(skipped)${COLORS.reset}`);
@@ -60,21 +60,11 @@ export class TestRunner {
   }
 
   assertEquals(actual, expected, message) {
-    if (actual !== expected) {
-      throw new Error(message || `Expected ${expected}, got ${actual}`);
-    }
+    this.assert(actual === expected, message || `Expected ${expected}, got ${actual}`);
   }
 
   assertTrue(value, message) {
-    if (value !== true) {
-      throw new Error(message || `Expected true, got ${value}`);
-    }
-  }
-
-  assertFalse(value, message) {
-    if (value !== false) {
-      throw new Error(message || `Expected false, got ${value}`);
-    }
+    this.assert(value === true, message || `Expected true, got ${value}`);
   }
 
   assert2xx(response, message) {
@@ -134,27 +124,18 @@ export const SERVICES = {
  * HTTP request helper with timeout
  */
 export async function fetchWithTimeout(url, options = {}, timeout = 5000) {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeout);
-  
-  // Automatically inject X-Api-Key for Gatekeeper API requests in tests
-  if (url.startsWith(SERVICES.gatekeeper)) {
+  if (url.startsWith(SERVICES.gatekeeper) || url.startsWith(SERVICES.ticketMasala)) {
     options.headers = options.headers || {};
-    if (!options.headers['X-Api-Key']) {
-      options.headers['X-Api-Key'] = 'masala-test-key';
-    }
+    options.headers['X-Api-Key'] ??= 'masala-test-key';
   }
-  
+
   try {
-    const response = await fetch(url, {
+    return await fetch(url, {
       ...options,
-      signal: controller.signal
+      signal: AbortSignal.timeout(timeout)
     });
-    clearTimeout(timeoutId);
-    return response;
   } catch (error) {
-    clearTimeout(timeoutId);
-    if (error.name === 'AbortError') {
+    if (error.name === 'TimeoutError') {
       throw new Error(`Request timeout after ${timeout}ms: ${url}`);
     }
     throw error;

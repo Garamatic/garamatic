@@ -8,7 +8,7 @@
  * - Invoice events → Email notifications
  */
 
-import { TestRunner, SERVICES, fetchWithTimeout, MailhogAPI, generateTestTicket, generateEmailEvent, generateInvoiceCreateRequestedEvent, generateInvoiceOverdueEvent, generateTicketAssignedEvent, generateUserCreatedEvent, generatePaymentReceivedEvent } from './lib/test-harness.js';
+import { TestRunner, SERVICES, fetchWithTimeout, MailhogAPI, generateTestTicket, generateEmailEvent, generateInvoiceCreateRequestedEvent, generateInvoiceOverdueEvent, generateTicketAssignedEvent, generateUserCreatedEvent } from './lib/test-harness.js';
 
 const runner = new TestRunner('Cross-Service Integration Tests');
 
@@ -35,7 +35,7 @@ async function main() {
       }, 10000);
       
       if (response.status === 401 || response.status === 403) {
-        runner.skip('Ticket creation (auth required, may need setup)', () => {});
+        runner.skip('Ticket creation (auth required, may need setup)');
         return;
       }
       
@@ -47,7 +47,7 @@ async function main() {
     
     await runner.it('should retrieve created ticket', async () => {
       if (!createdTicketId) {
-        runner.skip('Retrieve ticket (creation failed)', () => {});
+        runner.skip('Retrieve ticket (creation failed)');
         return;
       }
       
@@ -121,7 +121,7 @@ async function main() {
       }, 10000).catch(() => ({ ok: false, status: 'connection_failed' }));
       
       if (!response.ok) {
-        runner.skip('Email queuing (mailing service may not be configured)', () => {});
+        runner.skip('Email queuing (mailing service may not be configured)');
         return;
       }
       
@@ -169,7 +169,7 @@ async function main() {
         timestamp: new Date().toISOString(),
         source: 'integration-tests',
         payment_id: crypto.randomUUID(),
-        invoice_id: 'INV-001',
+        invoice_id: crypto.randomUUID(),
         amount: 100.00,
         currency: 'USD',
         payment_method: 'credit_card'
@@ -280,7 +280,7 @@ async function main() {
         const response = await fetchWithTimeout(`${SERVICES.agenticService}/health`, {}, 5000);
         runner.assertTrue(response.status < 500, 'Agentic service should respond');
       } catch {
-        runner.skip('Agentic service health check (service may not be running)', () => {});
+        runner.skip('Agentic service health check (service may not be running)');
       }
     });
 
@@ -299,7 +299,7 @@ async function main() {
         }, 10000);
 
         if (response.status === 401 || response.status === 403) {
-          runner.skip('Agentic ticket creation (auth required)', () => {});
+          runner.skip('Agentic ticket creation (auth required)');
           return;
         }
 
@@ -308,7 +308,7 @@ async function main() {
           `Should create ticket, got ${response.status}`
         );
       } catch {
-        runner.skip('Agentic ticket creation (service may not be running)', () => {});
+        runner.skip('Agentic ticket creation (service may not be running)');
       }
     });
 
@@ -317,7 +317,7 @@ async function main() {
         const response = await fetchWithTimeout(`${SERVICES.agenticService}/tickets?limit=5`, {}, 5000);
         runner.assertTrue(response.status < 500, 'Should list tickets');
       } catch {
-        runner.skip('Agentic list tickets (service may not be running)', () => {});
+        runner.skip('Agentic list tickets (service may not be running)');
       }
     });
 
@@ -336,7 +336,7 @@ async function main() {
 
         runner.assertTrue(response.status < 500, 'Should queue email via agentic service');
       } catch {
-        runner.skip('Agentic send email (service may not be running)', () => {});
+        runner.skip('Agentic send email (service may not be running)');
       }
     });
   });
