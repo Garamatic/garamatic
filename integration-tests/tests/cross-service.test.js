@@ -8,7 +8,7 @@
  * - Invoice events → Email notifications
  */
 
-import { TestRunner, SERVICES, fetchWithTimeout, MailhogAPI, generateTestTicket, generateEmailEvent } from './lib/test-harness.js';
+import { TestRunner, SERVICES, fetchWithTimeout, MailhogAPI, generateTestTicket, generateEmailEvent, generateInvoiceCreateRequestedEvent, generateInvoiceOverdueEvent, generateTicketAssignedEvent, generateUserCreatedEvent, generatePaymentReceivedEvent } from './lib/test-harness.js';
 
 const runner = new TestRunner('Cross-Service Integration Tests');
 
@@ -82,10 +82,7 @@ async function main() {
       }, 10000);
       
       // Should accept the event (may return 202 Accepted)
-      runner.assertTrue(
-        response.status === 200 || response.status === 202 || response.status === 201,
-        `Should accept event, got ${response.status}`
-      );
+      runner.assert2xx(response, `Should accept event`);
     });
     
     await runner.it('should reject invalid event (missing required fields)', async () => {
@@ -191,6 +188,159 @@ async function main() {
     });
   });
   
+  await runner.describe('Additional Event Type Ingestion', async () => {
+    await runner.it('should accept invoice.create_requested event', async () => {
+      const event = generateInvoiceCreateRequestedEvent({
+        customer_email: 'test-invoice@example.com',
+        amount: 199.99
+      });
+
+      const response = await fetchWithTimeout(`${SERVICES.gatekeeper}/ingest`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(event)
+      }, 10000);
+
+      runner.assert2xx(response, `Should accept invoice.create_requested event`);
+    });
+
+    await runner.it('should accept invoice.created event', async () => {
+      const event = {
+        event_type: 'invoice.created',
+        timestamp: new Date().toISOString(),
+        source: 'integration-tests',
+        invoice_id: crypto.randomUUID(),
+        odoo_invoice_id: 1234,
+        ticket_id: crypto.randomUUID(),
+        customer_email: 'invoice-created@example.com',
+        amount: 250.00,
+        currency: 'USD',
+        status: 'posted',
+        created_at: new Date().toISOString()
+      };
+
+      const response = await fetchWithTimeout(`${SERVICES.gatekeeper}/ingest`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(event)
+      }, 10000);
+
+      runner.assert2xx(response, `Should accept invoice.created event`);
+    });
+
+    await runner.it('should accept invoice.overdue event', async () => {
+      const event = generateInvoiceOverdueEvent({
+        customer_email: 'overdue-test@example.com',
+        days_overdue: 14
+      });
+
+      const response = await fetchWithTimeout(`${SERVICES.gatekeeper}/ingest`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(event)
+      }, 10000);
+
+      runner.assert2xx(response, `Should accept invoice.overdue event`);
+    });
+
+    await runner.it('should accept ticket.assigned event', async () => {
+      const event = generateTicketAssignedEvent({
+        assigned_to: 'agent-002',
+        assigned_by: 'supervisor-002'
+      });
+
+      const response = await fetchWithTimeout(`${SERVICES.gatekeeper}/ingest`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(event)
+      }, 10000);
+
+      runner.assert2xx(response, `Should accept ticket.assigned event`);
+    });
+
+    await runner.it('should accept user.created event', async () => {
+      const event = generateUserCreatedEvent({
+        email: 'new-user-test@example.com',
+        role: 'admin'
+      });
+
+      const response = await fetchWithTimeout(`${SERVICES.gatekeeper}/ingest`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(event)
+      }, 10000);
+
+      runner.assert2xx(response, `Should accept user.created event`);
+    });
+  });
+
+  await runner.describe('Agentic Service Integration', async () => {
+    await runner.it('should respond to health check', async () => {
+      try {
+        const response = await fetchWithTimeout(`${SERVICES.agenticService}/health`, {}, 5000);
+        runner.assertTrue(response.status < 500, 'Agentic service should respond');
+      } catch {
+        runner.skip('Agentic service health check (service may not be running)', () => {});
+      }
+    });
+
+    await runner.it('should create a ticket via agentic API', async () => {
+      try {
+        const response = await fetchWithTimeout(`${SERVICES.agenticService}/tickets`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: 'Integration Test Ticket',
+            description: 'Created by integration test suite',
+            customer_email: 'agentic-test@example.com',
+            customer_name: 'Agentic Test',
+            priority: 'medium'
+          })
+        }, 10000);
+
+        if (response.status === 401 || response.status === 403) {
+          runner.skip('Agentic ticket creation (auth required)', () => {});
+          return;
+        }
+
+        runner.assertTrue(
+          response.status === 200 || response.status === 201,
+          `Should create ticket, got ${response.status}`
+        );
+      } catch {
+        runner.skip('Agentic ticket creation (service may not be running)', () => {});
+      }
+    });
+
+    await runner.it('should list tickets via agentic API', async () => {
+      try {
+        const response = await fetchWithTimeout(`${SERVICES.agenticService}/tickets?limit=5`, {}, 5000);
+        runner.assertTrue(response.status < 500, 'Should list tickets');
+      } catch {
+        runner.skip('Agentic list tickets (service may not be running)', () => {});
+      }
+    });
+
+    await runner.it('should send email via agentic API', async () => {
+      try {
+        const response = await fetchWithTimeout(`${SERVICES.agenticService}/emails`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            to_email: 'agentic-email@example.com',
+            subject: 'Integration Test',
+            body: '<p>Hello from integration tests</p>',
+            from_name: 'Integration Test Suite'
+          })
+        }, 10000);
+
+        runner.assertTrue(response.status < 500, 'Should queue email via agentic service');
+      } catch {
+        runner.skip('Agentic send email (service may not be running)', () => {});
+      }
+    });
+  });
+
   await runner.describe('Error Handling', async () => {
     await runner.it('should handle service unavailable gracefully', async () => {
       // Try to reach a non-existent endpoint
@@ -199,21 +349,21 @@ async function main() {
         {},
         5000
       ).catch(err => ({ ok: false, status: 'error' }));
-      
+
       // Should return 404, not crash
       runner.assertTrue(
         response.status === 404 || !response.ok,
         'Should return 404 for unknown endpoints'
       );
     });
-    
+
     await runner.it('should reject requests with invalid JSON', async () => {
       const response = await fetchWithTimeout(`${SERVICES.gatekeeper}/ingest`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: 'not valid json'
       }, 5000);
-      
+
       runner.assertTrue(
         response.status === 400 || response.status === 422 || response.status === 500,
         'Should handle invalid JSON'

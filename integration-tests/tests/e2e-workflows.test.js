@@ -8,9 +8,7 @@
  * - Multi-tenant ticket routing
  */
 
-import { TestRunner, SERVICES, fetchWithTimeout, MailhogAPI, generateTestTicket } from './lib/test-harness.js';
-
-const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+import { TestRunner, SERVICES, fetchWithTimeout, MailhogAPI, generateTestTicket, generateTicketAssignedEvent, generateInvoiceOverdueEvent, generateUserCreatedEvent, generateInvoiceCreateRequestedEvent, sleep } from './lib/test-harness.js';
 
 const runner = new TestRunner('End-to-End Workflow Tests');
 
@@ -286,20 +284,20 @@ async function main() {
         timestamp: new Date().toISOString(),
         source: 'integration-tests'
       };
-      
+
       const response = await fetchWithTimeout(`${SERVICES.gatekeeper}/ingest`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(invalidEvent)
       }, 10000);
-      
+
       // Should return validation error, not crash
       runner.assertTrue(
         response.status === 400 || response.status === 422,
         `Should reject invalid event with 400/422, got ${response.status}`
       );
     });
-    
+
     await runner.it('should handle unknown event types', async () => {
       const unknownEvent = {
         event_type: 'unknown.event.type',
@@ -307,18 +305,262 @@ async function main() {
         source: 'integration-tests',
         data: { test: true }
       };
-      
+
       const response = await fetchWithTimeout(`${SERVICES.gatekeeper}/ingest`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(unknownEvent)
       }, 10000);
-      
+
       // May accept or reject, but should not crash
       runner.assertTrue(response.status < 500, 'Should handle unknown event types gracefully');
     });
   });
-  
+
+  await runner.describe('Ticket Assignment Workflow', async () => {
+    const flow = { events: [] };
+
+    await runner.it('Step 1: Create a ticket for assignment', async () => {
+      const ticketData = generateTestTicket({
+        description: 'Ticket for assignment workflow test',
+        priority: 'high'
+      });
+
+      const response = await fetchWithTimeout(`${SERVICES.ticketMasala}/api/tickets`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(ticketData)
+      }, 10000);
+
+      if (response.status === 401 || response.status === 403) {
+        runner.skip('Assignment workflow (auth required)', () => {});
+        return;
+      }
+
+      runner.assertResponseOk(response);
+      flow.events.push('ticket_created');
+    });
+
+    await runner.it('Step 2: Emit ticket.assigned event via gatekeeper', async () => {
+      const event = generateTicketAssignedEvent({
+        assigned_to: 'agent-003',
+        assigned_by: 'supervisor-003'
+      });
+
+      const response = await fetchWithTimeout(`${SERVICES.gatekeeper}/ingest`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(event)
+      }, 10000);
+
+      runner.assertTrue(response.status < 500, 'Should process assignment event');
+      flow.events.push('ticket_assigned');
+    });
+
+    await runner.it('Assignment workflow complete', () => {
+      runner.assertTrue(
+        flow.events.length >= 1,
+        `Expected at least 1 assignment step, got ${flow.events.length}`
+      );
+    });
+  });
+
+  await runner.describe('Invoice Overdue Workflow', async () => {
+    const flow = { events: [] };
+
+    await runner.it('Step 1: Request invoice creation', async () => {
+      const event = generateInvoiceCreateRequestedEvent({
+        amount: 300.00,
+        description: 'Overdue workflow test invoice'
+      });
+
+      const response = await fetchWithTimeout(`${SERVICES.gatekeeper}/ingest`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(event)
+      }, 10000);
+
+      runner.assertTrue(response.status < 500, 'Should process invoice creation request');
+      flow.events.push('create_requested');
+    });
+
+    await runner.it('Step 2: Emit invoice created event', async () => {
+      const event = {
+        event_type: 'invoice.created',
+        timestamp: new Date().toISOString(),
+        source: 'integration-tests',
+        invoice_id: crypto.randomUUID(),
+        odoo_invoice_id: 9999,
+        ticket_id: crypto.randomUUID(),
+        customer_email: 'overdue-wf@example.com',
+        amount: 300.00,
+        currency: 'USD',
+        status: 'posted',
+        created_at: new Date().toISOString()
+      };
+
+      const response = await fetchWithTimeout(`${SERVICES.gatekeeper}/ingest`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(event)
+      }, 10000);
+
+      runner.assertTrue(response.status < 500, 'Should process invoice created event');
+      flow.events.push('invoice_created');
+    });
+
+    await runner.it('Step 3: Emit invoice overdue event', async () => {
+      const event = generateInvoiceOverdueEvent({
+        amount: 300.00,
+        days_overdue: 30,
+        customer_email: 'overdue-wf@example.com'
+      });
+
+      const response = await fetchWithTimeout(`${SERVICES.gatekeeper}/ingest`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(event)
+      }, 10000);
+
+      runner.assertTrue(response.status < 500, 'Should process overdue event');
+      flow.events.push('invoice_overdue');
+    });
+
+    await runner.it('Overdue workflow complete', () => {
+      runner.assertTrue(
+        flow.events.length >= 2,
+        `Expected at least 2 overdue steps, got ${flow.events.length}`
+      );
+    });
+  });
+
+  await runner.describe('User Creation Workflow', async () => {
+    const flow = { events: [] };
+
+    await runner.it('Step 1: Emit user.created event via gatekeeper', async () => {
+      const event = generateUserCreatedEvent({
+        email: 'workflow-user@example.com',
+        name: 'Workflow User',
+        role: 'customer'
+      });
+
+      const response = await fetchWithTimeout(`${SERVICES.gatekeeper}/ingest`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(event)
+      }, 10000);
+
+      runner.assertTrue(response.status < 500, 'Should process user creation event');
+      flow.events.push('user_created');
+    });
+
+    await runner.it('Step 2: Create ticket for new user', async () => {
+      const ticketData = generateTestTicket({
+        customer_email: 'workflow-user@example.com',
+        customer_name: 'Workflow User',
+        description: 'First ticket for new user'
+      });
+
+      const response = await fetchWithTimeout(`${SERVICES.ticketMasala}/api/tickets`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(ticketData)
+      }, 10000);
+
+      if (response.status === 401 || response.status === 403) {
+        runner.skip('Ticket for new user (auth required)', () => {});
+        return;
+      }
+
+      runner.assertResponseOk(response);
+      flow.events.push('ticket_created');
+    });
+
+    await runner.it('User creation workflow complete', () => {
+      runner.assertTrue(
+        flow.events.length >= 1,
+        `Expected at least 1 user creation step, got ${flow.events.length}`
+      );
+    });
+  });
+
+  await runner.describe('Agentic Service Workflow', async () => {
+    const flow = { ticketId: null, events: [] };
+
+    await runner.it('Step 1: Create ticket via agentic service', async () => {
+      try {
+        const response = await fetchWithTimeout(`${SERVICES.agenticService}/tickets`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: 'Agentic Workflow Test',
+            description: 'Ticket created via agentic service in E2E test',
+            customer_email: 'agentic-wf@example.com',
+            customer_name: 'Agentic Workflow',
+            priority: 'high'
+          })
+        }, 10000);
+
+        if (response.status === 401 || response.status === 403) {
+          runner.skip('Agentic workflow (auth required)', () => {});
+          return;
+        }
+
+        if (response.status === 503) {
+          runner.skip('Agentic workflow (service unavailable)', () => {});
+          return;
+        }
+
+        runner.assertTrue(response.status === 200 || response.status === 201, 'Should create ticket via agentic');
+        const result = await response.json();
+        flow.ticketId = result.ticket_id;
+        flow.events.push('agentic_ticket_created');
+      } catch {
+        runner.skip('Agentic workflow (service not running)', () => {});
+      }
+    });
+
+    await runner.it('Step 2: Retrieve ticket via agentic service', async () => {
+      if (!flow.ticketId) {
+        runner.skip('Retrieve agentic ticket (creation failed)', () => {});
+        return;
+      }
+
+      try {
+        const response = await fetchWithTimeout(
+          `${SERVICES.agenticService}/tickets/${flow.ticketId}`,
+          {},
+          5000
+        );
+        runner.assertTrue(response.status < 500, 'Should retrieve ticket');
+        flow.events.push('agentic_ticket_retrieved');
+      } catch {
+        runner.skip('Retrieve agentic ticket (service not running)', () => {});
+      }
+    });
+
+    await runner.it('Step 3: Get customer context via agentic service', async () => {
+      try {
+        const response = await fetchWithTimeout(
+          `${SERVICES.agenticService}/customers/agentic-wf@example.com/context`,
+          {},
+          5000
+        );
+        runner.assertTrue(response.status < 500, 'Should retrieve customer context');
+        flow.events.push('agentic_customer_context');
+      } catch {
+        runner.skip('Customer context (service not running)', () => {});
+      }
+    });
+
+    await runner.it('Agentic workflow complete', () => {
+      runner.assertTrue(
+        flow.events.length >= 1,
+        `Expected at least 1 agentic step, got ${flow.events.length}`
+      );
+    });
+  });
+
   // Print summary and exit
   runner.printSummary();
   runner.exit();

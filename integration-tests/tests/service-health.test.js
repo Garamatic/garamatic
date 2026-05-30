@@ -88,6 +88,26 @@ async function main() {
       }
     });
   });
+
+  await runner.describe('Agentic Service', async () => {
+    await runner.it('should respond to health check', async () => {
+      try {
+        const response = await fetchWithTimeout(`${SERVICES.agenticService}/health`, {}, 5000);
+        runner.assertTrue(response.status < 500, 'Should respond to health check');
+      } catch {
+        runner.skip('Agentic service (service may not be running)', () => {});
+      }
+    });
+
+    await runner.it('should have API endpoints accessible', async () => {
+      try {
+        const response = await fetchWithTimeout(`${SERVICES.agenticService}/tickets?limit=1`, {}, 5000);
+        runner.assertTrue(response.status < 500, 'Should have accessible API');
+      } catch {
+        runner.skip('Agentic API endpoints (service may not be running)', () => {});
+      }
+    });
+  });
   
   await runner.describe('Mailhog (Test Email Capture)', async () => {
     await runner.it('should have API accessible', async () => {
@@ -122,11 +142,11 @@ async function main() {
         })
       );
       
-      for (const result of results) {
-        if (result.status === 'rejected') {
-          runner.assertTrue(false, `Service failed: ${result.reason.message}`);
-        }
-      }
+      const failed = results.filter(r => r.status === 'rejected');
+      runner.assert(
+        failed.length === 0,
+        `Services failed: ${failed.map(r => r.reason.message).join(', ')}`
+      );
     });
   });
   

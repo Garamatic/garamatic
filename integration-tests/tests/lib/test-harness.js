@@ -3,11 +3,7 @@
  * Shared utilities for all integration tests
  */
 
-import { readFile } from 'fs/promises';
-import { dirname, join } from 'path';
-import { fileURLToPath } from 'url';
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
+// No filesystem imports needed — all schema loading goes through integration-contracts validator
 
 // Color codes for terminal output
 const COLORS = {
@@ -81,6 +77,12 @@ export class TestRunner {
     }
   }
 
+  assert2xx(response, message) {
+    if (response.status < 200 || response.status >= 300) {
+      throw new Error(message || `Expected 2xx, got HTTP ${response.status}`);
+    }
+  }
+
   assertNotNull(value, message) {
     if (value === null || value === undefined) {
       throw new Error(message || 'Expected non-null value');
@@ -122,7 +124,10 @@ export const SERVICES = {
   mailing: process.env.MAILING_SERVICE_URL || 'http://localhost:8087',
   eventPlanner: process.env.EVENT_PLANNER_URL || 'http://localhost:8088',
   mailhog: process.env.MAILHOG_URL || 'http://localhost:8025',
-  testReceiver: process.env.TEST_RECEIVER_URL || 'http://localhost:8089'
+  testReceiver: process.env.TEST_RECEIVER_URL || 'http://localhost:8089',
+  agenticService: process.env.AGENTIC_SERVICE_URL || 'http://localhost:3001',
+  odooIntegration: process.env.ODOO_INTEGRATION_URL || 'http://localhost:8089',
+  rabbitmq: process.env.RABBITMQ_URL || 'http://localhost:15672'
 };
 
 /**
@@ -180,15 +185,6 @@ export async function waitForService(url, maxAttempts = 30, interval = 2000) {
 }
 
 /**
- * Load JSON schema from integration-contracts
- */
-export async function loadSchema(schemaName) {
-  const schemaPath = join(__dirname, '../../integration-contracts/Schemas', `${schemaName}.json`);
-  const content = await readFile(schemaPath, 'utf-8');
-  return JSON.parse(content);
-}
-
-/**
  * Generate test data
  */
 export function generateTestTicket(overrides = {}) {
@@ -212,7 +208,7 @@ export function generateTestTicket(overrides = {}) {
  */
 export function generateEmailEvent(overrides = {}) {
   const now = new Date().toISOString();
-  
+
   return {
     event_type: 'email.send',
     timestamp: now,
@@ -222,6 +218,104 @@ export function generateEmailEvent(overrides = {}) {
     body_html: '<p>This is a test email.</p>',
     from_email: 'test@garamatic.io',
     from_name: 'Garamatic Test',
+    ...overrides
+  };
+}
+
+/**
+ * Generate invoice create_requested event
+ */
+export function generateInvoiceCreateRequestedEvent(overrides = {}) {
+  const now = new Date().toISOString();
+
+  return {
+    event_type: 'invoice.create_requested',
+    timestamp: now,
+    source: 'integration-tests',
+    ticket_id: crypto.randomUUID(),
+    customer_email: 'billing@example.com',
+    customer_name: 'Billing Customer',
+    amount: 150.00,
+    description: 'Integration test invoice line',
+    requested_at: now,
+    ...overrides
+  };
+}
+
+/**
+ * Generate invoice overdue event
+ */
+export function generateInvoiceOverdueEvent(overrides = {}) {
+  const now = new Date().toISOString();
+
+  return {
+    event_type: 'invoice.overdue',
+    timestamp: now,
+    source: 'integration-tests',
+    invoice_id: crypto.randomUUID(),
+    odoo_invoice_id: 1234,
+    customer_email: 'overdue@example.com',
+    amount: 250.00,
+    days_overdue: 7,
+    ...overrides
+  };
+}
+
+/**
+ * Generate ticket assigned event
+ */
+export function generateTicketAssignedEvent(overrides = {}) {
+  const now = new Date().toISOString();
+
+  return {
+    event_type: 'ticket.assigned',
+    timestamp: now,
+    source: 'integration-tests',
+    ticket_id: crypto.randomUUID(),
+    customer_email: 'user@example.com',
+    customer_name: 'Test User',
+    assigned_to: 'agent-001',
+    assigned_by: 'supervisor-001',
+    assigned_at: now,
+    ...overrides
+  };
+}
+
+/**
+ * Generate user created event
+ */
+export function generateUserCreatedEvent(overrides = {}) {
+  const now = new Date().toISOString();
+
+  return {
+    event_type: 'user.created',
+    timestamp: now,
+    source: 'integration-tests',
+    user_id: crypto.randomUUID(),
+    email: 'newuser@example.com',
+    name: 'New User',
+    role: 'customer',
+    tenant_id: 'test-tenant',
+    created_at: now,
+    ...overrides
+  };
+}
+
+/**
+ * Generate payment received event
+ */
+export function generatePaymentReceivedEvent(overrides = {}) {
+  const now = new Date().toISOString();
+
+  return {
+    event_type: 'payment.received',
+    timestamp: now,
+    source: 'integration-tests',
+    invoice_id: crypto.randomUUID(),
+    odoo_invoice_id: 5678,
+    amount: 150.00,
+    payment_method: 'credit_card',
+    paid_at: now,
     ...overrides
   };
 }
@@ -251,27 +345,6 @@ export const MailhogAPI = {
 };
 
 /**
- * Load test fixture from integration-contracts test-samples
+ * Sleep for N milliseconds
  */
-export async function loadFixture(name) {
-  const fixturePath = join(__dirname, '../../integration-contracts/test-samples', `${name}.json`);
-  const content = await readFile(fixturePath, 'utf-8');
-  return JSON.parse(content);
-}
-
-let ajvInstance = null;
-
-/**
- * JSON Schema validator setup (singleton)
- */
-export async function createValidator() {
-  if (ajvInstance) return ajvInstance;
-  
-  const { default: Ajv } = await import('ajv');
-  const { default: addFormats } = await import('ajv-formats');
-  
-  ajvInstance = new Ajv({ strict: false, allErrors: true });
-  addFormats(ajvInstance);
-  
-  return ajvInstance;
-}
+export const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
