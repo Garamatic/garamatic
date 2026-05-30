@@ -1,0 +1,72 @@
+[
+  {
+    "email": "alice.johnson@techcorp.io",
+    "name": "Alice Johnson",
+    "company": "TechCorp",
+    "phone": "+1 555 123 4567",
+    "tier": "Enterprise"
+  },
+  {
+    "email": "bob.smith@startup.xyz",
+    "name": "Bob Smith",
+    "company": "StartupXYZ",
+    "phone": "+1 555 987 6543",
+    "tier": "Professional"
+  },
+  {
+    "email": "carol.davis@enterprise.net",
+    "name": "Carol Davis",
+    "company": "EnterpriseNet",
+    "phone": "+1 555 246 8135",
+    "tier": "Enterprise"
+  },
+  {
+    "email": "daniel.lee@innovate.dev",
+    "name": "Daniel Lee",
+    "company": "InnovateDev",
+    "phone": "+1 555 369 2580",
+    "tier": "Professional"
+  },
+  {
+    "email": "eva.brown@solutions.biz",
+    "name": "Eva Brown",
+    "company": "SolutionsBiz",
+    "phone": "+1 555 147 2589",
+    "tier": "Enterprise"
+  },
+  {
+    "email": "frank.miller@digital.agency",
+    "name": "Frank Miller",
+    "company": "DigitalAgency",
+    "phone": "+1 555 753 9514",
+    "tier": "Free"
+  },
+  {
+    "email": "grace.wilson@cloud.services",
+    "name": "Grace Wilson",
+    "company": "CloudServices",
+    "phone": "+1 555 369 7412",
+    "tier": "Enterprise"
+  },
+  {
+    "email": "henry.taylor@software.co",
+    "name": "Henry Taylor",
+    "company": "SoftwareCo",
+    "phone": "+1 555 852 9630",
+    "tier": "Professional"
+  },
+  {
+    "email": "ivy.anderson@systems.tech",
+    "name": "Ivy Anderson",
+    "company": "SystemsTech",
+    "phone": "+1 555 741 8523",
+    "tier": "Enterprise"
+  },
+  {
+    "email": "jack.thomas@consulting.group",
+    "name": "Jack Thomas",
+    "company": "ConsultingGroup",
+    "phone": "+1 555 963 8521",
+    "tier": "Professional"
+  }
+]

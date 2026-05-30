@@ -1,0 +1,202 @@
+[
+  {
+    "title": "Login system not working for multiple users",
+    "description": "Our team cannot access the system and we have a deadline today. Multiple users are affected. Please help ASAP!",
+    "priority": "urgent",
+    "status": "resolved",
+    "customer_email": "alice.johnson@techcorp.io",
+    "customer_name": "Alice Johnson",
+    "resolution_notes": "Resolved by updating authentication middleware. Added retry logic for token validation.",
+    "billable_amount": 150.00
+  },
+  {
+    "title": "Database performance degradation during peak hours",
+    "description": "Our API response times are 5x slower than normal between 2-4 PM daily. This is affecting our customers.",
+    "priority": "high",
+    "status": "in_progress",
+    "customer_email": "carol.davis@enterprise.net",
+    "customer_name": "Carol Davis",
+    "resolution_notes": "",
+    "billable_amount": null
+  },
+  {
+    "title": "Security vulnerability reported in authentication module",
+    "description": "Our security audit found a potential JWT token validation bypass. This needs immediate attention!",
+    "priority": "urgent",
+    "status": "resolved",
+    "customer_email": "daniel.lee@innovate.dev",
+    "customer_name": "Daniel Lee",
+    "resolution_notes": "Security patch applied (v2.3.1). Updated JWT library to fix validation bypass. All sessions invalidated as precaution.",
+    "billable_amount": 200.00
+  },
+  {
+    "title": "Feature request: Add dark mode to dashboard",
+    "description": "Would be great to have a dark mode option for the dashboard. Many of our team members work late hours.",
+    "priority": "low",
+    "status": "open",
+    "customer_email": "bob.smith@startup.xyz",
+    "customer_name": "Bob Smith",
+    "resolution_notes": "",
+    "billable_amount": null
+  },
+  {
+    "title": "Export functionality for reports in Excel format",
+    "description": "We need to export our monthly reports to Excel for board presentations. CSV is not sufficient.",
+    "priority": "medium",
+    "status": "resolved",
+    "customer_email": "eva.brown@solutions.biz",
+    "customer_name": "Eva Brown",
+    "resolution_notes": "Implemented Excel export using OpenXML SDK. Supports formatting, formulas, and charts. Available in v3.2.0.",
+    "billable_amount": 120.00
+  },
+  {
+    "title": "API rate limiting too restrictive for our use case",
+    "description": "Current limit of 100 requests/minute is blocking our integration. We need at least 500/minute for our batch processing.",
+    "priority": "high",
+    "status": "resolved",
+    "customer_email": "carol.davis@enterprise.net",
+    "customer_name": "Carol Davis",
+    "resolution_notes": "Increased rate limit from 100 to 500 req/min for Enterprise tier. Customer notified of change.",
+    "billable_amount": 80.00
+  },
+  {
+    "title": "Question: How to set up SSO with Azure AD?",
+    "description": "We're trying to configure SSO with Azure AD but the documentation is unclear. Can someone guide us through the process?",
+    "priority": "medium",
+    "status": "resolved",
+    "customer_email": "frank.miller@digital.agency",
+    "customer_name": "Frank Miller",
+    "resolution_notes": "Provided step-by-step SSO guide with screenshots. Customer confirmed successful setup. Closing ticket.",
+    "billable_amount": 50.00
+  },
+  {
+    "title": "Billing discrepancy - charged for wrong tier",
+    "description": "We were charged for the Enterprise tier but we're on the Professional plan. Please review and refund the difference.",
+    "priority": "high",
+    "status": "resolved",
+    "customer_email": "alice.johnson@techcorp.io",
+    "customer_name": "Alice Johnson",
+    "resolution_notes": "Billing corrected and refund processed. Invoice #INV-2024-0882 adjusted. Customer notified via email.",
+    "billable_amount": 100.00
+  },
+  {
+    "title": "Request for custom training session for our team",
+    "description": "We have 50 new users joining next month. Would like to schedule a custom training session covering advanced features.",
+    "priority": "low",
+    "status": "in_progress",
+    "customer_email": "eva.brown@solutions.biz",
+    "customer_name": "Eva Brown",
+    "resolution_notes": "",
+    "billable_amount": null
+  },
+  {
+    "title": "Mobile app crashes on iOS 17 devices",
+    "description": "The app crashes immediately on launch for all iOS 17 users. This is affecting about 30% of our user base.",
+    "priority": "urgent",
+    "status": "resolved",
+    "customer_email": "daniel.lee@innovate.dev",
+    "customer_name": "Daniel Lee",
+    "resolution_notes": "Fixed iOS 17 compatibility issue in v3.1.2. Updated SwiftUI navigation and deprecated API calls.",
+    "billable_amount": 250.00
+  },
+  {
+    "title": "Cannot access admin panel after recent update",
+    "description": "After the latest update, our admin team can no longer access the admin panel. Getting 403 errors.",
+    "priority": "high",
+    "status": "resolved",
+    "customer_email": "grace.wilson@cloud.services",
+    "customer_name": "Grace Wilson",
+    "resolution_notes": "Admin panel access restored by clearing corrupted cache entries. Added monitoring to prevent recurrence.",
+    "billable_amount": 90.00
+  },
+  {
+    "title": "Webhook endpoints returning 500 errors intermittently",
+    "description": "Our webhook integrations are failing with 500 errors. This is happening randomly about 20% of the time.",
+    "priority": "medium",
+    "status": "in_progress",
+    "customer_email": "jack.thomas@consulting.group",
+    "customer_name": "Jack Thomas",
+    "resolution_notes": "",
+    "billable_amount": null
+  },
+  {
+    "title": "Need help configuring multi-tenant setup",
+    "description": "We need to set up our workspace for multi-tenant use. Our team manages 3 different client organizations.",
+    "priority": "medium",
+    "status": "resolved",
+    "customer_email": "henry.taylor@software.co",
+    "customer_name": "Henry Taylor",
+    "resolution_notes": "Multi-tenant configuration guide sent. Tenant isolation verified. Database schemas separated correctly.",
+    "billable_amount": 200.00
+  },
+  {
+    "title": "Data migration failed during weekend maintenance",
+    "description": "Our scheduled data migration failed on Saturday. We need to restore from backup and retry.",
+    "priority": "high",
+    "status": "resolved",
+    "customer_email": "ivy.anderson@systems.tech",
+    "customer_name": "Ivy Anderson",
+    "resolution_notes": "Migration re-run from backup. All 47,000 records restored successfully. Validation checks passed.",
+    "billable_amount": 180.00
+  },
+  {
+    "title": "Password reset emails not being delivered",
+    "description": "Users are requesting password resets but not receiving the emails. Checked spam folders.",
+    "priority": "high",
+    "status": "resolved",
+    "customer_email": "alice.johnson@techcorp.io",
+    "customer_name": "Alice Johnson",
+    "resolution_notes": "Email provider configuration updated. SPF/DKIM records verified. Delivery rate restored to 99.8%.",
+    "billable_amount": 75.00
+  },
+  {
+    "title": "Two-factor authentication not working with authenticator app",
+    "description": "Our team cannot log in with 2FA. The authenticator app codes are not being accepted.",
+    "priority": "high",
+    "status": "resolved",
+    "customer_email": "bob.smith@startup.xyz",
+    "customer_name": "Bob Smith",
+    "resolution_notes": "TOTP secret regenerated for affected users. QR codes re-sent. Authenticator app sync confirmed.",
+    "billable_amount": 60.00
+  },
+  {
+    "title": "Report generation times out for large datasets",
+    "description": "When generating reports for more than 10,000 records, the system times out after 30 seconds.",
+    "priority": "medium",
+    "status": "resolved",
+    "customer_email": "eva.brown@solutions.biz",
+    "customer_name": "Eva Brown",
+    "resolution_notes": "Report query optimized with materialized view. Large dataset exports now complete in under 10s.",
+    "billable_amount": 110.00
+  },
+  {
+    "title": "File uploads failing for files larger than 10MB",
+    "description": "Our team needs to upload files up to 50MB but uploads are failing. The error says 'Request entity too large'.",
+    "priority": "medium",
+    "status": "resolved",
+    "customer_email": "grace.wilson@cloud.services",
+    "customer_name": "Grace Wilson",
+    "resolution_notes": "File upload limit increased to 50MB. Added streaming upload support. Progress bar implemented.",
+    "billable_amount": 95.00
+  },
+  {
+    "title": "Search functionality not returning all results",
+    "description": "Our search is only returning 80% of expected results. Some recently created items are not showing up.",
+    "priority": "medium",
+    "status": "in_progress",
+    "customer_email": "jack.thomas@consulting.group",
+    "customer_name": "Jack Thomas",
+    "resolution_notes": "",
+    "billable_amount": null
+  },
+  {
+    "title": "Notification preferences not saving correctly",
+    "description": "When we change notification settings, they revert after logging out. This is happening to all users.",
+    "priority": "medium",
+    "status": "resolved",
+    "customer_email": "henry.taylor@software.co",
+    "customer_name": "Henry Taylor",
+    "resolution_notes": "Notification service refactored to use event-driven architecture. Preferences now persist correctly.",
+    "billable_amount": 85.00
+  }
+]

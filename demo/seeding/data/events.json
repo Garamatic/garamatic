@@ -1,0 +1,95 @@
+[
+  {
+    "event_type": "ticket.created",
+    "ticket_id": "T-2024-1001",
+    "customer_email": "alice.johnson@techcorp.io",
+    "customer_name": "Alice Johnson",
+    "tenant_id": "demo-tenant",
+    "description": "Login system not working for multiple users",
+    "priority": "urgent",
+    "created_at": "2024-01-15T09:00:00Z"
+  },
+  {
+    "event_type": "ticket.resolved",
+    "ticket_id": "T-2024-1001",
+    "customer_email": "alice.johnson@techcorp.io",
+    "customer_name": "Alice Johnson",
+    "service_description": "Authentication system fix",
+    "amount": 150.00,
+    "tenant_id": "demo-tenant",
+    "resolved_at": "2024-01-15T14:30:00Z",
+    "resolution_notes": "Resolved by updating authentication middleware"
+  },
+  {
+    "event_type": "ticket.created",
+    "ticket_id": "T-2024-1002",
+    "customer_email": "carol.davis@enterprise.net",
+    "customer_name": "Carol Davis",
+    "tenant_id": "demo-tenant",
+    "description": "Database performance degradation during peak hours",
+    "priority": "high",
+    "created_at": "2024-01-20T10:00:00Z"
+  },
+  {
+    "event_type": "invoice.create_requested",
+    "ticket_id": "T-2024-1001",
+    "customer_email": "alice.johnson@techcorp.io",
+    "customer_name": "Alice Johnson",
+    "amount": 150.00,
+    "description": "Authentication system fix",
+    "requested_at": "2024-01-15T14:35:00Z"
+  },
+  {
+    "event_type": "invoice.created",
+    "invoice_id": "INV-2024-1001",
+    "odoo_invoice_id": 12345,
+    "ticket_id": "T-2024-1001",
+    "customer_email": "alice.johnson@techcorp.io",
+    "amount": 150.00,
+    "currency": "USD",
+    "status": "posted",
+    "created_at": "2024-01-15T15:00:00Z"
+  },
+  {
+    "event_type": "invoice.overdue",
+    "invoice_id": "INV-2024-1002",
+    "odoo_invoice_id": 12346,
+    "customer_email": "bob.smith@startup.xyz",
+    "amount": 250.00,
+    "days_overdue": 14
+  },
+  {
+    "event_type": "payment.received",
+    "invoice_id": "INV-2024-1001",
+    "odoo_invoice_id": 12345,
+    "amount": 150.00,
+    "payment_method": "credit_card",
+    "paid_at": "2024-01-20T10:00:00Z"
+  },
+  {
+    "event_type": "email.send",
+    "to_email": "alice.johnson@techcorp.io",
+    "subject": "Your ticket has been resolved",
+    "body_html": "<p>Your ticket T-2024-1001 has been resolved. Resolution: Authentication system fix.</p>",
+    "from_email": "support@garamatic.io",
+    "from_name": "Garamatic Support"
+  },
+  {
+    "event_type": "user.created",
+    "user_id": "USR-2024-001",
+    "email": "grace.wilson@cloud.services",
+    "name": "Grace Wilson",
+    "role": "customer",
+    "tenant_id": "demo-tenant",
+    "created_at": "2024-01-10T08:00:00Z"
+  },
+  {
+    "event_type": "ticket.assigned",
+    "ticket_id": "T-2024-1002",
+    "customer_email": "carol.davis@enterprise.net",
+    "customer_name": "Carol Davis",
+    "assigned_to": "agent-001",
+    "assigned_by": "supervisor-001",
+    "assigned_at": "2024-01-20T11:00:00Z"
+  }
+]

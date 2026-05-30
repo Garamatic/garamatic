@@ -66,6 +66,7 @@ services:
       - RabbitMQ__Username=guest
       - RabbitMQ__Password=guest
       - RabbitMQ__ExchangeName=event_exchange
+      - &agentic_api_key Agentic__ApiKey=${AGENTIC_API_KEY:-garamatic-agentic-secret-key}
     volumes:
       - ./ticket-masala/config:/app/config:ro
       - ticket_masala_data:/app/data
@@ -206,6 +207,7 @@ services:
       - RABBITMQ_PASS=guest
       - RABBITMQ_VHOST=/
       - LOG_LEVEL=INFO
+      - *agentic_api_key
     networks:
       - garamatic-network
     depends_on:
