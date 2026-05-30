@@ -10,7 +10,7 @@ docker compose up --build
 ```
 
 This will:
-1. Start all services (ticket-masala, gatekeeper, mailing-service, agentic-service, odoo-integration, event-planner, rabbitmq, mailhog)
+1. Start all services (ticket-masala, gatekeeper, mailing-service, agentic-service, odoo-integration, event-planner, showcase, rabbitmq, mailhog)
 2. Wait for all services to be healthy
 3. Seed realistic data via each service's API
 4. Show you access URLs
@@ -20,6 +20,7 @@ This will:
 ```
 demo/
 ├── docker-compose.yml          # Orchestrates all services + seeder
+├── showcase/                   # Static tenant demo pages
 ├── seeding/                    # Seeder container image
 │   ├── Dockerfile              # Node.js + curl image
 │   ├── seed.js                 # Main orchestrator
@@ -47,6 +48,7 @@ demo/
 | Mailing Service | http://localhost:8087 | Processes RabbitMQ events |
 | Agentic Service | http://localhost:3001 | 8 tickets + 4 emails |
 | Event Planner | http://localhost:8088 | 12 contact submissions |
+| Showcase | http://localhost:8092 | Static tenant demo pages |
 | Odoo Integration | http://localhost:8089 | LiteDB state seeded |
 | Mailhog | http://localhost:8025 | Captures all emails |
 | RabbitMQ | http://localhost:15672 | guest/guest |
@@ -60,6 +62,7 @@ The seeding creates realistic cross-service interactions:
 3. **Emails** sent via agentic-service → captured in Mailhog
 4. **Invoices** created via ticket resolution → picked up by odoo-integration
 5. **Contacts** submitted to event-planner → forwarded to RabbitMQ
+6. **Static tenant forms** opened from the showcase → submit to ticket-masala API
 
 ## Reset
 

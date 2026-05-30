@@ -1,17 +1,22 @@
-# ═══════════════════════════════════════════════════════════════════════════
 # Garamatic Demo Environment
-#
-# Spins up all services with demo data seeded via APIs.
-# Run: docker compose -f docker-compose.yml up --build
-#
-# The 'seeder' service waits for all services to be healthy,
-# then seeds realistic data through each service's API.
-# ═══════════════════════════════════════════════════════════════════════════
+# Run: docker compose up --build
 
 services:
-  # ════════════════════════════════════════════════════════════
-  # RABBITMQ - Message Broker
-  # ════════════════════════════════════════════════════════════
+  showcase:
+    image: nginx:1.27-alpine
+    container_name: garamatic_demo_showcase
+    ports:
+      - "8092:80"
+    volumes:
+      - ./showcase:/usr/share/nginx/html:ro
+    networks:
+      - garamatic_demo_net
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:80/"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   rabbitmq:
     image: rabbitmq:3-management-alpine
     container_name: garamatic_demo_rabbitmq
@@ -26,9 +31,6 @@ services:
       timeout: 3s
       retries: 5
 
-  # ════════════════════════════════════════════════════════════
-  # TICKET MASALA - Core Ticket Service
-  # ════════════════════════════════════════════════════════════
   ticket-masala:
     build:
       context: ../ticket-masala
@@ -57,9 +59,6 @@ services:
       timeout: 3s
       retries: 10
 
-  # ════════════════════════════════════════════════════════════
-  # GATEKEEPER API - Ingestion Service
-  # ════════════════════════════════════════════════════════════
   gatekeeper-api:
     build:
       context: ../ticket-masala
@@ -85,9 +84,6 @@ services:
       timeout: 3s
       retries: 10
 
-  # ════════════════════════════════════════════════════════════
-  # MAILING SERVICE - Email Worker
-  # ════════════════════════════════════════════════════════════
   mailing-service:
     build:
       context: ../mailing-service
@@ -115,9 +111,6 @@ services:
       timeout: 3s
       retries: 10
 
-  # ════════════════════════════════════════════════════════════
-  # AGENTIC SERVICE - AI Agent
-  # ════════════════════════════════════════════════════════════
   agentic-service:
     build:
       context: ../agentic-service
@@ -143,9 +136,6 @@ services:
       timeout: 3s
       retries: 10
 
-  # ════════════════════════════════════════════════════════════
-  # ODOO INTEGRATION - .NET Worker
-  # ════════════════════════════════════════════════════════════
   odoo-integration:
     build:
       context: ../odoo-integration
@@ -178,9 +168,6 @@ services:
       timeout: 3s
       retries: 10
 
-  # ════════════════════════════════════════════════════════════
-  # EVENT PLANNER - Drupal
-  # ════════════════════════════════════════════════════════════
   event-planner:
     build:
       context: ../event-planner
@@ -194,7 +181,8 @@ services:
     networks:
       - garamatic_demo_net
     depends_on:
-      - event-planner-db
+      event-planner-db:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:80"]
       interval: 5s
@@ -219,9 +207,6 @@ services:
       timeout: 5s
       retries: 5
 
-  # ════════════════════════════════════════════════════════════
-  # MAILHOG - Email Capture
-  # ════════════════════════════════════════════════════════════
   mailhog:
     image: mailhog/mailhog:latest
     container_name: garamatic_demo_mailhog
@@ -231,9 +216,6 @@ services:
     networks:
       - garamatic_demo_net
 
-  # ════════════════════════════════════════════════════════════
-  # DEMO SEEDER - Waits for services, then seeds via APIs
-  # ════════════════════════════════════════════════════════════
   seeder:
     build:
       context: ./seeding
