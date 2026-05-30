@@ -25,6 +25,11 @@ services:
       - "15672:15672"
     networks:
       - garamatic_test_net
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   # ════════════════════════════════════════════════════════════
   # TICKET MASALA - Core Ticket Service
@@ -49,7 +54,7 @@ services:
       - garamatic_test_net
     depends_on:
       rabbitmq:
-        condition: service_started
+        condition: service_healthy
 
   # ════════════════════════════════════════════════════════════
   # GATEKEEPER API - Ingestion Service
@@ -71,7 +76,7 @@ services:
       ticket-masala:
         condition: service_started
       rabbitmq:
-        condition: service_started
+        condition: service_healthy
 
   # ════════════════════════════════════════════════════════════
   # MAILING SERVICE - Email Worker + API
@@ -95,8 +100,10 @@ services:
     networks:
       - garamatic_test_net
     depends_on:
-      - rabbitmq
-      - mailhog
+      rabbitmq:
+        condition: service_healthy
+      mailhog:
+        condition: service_started
 
   # ════════════════════════════════════════════════════════════
   # EVENT PLANNER - Event Management (PHP/Drupal)
@@ -151,8 +158,10 @@ services:
     networks:
       - garamatic_test_net
     depends_on:
-      - ticket-masala
-      - rabbitmq
+      ticket-masala:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
 
   # ════════════════════════════════════════════════════════════
   # ODOO INTEGRATION - .NET Worker for Odoo Sync
@@ -178,7 +187,8 @@ services:
     networks:
       - garamatic_test_net
     depends_on:
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
 
   # ════════════════════════════════════════════════════════════
   # CONTRACT VALIDATOR - Schema Validation Service (Placeholder)
