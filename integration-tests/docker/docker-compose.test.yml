@@ -135,6 +135,52 @@ services:
       retries: 5
 
   # ════════════════════════════════════════════════════════════
+  # AGENTIC SERVICE - AI Agent Service
+  # ════════════════════════════════════════════════════════════
+  agentic-service:
+    build:
+      context: ../../agentic-service
+      dockerfile: Dockerfile
+    container_name: garamatic_agentic_test
+    ports:
+      - "3001:3001"
+    environment:
+      - MCP_TRANSPORT=sse
+      - ticket_api_url=http://ticket-masala:8080
+      - rabbitmq_host=rabbitmq
+    networks:
+      - garamatic_test_net
+    depends_on:
+      - ticket-masala
+      - rabbitmq
+
+  # ════════════════════════════════════════════════════════════
+  # ODOO INTEGRATION - .NET Worker for Odoo Sync
+  # ════════════════════════════════════════════════════════════
+  odoo-integration:
+    build:
+      context: ../../odoo-integration
+      dockerfile: Dockerfile
+    container_name: garamatic_odoo_integration_test
+    ports:
+      - "8089:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Testing
+      - RabbitMQ__HostName=rabbitmq
+      - RabbitMQ__Port=5672
+      - RabbitMQ__UserName=guest
+      - RabbitMQ__Password=guest
+      - HealthChecks__Port=8080
+      - OdooOptions__BaseUrl=${ODOO_URL:-http://localhost:8069}
+      - OdooOptions__Database=${ODOO_DB:-odoo}
+      - OdooOptions__Username=${ODOO_USER:-admin}
+      - OdooOptions__Password=${ODOO_PASS:-admin}
+    networks:
+      - garamatic_test_net
+    depends_on:
+      - rabbitmq
+
+  # ════════════════════════════════════════════════════════════
   # CONTRACT VALIDATOR - Schema Validation Service (Placeholder)
   # ════════════════════════════════════════════════════════════
   # NOTE: This service requires a Dockerfile.test to be created in integration-contracts/
@@ -191,6 +237,9 @@ services:
       - GATEKEEPER_URL=http://gatekeeper-api:8080
       - MAILING_SERVICE_URL=http://mailing-service:8080
       - EVENT_PLANNER_URL=http://event-planner:80
+      - AGENTIC_SERVICE_URL=http://agentic-service:3001
+      - ODOO_INTEGRATION_URL=http://odoo-integration:8080
+      - RABBITMQ_URL=http://rabbitmq:15672
       - MAILHOG_URL=http://mailhog:8025
       - TEST_RECEIVER_URL=http://test-receiver:8080
     networks:
@@ -203,6 +252,8 @@ services:
       mailing-service:
         condition: service_started
       event-planner:
+        condition: service_started
+      agentic-service:
         condition: service_started
 
 networks:

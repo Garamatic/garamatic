@@ -12,8 +12,35 @@ const RESULTS_DIR = './test-results';
 const REPORTS_DIR = './test-reports';
 
 async function generateHTMLReport(results) {
-  const timestamp = new Date().toISOString();
-  
+  const timestamp = results.timestamp || new Date().toISOString();
+  const summary = results.summary || {};
+  const suites = results.suites || [];
+  const services = results.services || {};
+
+  const overall = summary.failed === 0 ? 'passed' : 'failed';
+
+  const suiteRows = suites.map(s => {
+    const statusColor = s.failed === 0 ? '#22c55e' : '#ef4444';
+    const status = s.failed === 0 ? 'pass' : 'fail';
+    return `
+      <tr>
+        <td>${s.suite}</td>
+        <td><span class="badge badge-${status}">${s.status}</span></td>
+        <td>${s.passed}</td>
+        <td>${s.failed}</td>
+        <td>${s.skipped}</td>
+        <td>${s.duration}ms</td>
+      </tr>
+    `;
+  }).join('');
+
+  const serviceCards = Object.entries(services).map(([name, url]) => `
+    <div class="service-item online">
+      <div class="service-name">${name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</div>
+      <div class="service-url">${url}</div>
+    </div>
+  `).join('');
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,7 +49,7 @@ async function generateHTMLReport(results) {
   <title>Garamatic Integration Test Report</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { 
+    body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       line-height: 1.6;
       color: #333;
@@ -30,7 +57,7 @@ async function generateHTMLReport(results) {
       padding: 20px;
     }
     .container { max-width: 1200px; margin: 0 auto; }
-    header { 
+    header {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
       padding: 30px;
@@ -39,7 +66,7 @@ async function generateHTMLReport(results) {
     }
     h1 { font-size: 2rem; margin-bottom: 10px; }
     .timestamp { opacity: 0.9; font-size: 0.9rem; }
-    
+
     .summary-cards {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -63,7 +90,7 @@ async function generateHTMLReport(results) {
     .failed .card-value { color: #ef4444; }
     .skipped .card-value { color: #f59e0b; }
     .total .card-value { color: #3b82f6; }
-    
+
     .section {
       background: white;
       border-radius: 12px;
@@ -72,7 +99,7 @@ async function generateHTMLReport(results) {
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
     h2 { margin-bottom: 20px; color: #444; }
-    
+
     .service-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -88,39 +115,25 @@ async function generateHTMLReport(results) {
     .service-item.offline { border-left-color: #ef4444; }
     .service-name { font-weight: 600; margin-bottom: 5px; }
     .service-url { font-size: 0.85rem; color: #666; font-family: monospace; }
-    
-    .test-list { list-style: none; }
-    .test-item {
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
       padding: 12px 15px;
+      text-align: left;
       border-bottom: 1px solid #eee;
-      display: flex;
-      align-items: center;
-      gap: 10px;
     }
-    .test-item:last-child { border-bottom: none; }
-    .test-status { 
-      width: 24px; 
-      height: 24px; 
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      flex-shrink: 0;
-    }
-    .test-status.pass { background: #dcfce7; color: #166534; }
-    .test-status.fail { background: #fee2e2; color: #991b1b; }
-    .test-status.skip { background: #fef3c7; color: #92400e; }
-    .test-name { flex: 1; }
-    .test-duration { color: #999; font-size: 0.85rem; }
-    
-    footer {
-      text-align: center;
-      padding: 30px;
+    th {
+      font-weight: 600;
       color: #666;
-      font-size: 0.9rem;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 1px;
     }
-    
+    tr:last-child td { border-bottom: none; }
+
     .badge {
       display: inline-block;
       padding: 4px 12px;
@@ -129,8 +142,18 @@ async function generateHTMLReport(results) {
       font-weight: 600;
       text-transform: uppercase;
     }
+    .badge-pass { background: #dcfce7; color: #166534; }
+    .badge-fail { background: #fee2e2; color: #991b1b; }
+    .badge-skipped { background: #fef3c7; color: #92400e; }
     .badge-success { background: #dcfce7; color: #166534; }
     .badge-failure { background: #fee2e2; color: #991b1b; }
+
+    footer {
+      text-align: center;
+      padding: 30px;
+      color: #666;
+      font-size: 0.9rem;
+    }
   </style>
 </head>
 <body>
@@ -139,54 +162,68 @@ async function generateHTMLReport(results) {
       <h1>🔧 Garamatic Integration Test Report</h1>
       <p class="timestamp">Generated: ${timestamp}</p>
     </header>
-    
+
     <div class="summary-cards">
       <div class="card passed">
-        <div class="card-value">${results.summary?.passed || 0}</div>
+        <div class="card-value">${summary.passed || 0}</div>
         <div class="card-label">Passed</div>
       </div>
       <div class="card failed">
-        <div class="card-value">${results.summary?.failed || 0}</div>
+        <div class="card-value">${summary.failed || 0}</div>
         <div class="card-label">Failed</div>
       </div>
       <div class="card skipped">
-        <div class="card-value">${results.summary?.skipped || 0}</div>
+        <div class="card-value">${summary.skipped || 0}</div>
         <div class="card-label">Skipped</div>
       </div>
       <div class="card total">
-        <div class="card-value">${results.summary?.total || 0}</div>
+        <div class="card-value">${summary.total || 0}</div>
         <div class="card-label">Total Tests</div>
       </div>
     </div>
-    
+
     <div class="section">
       <h2>🌐 Service Status</h2>
       <div class="service-grid">
-        ${Object.entries(results.services || {}).map(([name, url]) => `
-          <div class="service-item online">
-            <div class="service-name">${name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</div>
-            <div class="service-url">${url}</div>
-          </div>
-        `).join('')}
+        ${serviceCards}
       </div>
     </div>
-    
+
+    <div class="section">
+      <h2>📋 Test Suites</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Suite</th>
+            <th>Status</th>
+            <th>Passed</th>
+            <th>Failed</th>
+            <th>Skipped</th>
+            <th>Duration</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${suiteRows}
+        </tbody>
+      </table>
+    </div>
+
     <div class="section">
       <h2>📊 Overall Status</h2>
       <p>
-        <span class="badge ${results.summary?.failed === 0 ? 'badge-success' : 'badge-failure'}">
-          ${results.summary?.failed === 0 ? 'All Tests Passed' : 'Tests Failed'}
+        <span class="badge ${overall === 'passed' ? 'badge-success' : 'badge-failure'}">
+          ${overall === 'passed' ? 'All Tests Passed' : 'Tests Failed'}
         </span>
       </p>
       <p style="margin-top: 15px;">
-        ${results.summary?.failed === 0 
+        ${overall === 'passed'
           ? '✅ All integration tests completed successfully. The services are properly integrated.'
-          : `⚠️ ${results.summary?.failed} test(s) failed. Review the logs for details.`}
+          : `⚠️ ${summary.failed} test(s) failed. Review the logs for details.`}
       </p>
     </div>
-    
+
     <footer>
-      <p>Garamatic Integration Test Suite &bull; Generated by test runner</p>
+      <p>Garamatic Integration Test Suite &bull; Generated by unified test runner</p>
     </footer>
   </div>
 </body>
@@ -209,6 +246,7 @@ async function main() {
     const md = `# Integration Test Report
 
 **Generated:** ${results.timestamp}
+**Overall:** ${results.overall === 'passed' ? '✅ All tests passed' : '⚠️ Some tests failed'}
 
 ## Summary
 
@@ -218,6 +256,12 @@ async function main() {
 | ❌ Failed | ${results.summary?.failed || 0} |
 | ⏭️ Skipped | ${results.summary?.skipped || 0} |
 | **Total** | **${results.summary?.total || 0}** |
+
+## Test Suites
+
+| Suite | Status | Passed | Failed | Skipped | Duration |
+|-------|--------|--------|--------|---------|----------|
+${(results.suites || []).map(s => `| ${s.suite} | ${s.status} | ${s.passed} | ${s.failed} | ${s.skipped} | ${s.duration}ms |`).join('\n')}
 
 ## Services Tested
 
