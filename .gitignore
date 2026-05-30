@@ -37,3 +37,7 @@ node_modules/
 # ─── Temporary Files ─────────────────────────────────────────────────────
 *.tmp
 *.temp
+
+# ─── Integration Test Artifacts ──────────────────────────────────────
+integration-tests/test-reports/
+integration-tests/test-results/
