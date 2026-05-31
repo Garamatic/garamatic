@@ -36,7 +36,8 @@ up:
 	@echo "   • Event Planner  → http://localhost:8088"
 	@echo "   • Garamatic Web  → http://localhost:8090"
 	@echo "   • Masala Web     → http://localhost:8091"
-	@echo "   • Agentic        → http://localhost:3001"
+	@echo "   • Odoo          → http://localhost:8092"
+	@echo "   • Odoo Bridge   → http://localhost:8089/health"
 	@echo "   • RabbitMQ Mgmt  → http://localhost:15672  (guest/guest)"
 	@echo "   • Mailhog UI     → http://localhost:8025"
 

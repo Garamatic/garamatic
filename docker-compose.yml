@@ -229,8 +229,8 @@ services:
       - DATABASE=odoo
     volumes:
       - odoo_data:/var/lib/odoo
-      - ./odoo/config:/etc/odoo:ro
-      - ./odoo/addons:/mnt/extra-addons:ro
+      - ./odoo-integration/config:/etc/odoo:ro
+      - ./odoo-integration/addons:/mnt/extra-addons:ro
       - ./scripts/odoo-init.sh:/odoo-init.sh:ro
     command: ["/bin/bash", "/odoo-init.sh"]
     networks:
@@ -264,6 +264,8 @@ services:
       context: ./odoo-integration
       dockerfile: Dockerfile
     container_name: garamatic_odoo_bridge
+    ports:
+      - "8089:8080"
     environment:
       - Odoo__BaseUrl=http://odoo:8069
       - Odoo__Database=odoo
@@ -283,8 +285,10 @@ services:
     networks:
       - garamatic-network
     depends_on:
-      - odoo
-      - rabbitmq
+      odoo:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
     restart: unless-stopped
 
   # ════════════════════════════════════════════════════════════
