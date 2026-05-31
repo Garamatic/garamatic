@@ -21,8 +21,7 @@ async function main() {
       const response = await fetchWithTimeout(`${SERVICES.ticketMasala}/api/info`, {}, 10000);
       // API info endpoint is optional - service may not have it
       if (response.status === 404) {
-        runner.skip('API info endpoint (not implemented)', () => {});
-        return;
+        runner.skip('API info endpoint (not implemented)');
       }
       runner.assertResponseOk(response);
       const data = await response.json();
@@ -69,43 +68,47 @@ async function main() {
   
   await runner.describe('Mailing Service', async () => {
     await runner.it('should respond to health check', async () => {
+      let response;
       try {
-        const response = await fetchWithTimeout(`${SERVICES.mailing}/health`, {}, 5000);
-        runner.assertTrue(response.ok || response.status === 404, 'Should respond');
+        response = await fetchWithTimeout(`${SERVICES.mailing}/health`, {}, 5000);
       } catch {
-        runner.skip('Mailing service health check (service may not be running)', () => {});
+        runner.skip('Mailing service health check (service may not be running)');
       }
+      runner.assertTrue(response.ok || response.status === 404, 'Should respond');
     });
   });
   
   await runner.describe('Event Planner Service', async () => {
     await runner.it('should respond to HTTP requests', async () => {
+      let response;
       try {
-        const response = await fetchWithTimeout(SERVICES.eventPlanner, {}, 10000);
-        runner.assertTrue(response.status < 500, 'Should not return server error');
+        response = await fetchWithTimeout(SERVICES.eventPlanner, {}, 10000);
       } catch {
-        runner.skip('Event planner service (service may not be running)', () => {});
+        runner.skip('Event planner service (service may not be running)');
       }
+      runner.assertTrue(response.status < 500, 'Should not return server error');
     });
   });
 
   await runner.describe('Agentic Service', async () => {
     await runner.it('should respond to health check', async () => {
+      let response;
       try {
-        const response = await fetchWithTimeout(`${SERVICES.agenticService}/health`, {}, 5000);
-        runner.assertTrue(response.status < 500, 'Should respond to health check');
+        response = await fetchWithTimeout(`${SERVICES.agenticService}/health`, {}, 5000);
       } catch {
-        runner.skip('Agentic service (service may not be running)', () => {});
+        runner.skip('Agentic service (service may not be running)');
       }
+      runner.assertTrue(response.status < 500, 'Should respond to health check');
     });
 
     await runner.it('should have API endpoints accessible', async () => {
+      let response;
       try {
-        const response = await fetchWithTimeout(`${SERVICES.agenticService}/tickets?limit=1`, {}, 5000);
-        runner.assertTrue(response.status < 500, 'Should have accessible API');
+        response = await fetchWithTimeout(`${SERVICES.agenticService}/tickets?limit=1`, {}, 5000);
       } catch {
-        runner.skip('Agentic API endpoints (service may not be running)', () => {});
+        runner.skip('Agentic API endpoints (service may not be running)');
       }
+      runner.assertTrue(response.status < 500, 'Should have accessible API');
     });
   });
   
@@ -158,7 +161,7 @@ async function main() {
         const latency = Date.now() - start;
         runner.assertTrue(latency < 2000, `Health check took ${latency}ms (max 2000ms)`);
       } catch {
-        runner.skip('Response time benchmark (service unavailable)', () => {});
+        runner.skip('Response time benchmark (service unavailable)');
       }
     });
   });

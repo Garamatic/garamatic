@@ -8,7 +8,7 @@
  * - Multi-tenant ticket routing
  */
 
-import { TestRunner, SERVICES, fetchWithTimeout, MailhogAPI, generateTestTicket, generateTicketAssignedEvent, generateInvoiceOverdueEvent, generateUserCreatedEvent, generateInvoiceCreateRequestedEvent, sleep } from './lib/test-harness.js';
+import { TestRunner, SERVICES, fetchWithTimeout, MailhogAPI, generateTestTicket, generateTicketAssignedEvent, generateInvoiceOverdueEvent, generateUserCreatedEvent, generateInvoiceCreateRequestedEvent, sleep, randomUUID } from './lib/test-harness.js';
 
 const runner = new TestRunner('End-to-End Workflow Tests');
 
@@ -44,7 +44,6 @@ async function main() {
       
       if (response.status === 401 || response.status === 403) {
         runner.skip('Workflow test (auth required)');
-        return;
       }
       
       runner.assertResponseOk(response);
@@ -56,16 +55,19 @@ async function main() {
     await runner.it('Step 2: Ticket creation triggers notification email', async () => {
       if (!workflow.ticketId) {
         runner.skip('Email notification (ticket creation failed)');
-        return;
       }
       
       // Wait for async email processing
       await sleep(2000);
       
       // Check if email was captured (this depends on integration being configured)
-      const messages = await MailhogAPI.getMessages().catch(() => ({ items: [] }));
-      
-      // Verify Mailhog API is accessible (items will be an array, even if empty)
+      let messages;
+      try {
+        messages = await MailhogAPI.getMessages();
+      } catch {
+        runner.skip('Mailhog not accessible');
+      }
+
       runner.assertNotNull(messages.items, 'Mailhog should return messages array');
       workflow.events.push('email_check');
     });
@@ -73,7 +75,6 @@ async function main() {
     await runner.it('Step 3: Support agent can view and update ticket', async () => {
       if (!workflow.ticketId) {
         runner.skip('Agent update (ticket creation failed)');
-        return;
       }
       
       // Update ticket status
@@ -100,7 +101,6 @@ async function main() {
     await runner.it('Step 4: Ticket resolution completes workflow', async () => {
       if (!workflow.ticketId) {
         runner.skip('Resolution (ticket creation failed)');
-        return;
       }
       
       // Send resolution event
@@ -134,7 +134,7 @@ async function main() {
   
   await runner.describe('Invoice and Payment Workflow', async () => {
     const invoiceFlow = {
-      invoiceId: crypto.randomUUID(),
+      invoiceId: randomUUID(),
       events: []
     };
     
@@ -190,7 +190,7 @@ async function main() {
         event_type: 'payment.received',
         timestamp: new Date().toISOString(),
         source: 'integration-tests',
-        payment_id: crypto.randomUUID(),
+        payment_id: randomUUID(),
         invoice_id: invoiceFlow.invoiceId,
         amount: 150.00,
         currency: 'USD',
@@ -243,7 +243,6 @@ async function main() {
       // If we couldn't create any tickets, skip this test
       if (Object.keys(tenantTickets).length === 0) {
         runner.skip('Multi-tenant test (auth required)');
-        return;
       }
       
       runner.assertTrue(
@@ -255,7 +254,6 @@ async function main() {
     await runner.it('tenant A should not access tenant B tickets', async () => {
       if (Object.keys(tenantTickets).length < 2) {
         runner.skip('Tenant isolation (insufficient tickets created)');
-        return;
       }
       
       // Try to access tenant B's ticket as tenant A
@@ -334,7 +332,6 @@ async function main() {
 
       if (response.status === 401 || response.status === 403) {
         runner.skip('Assignment workflow (auth required)');
-        return;
       }
 
       runner.assertResponseOk(response);
@@ -389,9 +386,9 @@ async function main() {
         event_type: 'invoice.created',
         timestamp: new Date().toISOString(),
         source: 'integration-tests',
-        invoice_id: crypto.randomUUID(),
+        invoice_id: randomUUID(),
         odoo_invoice_id: 9999,
-        ticket_id: crypto.randomUUID(),
+        ticket_id: randomUUID(),
         customer_email: 'overdue-wf@example.com',
         amount: 300.00,
         currency: 'USD',
@@ -469,7 +466,6 @@ async function main() {
 
       if (response.status === 401 || response.status === 403) {
         runner.skip('Ticket for new user (auth required)');
-        return;
       }
 
       runner.assertResponseOk(response);
@@ -488,8 +484,9 @@ async function main() {
     const flow = { ticketId: null, events: [] };
 
     await runner.it('Step 1: Create ticket via agentic service', async () => {
+      let response;
       try {
-        const response = await fetchWithTimeout(`${SERVICES.agenticService}/tickets`, {
+        response = await fetchWithTimeout(`${SERVICES.agenticService}/tickets`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -500,57 +497,56 @@ async function main() {
             priority: 'high'
           })
         }, 10000);
-
-        if (response.status === 401 || response.status === 403) {
-          runner.skip('Agentic workflow (auth required)');
-          return;
-        }
-
-        if (response.status === 503) {
-          runner.skip('Agentic workflow (service unavailable)');
-          return;
-        }
-
-        runner.assertTrue(response.status === 200 || response.status === 201, 'Should create ticket via agentic');
-        const result = await response.json();
-        flow.ticketId = result.ticket_id;
-        flow.events.push('agentic_ticket_created');
       } catch {
         runner.skip('Agentic workflow (service not running)');
       }
+
+      if (response.status === 401 || response.status === 403) {
+        runner.skip('Agentic workflow (auth required)');
+      }
+
+      if (response.status === 503) {
+        runner.skip('Agentic workflow (service unavailable)');
+      }
+
+      runner.assertTrue(response.status === 200 || response.status === 201, 'Should create ticket via agentic');
+      const result = await response.json();
+      flow.ticketId = result.ticket_id;
+      flow.events.push('agentic_ticket_created');
     });
 
     await runner.it('Step 2: Retrieve ticket via agentic service', async () => {
       if (!flow.ticketId) {
         runner.skip('Retrieve agentic ticket (creation failed)');
-        return;
       }
 
+      let response;
       try {
-        const response = await fetchWithTimeout(
+        response = await fetchWithTimeout(
           `${SERVICES.agenticService}/tickets/${flow.ticketId}`,
           {},
           5000
         );
-        runner.assertTrue(response.status < 500, 'Should retrieve ticket');
-        flow.events.push('agentic_ticket_retrieved');
       } catch {
         runner.skip('Retrieve agentic ticket (service not running)');
       }
+      runner.assertTrue(response.status < 500, 'Should retrieve ticket');
+      flow.events.push('agentic_ticket_retrieved');
     });
 
     await runner.it('Step 3: Get customer context via agentic service', async () => {
+      let response;
       try {
-        const response = await fetchWithTimeout(
+        response = await fetchWithTimeout(
           `${SERVICES.agenticService}/customers/agentic-wf@example.com/context`,
           {},
           5000
         );
-        runner.assertTrue(response.status < 500, 'Should retrieve customer context');
-        flow.events.push('agentic_customer_context');
       } catch {
         runner.skip('Customer context (service not running)');
       }
+      runner.assertTrue(response.status < 500, 'Should retrieve customer context');
+      flow.events.push('agentic_customer_context');
     });
 
     await runner.it('Agentic workflow complete', () => {

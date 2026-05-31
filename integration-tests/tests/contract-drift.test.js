@@ -300,8 +300,9 @@ async function main() {
 
   await runner.describe('Agentic Service Event Conformance', async () => {
     await runner.it('agentic invoice.create_requested payload should match schema', async () => {
+      let response;
       try {
-        const response = await fetchWithTimeout(`${SERVICES.agenticService}/invoices/DRIFT-001`, {
+        response = await fetchWithTimeout(`${SERVICES.agenticService}/invoices/DRIFT-001`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -309,13 +310,13 @@ async function main() {
             description: 'Drift test invoice'
           })
         }, 10000);
-
-        // The agentic service may return 404 (ticket not found) or 503 (not configured)
-        // but if it returns 200, the invoice should have been queued
-        runner.assertTrue(response.status < 500, 'Agentic service should not crash on invoice request');
       } catch {
-        runner.skip('Agentic invoice drift test (service may not be running)', () => {});
+        runner.skip('Agentic invoice drift test (service may not be running)');
       }
+
+      // The agentic service may return 404 (ticket not found) or 503 (not configured)
+      // but if it returns 200, the invoice should have been queued
+      runner.assertTrue(response.status < 500, 'Agentic service should not crash on invoice request');
     });
   });
 

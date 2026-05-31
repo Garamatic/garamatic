@@ -8,7 +8,7 @@
  * - Invoice events → Email notifications
  */
 
-import { TestRunner, SERVICES, fetchWithTimeout, MailhogAPI, generateTestTicket, generateEmailEvent, generateInvoiceCreateRequestedEvent, generateInvoiceOverdueEvent, generateTicketAssignedEvent, generateUserCreatedEvent } from './lib/test-harness.js';
+import { TestRunner, SERVICES, fetchWithTimeout, MailhogAPI, generateTestTicket, generateEmailEvent, generateInvoiceCreateRequestedEvent, generateInvoiceOverdueEvent, generateTicketAssignedEvent, generateUserCreatedEvent, randomUUID } from './lib/test-harness.js';
 
 const runner = new TestRunner('Cross-Service Integration Tests');
 
@@ -36,7 +36,6 @@ async function main() {
       
       if (response.status === 401 || response.status === 403) {
         runner.skip('Ticket creation (auth required, may need setup)');
-        return;
       }
       
       runner.assertResponseOk(response);
@@ -48,7 +47,6 @@ async function main() {
     await runner.it('should retrieve created ticket', async () => {
       if (!createdTicketId) {
         runner.skip('Retrieve ticket (creation failed)');
-        return;
       }
       
       const response = await fetchWithTimeout(
@@ -66,7 +64,7 @@ async function main() {
         event_type: 'ticket.created',
         timestamp: new Date().toISOString(),
         source: 'integration-tests',
-        ticket_id: crypto.randomUUID(),
+        ticket_id: randomUUID(),
         customer_email: 'test@example.com',
         customer_name: 'Test Customer',
         tenant_id: 'test-tenant',
@@ -113,26 +111,30 @@ async function main() {
         to_email: 'integration-test@example.com',
         subject: 'Integration Test Email'
       });
-      
-      const response = await fetchWithTimeout(`${SERVICES.mailing}/send`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(emailEvent)
-      }, 10000).catch(() => ({ ok: false, status: 'connection_failed' }));
-      
-      if (!response.ok) {
+
+      let response;
+      try {
+        response = await fetchWithTimeout(`${SERVICES.mailing}/send`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(emailEvent)
+        }, 10000);
+      } catch {
         runner.skip('Email queuing (mailing service may not be configured)');
-        return;
       }
-      
+
       runner.assertTrue(response.status === 200 || response.status === 202, 'Should queue email');
     });
     
     await runner.it('should capture sent email in Mailhog', async () => {
       // This test assumes emails are configured to route to Mailhog
-      const messages = await MailhogAPI.getMessages().catch(() => ({ items: [] }));
-      
-      // We just verify Mailhog is working - can't guarantee emails were sent
+      let messages;
+      try {
+        messages = await MailhogAPI.getMessages();
+      } catch {
+        runner.skip('Mailhog not accessible');
+      }
+
       runner.assertNotNull(messages.items, 'Mailhog should return messages array');
     });
   });
@@ -143,7 +145,7 @@ async function main() {
         event_type: 'ticket.resolved',
         timestamp: new Date().toISOString(),
         source: 'integration-tests',
-        ticket_id: crypto.randomUUID(),
+        ticket_id: randomUUID(),
         resolved_by: 'agent@example.com',
         resolution_notes: 'Issue resolved',
         resolved_at: new Date().toISOString()
@@ -168,8 +170,8 @@ async function main() {
         event_type: 'payment.received',
         timestamp: new Date().toISOString(),
         source: 'integration-tests',
-        payment_id: crypto.randomUUID(),
-        invoice_id: crypto.randomUUID(),
+        payment_id: randomUUID(),
+        invoice_id: randomUUID(),
         amount: 100.00,
         currency: 'USD',
         payment_method: 'credit_card'
@@ -209,9 +211,9 @@ async function main() {
         event_type: 'invoice.created',
         timestamp: new Date().toISOString(),
         source: 'integration-tests',
-        invoice_id: crypto.randomUUID(),
+        invoice_id: randomUUID(),
         odoo_invoice_id: 1234,
-        ticket_id: crypto.randomUUID(),
+        ticket_id: randomUUID(),
         customer_email: 'invoice-created@example.com',
         amount: 250.00,
         currency: 'USD',
@@ -276,17 +278,19 @@ async function main() {
 
   await runner.describe('Agentic Service Integration', async () => {
     await runner.it('should respond to health check', async () => {
+      let response;
       try {
-        const response = await fetchWithTimeout(`${SERVICES.agenticService}/health`, {}, 5000);
-        runner.assertTrue(response.status < 500, 'Agentic service should respond');
+        response = await fetchWithTimeout(`${SERVICES.agenticService}/health`, {}, 5000);
       } catch {
         runner.skip('Agentic service health check (service may not be running)');
       }
+      runner.assertTrue(response.status < 500, 'Agentic service should respond');
     });
 
     await runner.it('should create a ticket via agentic API', async () => {
+      let response;
       try {
-        const response = await fetchWithTimeout(`${SERVICES.agenticService}/tickets`, {
+        response = await fetchWithTimeout(`${SERVICES.agenticService}/tickets`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -297,33 +301,34 @@ async function main() {
             priority: 'medium'
           })
         }, 10000);
-
-        if (response.status === 401 || response.status === 403) {
-          runner.skip('Agentic ticket creation (auth required)');
-          return;
-        }
-
-        runner.assertTrue(
-          response.status === 200 || response.status === 201,
-          `Should create ticket, got ${response.status}`
-        );
       } catch {
         runner.skip('Agentic ticket creation (service may not be running)');
       }
+
+      if (response.status === 401 || response.status === 403) {
+        runner.skip('Agentic ticket creation (auth required)');
+      }
+
+      runner.assertTrue(
+        response.status === 200 || response.status === 201,
+        `Should create ticket, got ${response.status}`
+      );
     });
 
     await runner.it('should list tickets via agentic API', async () => {
+      let response;
       try {
-        const response = await fetchWithTimeout(`${SERVICES.agenticService}/tickets?limit=5`, {}, 5000);
-        runner.assertTrue(response.status < 500, 'Should list tickets');
+        response = await fetchWithTimeout(`${SERVICES.agenticService}/tickets?limit=5`, {}, 5000);
       } catch {
         runner.skip('Agentic list tickets (service may not be running)');
       }
+      runner.assertTrue(response.status < 500, 'Should list tickets');
     });
 
     await runner.it('should send email via agentic API', async () => {
+      let response;
       try {
-        const response = await fetchWithTimeout(`${SERVICES.agenticService}/emails`, {
+        response = await fetchWithTimeout(`${SERVICES.agenticService}/emails`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -333,26 +338,29 @@ async function main() {
             from_name: 'Integration Test Suite'
           })
         }, 10000);
-
-        runner.assertTrue(response.status < 500, 'Should queue email via agentic service');
       } catch {
         runner.skip('Agentic send email (service may not be running)');
       }
+
+      runner.assertTrue(response.status < 500, 'Should queue email via agentic service');
     });
   });
 
   await runner.describe('Error Handling', async () => {
-    await runner.it('should handle service unavailable gracefully', async () => {
-      // Try to reach a non-existent endpoint
-      const response = await fetchWithTimeout(
-        `${SERVICES.ticketMasala}/api/non-existent-endpoint`,
-        {},
-        5000
-      ).catch(err => ({ ok: false, status: 'error' }));
+    await runner.it('should handle unknown endpoints gracefully', async () => {
+      let response;
+      try {
+        response = await fetchWithTimeout(
+          `${SERVICES.ticketMasala}/api/non-existent-endpoint`,
+          {},
+          5000
+        );
+      } catch {
+        runner.skip('Service unavailable (service not running)');
+      }
 
-      // Should return 404, not crash
       runner.assertTrue(
-        response.status === 404 || !response.ok,
+        response.status === 404,
         'Should return 404 for unknown endpoints'
       );
     });

@@ -6,7 +6,7 @@
  * across all services that depend on it.
  */
 
-import { TestRunner, SERVICES, fetchWithTimeout } from './lib/test-harness.js';
+import { TestRunner, SERVICES, fetchWithTimeout, randomUUID } from './lib/test-harness.js';
 
 const runner = new TestRunner('RabbitMQ Connectivity Tests');
 const RABBITMQ_AUTH = { Authorization: 'Basic ' + Buffer.from('guest:guest').toString('base64') };
@@ -58,13 +58,13 @@ async function main() {
   });
 
   await runner.describe('RabbitMQ Service Dependencies', async () => {
-    await runner.it('ticket-masala should be connected to RabbitMQ', async () => {
+    await runner.it('gatekeeper should be connected to RabbitMQ', async () => {
       // The gatekeeper API depends on RabbitMQ; if it can ingest events, the connection works
       const testEvent = {
         event_type: 'ticket.created',
         timestamp: new Date().toISOString(),
         source: 'rabbitmq-test',
-        ticket_id: crypto.randomUUID(),
+        ticket_id: randomUUID(),
         customer_email: 'rabbitmq@example.com',
         customer_name: 'RabbitMQ Test',
         tenant_id: 'test-tenant',
@@ -84,30 +84,32 @@ async function main() {
 
     await runner.it('mailing-service should have RabbitMQ connection', async () => {
       // Check if the service health endpoint mentions RabbitMQ or just verify service is up
+      let response;
       try {
-        const response = await fetchWithTimeout(`${SERVICES.mailing}/health`, {}, 5000);
-        runner.assertTrue(response.status < 500, 'Mailing service should be reachable');
+        response = await fetchWithTimeout(`${SERVICES.mailing}/health`, {}, 5000);
       } catch {
-        runner.skip('Mailing RabbitMQ check (service may not be running)', () => {});
+        runner.skip('Mailing RabbitMQ check (service may not be running)');
       }
+      runner.assertTrue(response.status < 500, 'Mailing service should be reachable');
     });
 
     await runner.it('odoo-integration should have RabbitMQ connection', async () => {
+      let response;
       try {
-        const response = await fetchWithTimeout(`${SERVICES.odooIntegration}/health`, {}, 10000);
-        runner.assertResponseOk(response);
-        const data = await response.json();
-
-        // Check if the health report includes RabbitMQ status
-        const hasRabbitmq = data.entries &&
-          Object.keys(data.entries).some(k => k.toLowerCase().includes('rabbitmq'));
-        runner.assertTrue(
-          hasRabbitmq || data.status === 'Healthy',
-          'Odoo integration health should include RabbitMQ or be healthy'
-        );
+        response = await fetchWithTimeout(`${SERVICES.odooIntegration}/health`, {}, 10000);
       } catch {
-        runner.skip('Odoo integration RabbitMQ check (service may not be running)', () => {});
+        runner.skip('Odoo integration RabbitMQ check (service may not be running)');
       }
+      runner.assertResponseOk(response);
+      const data = await response.json();
+
+      // Check if the health report includes RabbitMQ status
+      const hasRabbitmq = data.entries &&
+        Object.keys(data.entries).some(k => k.toLowerCase().includes('rabbitmq'));
+      runner.assertTrue(
+        hasRabbitmq || data.status === 'Healthy',
+        'Odoo integration health should include RabbitMQ or be healthy'
+      );
     });
   });
 

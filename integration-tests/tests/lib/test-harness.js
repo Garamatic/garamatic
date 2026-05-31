@@ -3,7 +3,7 @@
  * Shared utilities for all integration tests
  */
 
-// No filesystem imports needed — all schema loading goes through integration-contracts validator
+import { randomUUID } from 'crypto';
 
 // Color codes for terminal output
 const COLORS = {
@@ -15,6 +15,13 @@ const COLORS = {
   blue: '\x1b[34m'
 };
 
+class SkipError extends Error {
+  constructor(description) {
+    super(description);
+    this.name = 'SkipError';
+  }
+}
+
 /**
  * Test result tracking
  */
@@ -24,7 +31,6 @@ export class TestRunner {
     this.passed = 0;
     this.failed = 0;
     this.skipped = 0;
-    this.tests = [];
     this.startTime = Date.now();
   }
 
@@ -37,20 +43,24 @@ export class TestRunner {
     try {
       await fn();
       this.passed++;
-      this.tests.push({ description, status: 'passed' });
+
       console.log(`  ${COLORS.green}✓${COLORS.reset} ${description}`);
     } catch (error) {
-      this.failed++;
-      this.tests.push({ description, status: 'failed', error: error.message });
-      console.log(`  ${COLORS.red}✗${COLORS.reset} ${description}`);
-      console.log(`    ${COLORS.red}${error.message}${COLORS.reset}`);
+      if (error instanceof SkipError) {
+        this.skipped++;
+
+        console.log(`  ${COLORS.yellow}⊘${COLORS.reset} ${description} ${COLORS.yellow}(skipped)${COLORS.reset}`);
+      } else {
+        this.failed++;
+
+        console.log(`  ${COLORS.red}✗${COLORS.reset} ${description}`);
+        console.log(`    ${COLORS.red}${error.message}${COLORS.reset}`);
+      }
     }
   }
 
   skip(description) {
-    this.skipped++;
-    this.tests.push({ description, status: 'skipped' });
-    console.log(`  ${COLORS.yellow}⊘${COLORS.reset} ${description} ${COLORS.yellow}(skipped)${COLORS.reset}`);
+    throw new SkipError(description);
   }
 
   assert(condition, message) {
@@ -68,7 +78,7 @@ export class TestRunner {
   }
 
   assert2xx(response, message) {
-    if (response.status < 200 || response.status >= 300) {
+    if (typeof response.status !== 'number' || response.status < 200 || response.status >= 300) {
       throw new Error(message || `Expected 2xx, got HTTP ${response.status}`);
     }
   }
@@ -97,7 +107,6 @@ export class TestRunner {
     console.log(`  Duration: ${duration}ms`);
     console.log(`${COLORS.bright}═══════════════════════════════════════════════════════════════${COLORS.reset}\n`);
     
-    return this.failed === 0;
   }
 
   exit() {
@@ -114,7 +123,7 @@ export const SERVICES = {
   mailing: process.env.MAILING_SERVICE_URL || 'http://localhost:8087',
   eventPlanner: process.env.EVENT_PLANNER_URL || 'http://localhost:8088',
   mailhog: process.env.MAILHOG_URL || 'http://localhost:8025',
-  testReceiver: process.env.TEST_RECEIVER_URL || 'http://localhost:8089',
+  testReceiver: process.env.TEST_RECEIVER_URL || 'http://localhost:19999',
   agenticService: process.env.AGENTIC_SERVICE_URL || 'http://localhost:3001',
   odooIntegration: process.env.ODOO_INTEGRATION_URL || 'http://localhost:8089',
   rabbitmq: process.env.RABBITMQ_URL || 'http://localhost:15672'
@@ -124,18 +133,19 @@ export const SERVICES = {
  * HTTP request helper with timeout
  */
 export async function fetchWithTimeout(url, options = {}, timeout = 5000) {
+  const headers = { ...options.headers };
   if (url.startsWith(SERVICES.gatekeeper) || url.startsWith(SERVICES.ticketMasala)) {
-    options.headers = options.headers || {};
-    options.headers['X-Api-Key'] ??= 'masala-test-key';
+    headers['X-Api-Key'] ??= 'masala-test-key';
   }
 
   try {
     return await fetch(url, {
       ...options,
+      headers,
       signal: AbortSignal.timeout(timeout)
     });
   } catch (error) {
-    if (error.name === 'TimeoutError') {
+    if (error.name === 'TimeoutError' || error.name === 'AbortError') {
       throw new Error(`Request timeout after ${timeout}ms: ${url}`);
     }
     throw error;
@@ -143,33 +153,10 @@ export async function fetchWithTimeout(url, options = {}, timeout = 5000) {
 }
 
 /**
- * Wait for service to be healthy
- */
-export async function waitForService(url, maxAttempts = 30, interval = 2000) {
-  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    try {
-      const response = await fetchWithTimeout(`${url}/health`, {}, 5000);
-      if (response.ok) {
-        return true;
-      }
-    } catch (error) {
-      // Service not ready yet
-    }
-    
-    if (attempt < maxAttempts) {
-      process.stdout.write(`  Waiting for ${url} (attempt ${attempt}/${maxAttempts})...\r`);
-      await new Promise(resolve => setTimeout(resolve, interval));
-    }
-  }
-  
-  throw new Error(`Service ${url} failed to become healthy after ${maxAttempts} attempts`);
-}
-
-/**
  * Generate test data
  */
 export function generateTestTicket(overrides = {}) {
-  const uuid = crypto.randomUUID();
+  const uuid = randomUUID();
   const now = new Date().toISOString();
   
   return {
@@ -213,7 +200,7 @@ export function generateInvoiceCreateRequestedEvent(overrides = {}) {
     event_type: 'invoice.create_requested',
     timestamp: now,
     source: 'integration-tests',
-    ticket_id: crypto.randomUUID(),
+    ticket_id: randomUUID(),
     customer_email: 'billing@example.com',
     customer_name: 'Billing Customer',
     amount: 150.00,
@@ -233,7 +220,7 @@ export function generateInvoiceOverdueEvent(overrides = {}) {
     event_type: 'invoice.overdue',
     timestamp: now,
     source: 'integration-tests',
-    invoice_id: crypto.randomUUID(),
+    invoice_id: randomUUID(),
     odoo_invoice_id: 1234,
     customer_email: 'overdue@example.com',
     amount: 250.00,
@@ -252,7 +239,7 @@ export function generateTicketAssignedEvent(overrides = {}) {
     event_type: 'ticket.assigned',
     timestamp: now,
     source: 'integration-tests',
-    ticket_id: crypto.randomUUID(),
+    ticket_id: randomUUID(),
     customer_email: 'user@example.com',
     customer_name: 'Test User',
     assigned_to: 'agent-001',
@@ -272,31 +259,12 @@ export function generateUserCreatedEvent(overrides = {}) {
     event_type: 'user.created',
     timestamp: now,
     source: 'integration-tests',
-    user_id: crypto.randomUUID(),
+    user_id: randomUUID(),
     email: 'newuser@example.com',
     name: 'New User',
     role: 'customer',
     tenant_id: 'test-tenant',
     created_at: now,
-    ...overrides
-  };
-}
-
-/**
- * Generate payment received event
- */
-export function generatePaymentReceivedEvent(overrides = {}) {
-  const now = new Date().toISOString();
-
-  return {
-    event_type: 'payment.received',
-    timestamp: now,
-    source: 'integration-tests',
-    invoice_id: crypto.randomUUID(),
-    odoo_invoice_id: 5678,
-    amount: 150.00,
-    payment_method: 'credit_card',
-    paid_at: now,
     ...overrides
   };
 }
@@ -315,17 +283,11 @@ export const MailhogAPI = {
     const response = await fetchWithTimeout(`${SERVICES.mailhog}/api/v1/messages`, { method: 'DELETE' });
     if (!response.ok) throw new Error('Failed to delete Mailhog messages');
   },
-  
-  async findMessageByRecipient(email) {
-    const { items } = await this.getMessages();
-    return items.find(msg => 
-      msg.Content.Headers.To && 
-      msg.Content.Headers.To.some(to => to.includes(email))
-    );
-  }
 };
 
 /**
  * Sleep for N milliseconds
  */
 export const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+export { randomUUID };
