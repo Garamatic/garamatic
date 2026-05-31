@@ -17,6 +17,7 @@ mkdir -p "$RESULTS_DIR" "$LOGS_DIR"
 TOTAL_PASSED=0
 TOTAL_FAILED=0
 TOTAL_SKIPPED=0
+TOTAL_MISSING=0
 
 echo -e "${BLUE}═══════════════════════════════════════════════════════════════${NC}"
 echo -e "${BLUE}  Garamatic Integration Test Suite${NC}"
@@ -32,8 +33,8 @@ run_test() {
     echo -e "${YELLOW}▶ Running: $test_name${NC}"
 
     if [ ! -f "$test_file" ]; then
-        echo -e "${YELLOW}⊘ $test_name skipped (file not found)${NC}"
-        ((TOTAL_SKIPPED++)) || true
+        echo -e "${YELLOW}⊘ $test_name missing (file not found)${NC}"
+        ((TOTAL_MISSING++)) || true
         return 0
     fi
 
@@ -59,8 +60,10 @@ SERVICES=(
     "${TICKET_MASALA_URL:-http://ticket-masala:8080}/health"
     "${GATEKEEPER_URL:-http://gatekeeper-api:8080}/health"
     "${MAILHOG_URL:-http://mailhog:8025}"
-    "${RABBITMQ_URL:-http://rabbitmq:15672}"
 )
+# NOTE: RabbitMQ is omitted — its docker-compose healthcheck already guarantees
+# readiness before any dependent service (mailing-service, gatekeeper-api, etc.)
+# starts. The management API requires auth, so a simple curl check would fail.
 
 for service in "${SERVICES[@]}"; do
     max_attempts=30
@@ -126,17 +129,26 @@ echo ""
 echo -e "${GREEN}Passed:  $TOTAL_PASSED${NC}"
 echo -e "${RED}Failed:  $TOTAL_FAILED${NC}"
 echo -e "${YELLOW}Skipped: $TOTAL_SKIPPED${NC}"
+echo -e "${RED}Missing: $TOTAL_MISSING${NC}"
 echo ""
+
+# Determine overall status
+overall="passed"
+if [ $TOTAL_FAILED -gt 0 ] || [ $TOTAL_MISSING -gt 0 ]; then
+    overall="failed"
+fi
 
 # Generate JSON report
 cat > "$RESULTS_DIR/test-results.json" <<EOF
 {
   "timestamp": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+  "overall": "$overall",
   "summary": {
     "passed": $TOTAL_PASSED,
     "failed": $TOTAL_FAILED,
     "skipped": $TOTAL_SKIPPED,
-    "total": $((TOTAL_PASSED + TOTAL_FAILED + TOTAL_SKIPPED))
+    "missing": $TOTAL_MISSING,
+    "total": $((TOTAL_PASSED + TOTAL_FAILED + TOTAL_SKIPPED + TOTAL_MISSING))
   },
   "services": {
     "ticket_masala": "${TICKET_MASALA_URL:-http://ticket-masala:8080}",
@@ -152,4 +164,4 @@ cat > "$RESULTS_DIR/test-results.json" <<EOF
 EOF
 
 # Exit with failure count
-exit $TOTAL_FAILED
+exit $((TOTAL_FAILED + TOTAL_MISSING))

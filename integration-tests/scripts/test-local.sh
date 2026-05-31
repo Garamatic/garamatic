@@ -17,20 +17,20 @@ export AGENTIC_SERVICE_URL="${AGENTIC_SERVICE_URL:-http://localhost:3001}"
 export ODOO_INTEGRATION_URL="${ODOO_INTEGRATION_URL:-http://localhost:8089}"
 export RABBITMQ_URL="${RABBITMQ_URL:-http://localhost:15672}"
 export MAILHOG_URL="${MAILHOG_URL:-http://localhost:8025}"
-export TEST_RECEIVER_URL="${TEST_RECEIVER_URL:-http://localhost:8089}"
+# Test receiver is an nginx container only available in Docker compose — no local default
 
 echo -e "${BLUE}═══════════════════════════════════════════════════════════════${NC}"
 echo -e "${BLUE}  Garamatic Integration Tests (Local)${NC}"
 echo -e "${BLUE}═══════════════════════════════════════════════════════════════${NC}"
-printf '\n%-16s %s\n' \
-  "Ticket Masala:" "$TICKET_MASALA_URL" \
-  "Gatekeeper:" "$GATEKEEPER_URL" \
-  "Mailing:" "$MAILING_SERVICE_URL" \
-  "Event Planner:" "$EVENT_PLANNER_URL" \
-  "Agentic:" "$AGENTIC_SERVICE_URL" \
-  "Odoo Integ:" "$ODOO_INTEGRATION_URL" \
-  "RabbitMQ:" "$RABBITMQ_URL" \
-  "Mailhog:" "$MAILHOG_URL"
+echo ""
+echo "Ticket Masala:   $TICKET_MASALA_URL"
+echo "Gatekeeper:      $GATEKEEPER_URL"
+echo "Mailing:         $MAILING_SERVICE_URL"
+echo "Event Planner:   $EVENT_PLANNER_URL"
+echo "Agentic:         $AGENTIC_SERVICE_URL"
+echo "Odoo Integ:      $ODOO_INTEGRATION_URL"
+echo "RabbitMQ:        $RABBITMQ_URL"
+echo "Mailhog:         $MAILHOG_URL"
 echo ""
 
 # Check if core services are running
@@ -64,10 +64,15 @@ fi
 
 echo -e "${YELLOW}Running all integration tests...${NC}\n"
 
+if [ -z "$(ls tests/*.test.js 2>/dev/null)" ]; then
+  echo -e "${RED}No test files found in tests/${NC}"
+  exit 1
+fi
+
 FAILED=0
 for test in tests/*.test.js; do
   if [ -f "$test" ]; then
-    echo -e "${BLUE}Running: $(basename $test)${NC}"
+    echo -e "${BLUE}Running: $(basename "$test")${NC}"
     node "$test" || FAILED=$((FAILED + 1))
   fi
 done

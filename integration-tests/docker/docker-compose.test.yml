@@ -209,6 +209,7 @@ services:
       - RABBITMQ_URL=http://rabbitmq:15672
       - MAILHOG_URL=http://mailhog:8025
       - TEST_RECEIVER_URL=http://test-receiver:8080
+      - TEST_RESULTS_DIR=/test-results
     networks:
       - garamatic_test_net
     depends_on:
