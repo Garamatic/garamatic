@@ -481,7 +481,7 @@ async function main() {
   });
 
   await runner.describe('Agentic Service Workflow', async () => {
-    const flow = { ticketId: null, events: [] };
+    const flow = { ticketId: null, events: [], serviceAvailable: true };
 
     await runner.it('Step 1: Create ticket via agentic service', async () => {
       let response;
@@ -498,6 +498,7 @@ async function main() {
           })
         }, 10000);
       } catch {
+        flow.serviceAvailable = false;
         runner.skip('Agentic workflow (service not running)');
       }
 
@@ -528,6 +529,7 @@ async function main() {
           5000
         );
       } catch {
+        flow.serviceAvailable = false;
         runner.skip('Retrieve agentic ticket (service not running)');
       }
       runner.assertTrue(response.status < 500, 'Should retrieve ticket');
@@ -543,6 +545,7 @@ async function main() {
           5000
         );
       } catch {
+        flow.serviceAvailable = false;
         runner.skip('Customer context (service not running)');
       }
       runner.assertTrue(response.status < 500, 'Should retrieve customer context');
@@ -550,6 +553,9 @@ async function main() {
     });
 
     await runner.it('Agentic workflow complete', () => {
+      if (!flow.serviceAvailable) {
+        runner.skip('Agentic workflow (service not available)');
+      }
       runner.assertTrue(
         flow.events.length >= 1,
         `Expected at least 1 agentic step, got ${flow.events.length}`
