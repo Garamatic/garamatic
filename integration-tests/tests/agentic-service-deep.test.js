@@ -244,7 +244,7 @@ async function main() {
         runner.skip('Agent chat (service not running)');
       }
 
-      // May return 503 if OPENAI_API_KEY not configured, or 200 if working
+      // May return 503 if no LLM provider is configured, or 200 if working
       runner.assertTrue(
         response.status === 200 || response.status === 503 || response.status === 500,
         'Should handle agent chat without unexpected errors'

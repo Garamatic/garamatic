@@ -68,6 +68,9 @@ services:
       - RabbitMQ__Password=guest
       - RabbitMQ__ExchangeName=event_exchange
       - &agentic_api_key Agentic__ApiKey=${AGENTIC_API_KEY:-garamatic-agentic-secret-key}
+      - OPENAI_BASE_URL=${OLLAMA_BASE_URL:-http://ollama:11434/v1}
+      - OPENAI_API_KEY=${OLLAMA_API_KEY:-ollama}
+      - OpenAI__Provider=ollama
     volumes:
       - ./ticket-masala/config:/app/config:ro
       - ticket_masala_data:/app/data
@@ -230,8 +233,10 @@ services:
       - RABBITMQ_PASS=guest
       - RABBITMQ_VHOST=/
       - LOG_LEVEL=INFO
-      - OLLAMA_BASE_URL=http://ollama:11434
-      - OLLAMA_MODEL=qwen3.5:2b
+      - LLM_PROVIDER=ollama
+      - LLM_MODEL=qwen3.5:2b
+      - LLM_BASE_URL=http://ollama:11434
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
       - *agentic_api_key
     networks:
       - garamatic-network

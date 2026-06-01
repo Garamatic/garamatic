@@ -45,6 +45,9 @@ services:
       - MasalaConfig__SeedDataPath=/app/config/seed_data.json
       - TEST_MODE=false
       - RabbitMQ__HostName=rabbitmq
+      - OPENAI_BASE_URL=${OLLAMA_BASE_URL:-http://ollama:11434/v1}
+      - OPENAI_API_KEY=${OLLAMA_API_KEY:-ollama}
+      - OpenAI__Provider=ollama
     volumes:
       - ../ticket-masala/config:/app/config:ro
       - ticket_masala_demo_data:/app/data
@@ -111,6 +114,16 @@ services:
       timeout: 3s
       retries: 10
 
+  ollama:
+    image: ollama/ollama:latest
+    container_name: garamatic_demo_ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_demo_data:/root/.ollama
+    networks:
+      - garamatic_demo_net
+
   agentic-service:
     build:
       context: ../agentic-service
@@ -122,6 +135,9 @@ services:
       - MCP_TRANSPORT=sse
       - ticket_api_url=http://ticket-masala:8080
       - rabbitmq_host=rabbitmq
+      - LLM_PROVIDER=ollama
+      - LLM_MODEL=qwen3.5:2b
+      - LLM_BASE_URL=http://ollama:11434
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}
     networks:
       - garamatic_demo_net
@@ -130,6 +146,8 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+      ollama:
+        condition: service_started
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
       interval: 5s
@@ -264,3 +282,4 @@ volumes:
   ticket_masala_demo_data:
   event_planner_demo_db_data:
   odoo_demo_data:
+  ollama_demo_data:
