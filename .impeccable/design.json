@@ -1,0 +1,207 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2025-06-01T00:00:00.000Z",
+  "title": "Design System: Ticket Masala",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "Signal Indigo",
+        "canonical": "oklch(56% 0.17 280)",
+        "tonalRamp": [
+          "oklch(25% 0.12 280)",
+          "oklch(32% 0.14 280)",
+          "oklch(40% 0.16 280)",
+          "oklch(48% 0.17 280)",
+          "oklch(56% 0.17 280)",
+          "oklch(64% 0.15 280)",
+          "oklch(76% 0.10 280)",
+          "oklch(88% 0.05 280)",
+          "oklch(95% 0.02 280)"
+        ]
+      },
+      "primary-light": {
+        "role": "primary",
+        "displayName": "Signal Indigo Light",
+        "canonical": "oklch(66% 0.12 280)"
+      },
+      "primary-dark": {
+        "role": "primary",
+        "displayName": "Signal Indigo Dark",
+        "canonical": "oklch(45% 0.18 280)"
+      },
+      "accent": {
+        "role": "accent",
+        "displayName": "Ember",
+        "canonical": "oklch(65% 0.16 45)",
+        "tonalRamp": [
+          "oklch(30% 0.14 45)",
+          "oklch(40% 0.16 45)",
+          "oklch(50% 0.18 45)",
+          "oklch(60% 0.18 45)",
+          "oklch(65% 0.16 45)",
+          "oklch(72% 0.13 45)",
+          "oklch(80% 0.09 45)",
+          "oklch(90% 0.05 45)",
+          "oklch(96% 0.02 45)"
+        ]
+      },
+      "secondary": {
+        "role": "secondary",
+        "displayName": "Steel",
+        "canonical": "oklch(55% 0.03 260)",
+        "tonalRamp": [
+          "oklch(25% 0.02 260)",
+          "oklch(35% 0.02 260)",
+          "oklch(45% 0.03 260)",
+          "oklch(50% 0.03 260)",
+          "oklch(55% 0.03 260)",
+          "oklch(65% 0.02 260)",
+          "oklch(75% 0.02 260)",
+          "oklch(85% 0.01 260)",
+          "oklch(95% 0.00 260)"
+        ]
+      },
+      "success": { "role": "status", "displayName": "Mint", "canonical": "oklch(62% 0.16 160)" },
+      "warning": { "role": "status", "displayName": "Honey", "canonical": "oklch(75% 0.16 85)" },
+      "danger": { "role": "status", "displayName": "Rose", "canonical": "oklch(55% 0.20 30)" },
+      "info": { "role": "status", "displayName": "Sky", "canonical": "oklch(55% 0.14 250)" },
+      "surface-card": { "role": "neutral", "displayName": "White", "canonical": "oklch(100% 0 0)" },
+      "surface-page": { "role": "neutral", "displayName": "Cloud", "canonical": "oklch(97% 0.005 260)" },
+      "surface-subtle": { "role": "neutral", "displayName": "Mist", "canonical": "oklch(95% 0.01 260)" },
+      "text-heading": { "role": "neutral", "displayName": "Ink", "canonical": "oklch(15% 0.02 260)" },
+      "text-body": { "role": "neutral", "displayName": "Stone", "canonical": "oklch(38% 0.02 260)" },
+      "text-muted": { "role": "neutral", "displayName": "Cement", "canonical": "oklch(65% 0.02 260)" },
+      "border-default": { "role": "neutral", "displayName": "Frost", "canonical": "oklch(90% 0.01 260)" }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Dashboard titles, page headers, landing hero text."
+      },
+      "heading": {
+        "displayName": "Heading",
+        "purpose": "Section headings, modal titles, feature card titles."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Card titles, sidebar headings, list item titles."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Paragraphs, descriptions, table cells. Max 70ch."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Form labels, button text, badge text, table headers."
+      }
+    },
+    "shadows": [
+      { "name": "shadow-xs", "value": "0 1px 2px 0 rgb(0 0 0 / 0.05)", "purpose": "Faint separation when tonal layering is insufficient." },
+      { "name": "shadow-sm", "value": "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)", "purpose": "Card hover states, elevated interactions." },
+      { "name": "shadow-md", "value": "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)", "purpose": "Dropdowns, popovers, floating action elements." },
+      { "name": "shadow-lg", "value": "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)", "purpose": "Modals, toasts, high-priority floating content." }
+    ],
+    "motion": [
+      { "name": "transition-fast", "value": "150ms ease", "purpose": "Hover states, micro-interactions." },
+      { "name": "transition-base", "value": "200ms ease", "purpose": "Default state transitions." },
+      { "name": "transition-slow", "value": "300ms ease", "purpose": "Page transitions, panel slide-ins." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "576px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "992px" },
+      { "name": "xl", "value": "1200px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The primary call to action. One per view max.",
+      "html": "<button class=\"ds-btn-primary\">Create Ticket</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 20px; background: #6366F1; color: #fff; font-family: Inter, system-ui, sans-serif; font-size: 0.875rem; font-weight: 500; line-height: 1.4; border: 1px solid transparent; border-radius: 8px; cursor: pointer; white-space: nowrap; transition: background 150ms ease, transform 150ms ease, box-shadow 150ms ease; } .ds-btn-primary:hover { background: #4F46E5; transform: translateY(-1px); box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1); } .ds-btn-primary:focus-visible { outline: 2px solid #6366F1; outline-offset: 2px; } .ds-btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Secondary action with visible boundary.",
+      "html": "<button class=\"ds-btn-outline\">Cancel</button>",
+      "css": ".ds-btn-outline { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 20px; background: transparent; color: #6366F1; font-family: Inter, system-ui, sans-serif; font-size: 0.875rem; font-weight: 500; line-height: 1.4; border: 1px solid #6366F1; border-radius: 8px; cursor: pointer; white-space: nowrap; transition: background 150ms ease, color 150ms ease; } .ds-btn-outline:hover { background: #6366F1; color: #fff; } .ds-btn-outline:focus-visible { outline: 2px solid #6366F1; outline-offset: 2px; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Default text input field.",
+      "html": "<input class=\"ds-input\" type=\"text\" placeholder=\"Search tickets...\" />",
+      "css": ".ds-input { width: 100%; padding: 10px 14px; font-family: Inter, system-ui, sans-serif; font-size: 1rem; line-height: 1.5; color: #0F172A; background: #fff; border: 1px solid #E2E8F0; border-radius: 8px; transition: border-color 150ms ease, box-shadow 150ms ease; } .ds-input:focus { outline: none; border-color: #6366F1; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1); } .ds-input::placeholder { color: #94A3B8; } .ds-input:disabled { background: #F1F5F9; opacity: 0.6; }"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Standard content container.",
+      "html": "<div class=\"ds-card\"><div class=\"ds-card-header\"><h3 class=\"ds-card-title\">Open Tickets</h3></div><div class=\"ds-card-body\"><p class=\"ds-card-text\">24 tickets awaiting assignment.</p></div></div>",
+      "css": ".ds-card { background: #fff; border: 1px solid #E2E8F0; border-radius: 12px; padding: 24px; margin-bottom: 16px; transition: box-shadow 200ms ease, transform 200ms ease; } .ds-card:hover { box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1); transform: translateY(-2px); } .ds-card-header { border-bottom: 1px solid #E2E8F0; padding-bottom: 16px; margin-bottom: 16px; } .ds-card-title { font-family: Inter, system-ui, sans-serif; font-size: 1.125rem; font-weight: 600; line-height: 1.3; color: #0F172A; margin: 0; } .ds-card-body { padding: 0; } .ds-card-text { color: #475569; font-size: 1rem; line-height: 1.5; margin: 0; }"
+    },
+    {
+      "name": "Status Badge",
+      "kind": "chip",
+      "refersTo": "badge",
+      "description": "Status indicator pill for tickets, projects, and notifications.",
+      "html": "<span class=\"ds-badge ds-badge-success\">Completed</span>",
+      "css": ".ds-badge { display: inline-flex; align-items: center; padding: 4px 12px; font-family: Inter, system-ui, sans-serif; font-size: 0.75rem; font-weight: 500; line-height: 1.4; text-transform: uppercase; letter-spacing: 0.5px; border-radius: 9999px; white-space: nowrap; } .ds-badge-success { background: #E8F5E9; color: #1B5E20; } .ds-badge-pending { background: #FFF3E0; color: #E65100; } .ds-badge-danger { background: #FFEBEE; color: #C62828; } .ds-badge-info { background: #E3F2FD; color: #1565C0; } .ds-badge-primary { background: rgba(99, 102, 241, 0.12); color: #4F46E5; }"
+    },
+    {
+      "name": "Sidebar Navigation",
+      "kind": "nav",
+      "refersTo": "nav",
+      "description": "Sidebar navigation link with active state.",
+      "html": "<nav class=\"ds-sidebar\"><a class=\"ds-nav-item\" href=\"#\"><span class=\"ds-nav-icon\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" fill=\"none\"><rect x=\"2\" y=\"2\" width=\"16\" height=\"16\" rx=\"2\" stroke=\"currentColor\" stroke-width=\"1.5\"/><path d=\"M6 10h8M10 6v8\" stroke=\"currentColor\" stroke-width=\"1.5\"/></svg></span>Tickets</a><a class=\"ds-nav-item ds-nav-active\" href=\"#\"><span class=\"ds-nav-icon\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" fill=\"none\"><rect x=\"2\" y=\"2\" width=\"7\" height=\"7\" rx=\"1.5\" fill=\"currentColor\"/><rect x=\"11\" y=\"2\" width=\"7\" height=\"7\" rx=\"1.5\" fill=\"currentColor\"/><rect x=\"2\" y=\"11\" width=\"7\" height=\"7\" rx=\"1.5\" fill=\"currentColor\"/><rect x=\"11\" y=\"11\" width=\"7\" height=\"7\" rx=\"1.5\" fill=\"currentColor\"/></svg></span>Projects</a><a class=\"ds-nav-item\" href=\"#\"><span class=\"ds-nav-icon\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" fill=\"none\"><circle cx=\"10\" cy=\"10\" r=\"8\" stroke=\"currentColor\" stroke-width=\"1.5\"/><path d=\"M10 6v4l3 3\" stroke=\"currentColor\" stroke-width=\"1.5\"/></svg></span>Dashboard</a></nav>",
+      "css": ".ds-sidebar { display: flex; flex-direction: column; gap: 2px; padding: 16px 0; } .ds-nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 20px; color: #475569; font-family: Inter, system-ui, sans-serif; font-size: 0.875rem; font-weight: 500; text-decoration: none; border-left: 3px solid transparent; transition: background 150ms ease, color 150ms ease; } .ds-nav-item:hover { background: #F8FAFC; color: #0F172A; } .ds-nav-active { color: #6366F1; background: rgba(99, 102, 241, 0.05); border-left-color: #6366F1; font-weight: 600; } .ds-nav-icon { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }"
+    },
+    {
+      "name": "Skeleton Loading",
+      "kind": "custom",
+      "refersTo": "skeleton",
+      "description": "Loading placeholder for async content.",
+      "html": "<div class=\"ds-skeleton\"><div class=\"ds-skeleton-title\"></div><div class=\"ds-skeleton-text\"></div><div class=\"ds-skeleton-text\" style=\"width: 70%\"></div></div>",
+      "css": ".ds-skeleton { padding: 16px; } .ds-skeleton-title { height: 2rem; width: 60%; margin-bottom: 16px; background: linear-gradient(90deg, #F1F5F9 0%, #E2E8F0 50%, #F1F5F9 100%); background-size: 200% 100%; border-radius: 8px; animation: ds-shimmer 1.5s infinite; } .ds-skeleton-text { height: 1rem; width: 100%; margin-bottom: 8px; background: linear-gradient(90deg, #F1F5F9 0%, #E2E8F0 50%, #F1F5F9 100%); background-size: 200% 100%; border-radius: 8px; animation: ds-shimmer 1.5s infinite; } @keyframes ds-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Masala Kitchen",
+    "overview": "A workspace that feels like a well-organized kitchen — warm but precise, colorful but structured. Every tool has its place, every spice is labeled, and the cook moves with confidence because the mise en place is done. The interface should feel approachable without being casual, serious without being cold. Personality lives in the details — microcopy, transitions, and thoughtful spacing — while the structure follows proven SaaS patterns. This system explicitly rejects the corporate SaaS cliché (generic blue navbars, cookie-cutter dashboards, Bootstrap defaults) and the AI hype aesthetic (purple gradients, brain illustrations, chatbot-first UIs). GERDA is a tool on the bench, not a personality.",
+    "keyCharacteristics": [
+      "Clean hierarchy with generous whitespace, not information density",
+      "One accent color (Signal Indigo) used sparingly — its rarity is the point",
+      "Personality in copy and details, restraint in layout and color",
+      "Tonal layering over shadows for surface distinction"
+    ],
+    "rules": [
+      { "name": "The Rarity Rule", "body": "Signal Indigo covers ≤15% of any screen. The accent is expensive; spending it everywhere devalues it.", "section": "colors" },
+      { "name": "The Layering Rule", "body": "Never put a shadow on an element that already has a background color distinct from its container. Tonal shifts and shadows are alternatives, not complements.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do use tonal layering for hierarchy: white card on Cloud page, elevated on Mist. Let background color do the work.",
+      "Do use Signal Indigo sparingly — one primary action per view, one active nav item per section.",
+      "Do keep body text at Stone (#475569) or darker. Never use Cement (#94A3B8) for readable content.",
+      "Do use the Masala Kitchen voice in microcopy: specific, warm, mildly unexpected.",
+      "Do use skeleton loading for all async content.",
+      "Do support dark mode as a first-class experience via [data-theme=\"dark\"]."
+    ],
+    "donts": [
+      "Don't use gradient backgrounds for decorative purposes.",
+      "Don't apply box-shadow to an element that already has a tonal background layer.",
+      "Don't use Pill shapes (9999px radius) on cards, buttons, or containers.",
+      "Don't use border-left greater than 1px as a colored stripe accent.",
+      "Don't use gradient text (background-clip: text).",
+      "Don't ship a generic SaaS cliché.",
+      "Don't ship AI hype aesthetic.",
+      "Don't use all-caps for body text."
+    ]
+  }
+}
