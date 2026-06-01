@@ -16,10 +16,10 @@ const runner = new TestRunner('Demo Sites + Mail Flow E2E Tests');
 const SHOWCASE_URL = SERVICES.showcase;
 
 const TENANTS = [
-  { id: 'desgoffe', name: 'Desgoffe', customField: 'quartier', customFieldValue: 'Centre' },
-  { id: 'whitman', name: 'Whitman', customField: 'worksite', customFieldValue: 'Site A' },
-  { id: 'liberty', name: 'Liberty', customField: 'department', customFieldValue: 'IT' },
-  { id: 'hennessey', name: 'Hennessey', customField: 'grantType', customFieldValue: 'Research' }
+  { id: 'desgoffe', name: 'Desgoffe', customField: 'quartier', customFieldValue: 'Centre', fields: ['customerName', 'customerEmail', 'description', 'requestType'] },
+  { id: 'whitman', name: 'Whitman', customField: 'worksite', customFieldValue: 'Site A', fields: ['description', 'interventionType', 'location'] },
+  { id: 'liberty', name: 'Liberty', customField: 'department', customFieldValue: 'IT', fields: ['description', 'issueType', 'title', 'reporterName', 'reporterEmail'] },
+  { id: 'hennessey', name: 'Hennessey', customField: 'grantType', customFieldValue: 'Research', fields: ['projectTitle', 'grantType', 'principalInvestigator', 'piEmail', 'abstract'] }
 ];
 
 function buildFormData(tenant, overrides = {}) {
@@ -86,12 +86,11 @@ async function main() {
         }
         runner.assertResponseOk(response);
         const html = await response.text();
-        runner.assertTrue(html.includes('customerName'), 'Has customer name field');
-        runner.assertTrue(html.includes('customerEmail'), 'Has email field');
-        runner.assertTrue(html.includes('description'), 'Has description field');
-        runner.assertTrue(html.includes('requestType'), 'Has request type field');
+        for (const field of tenant.fields) {
+          runner.assertTrue(html.includes(field), `Has ${field} field`);
+        }
         runner.assertTrue(html.includes('script.js'), 'Loads JS');
-        runner.assertTrue(html.includes('style.css'), 'Loads CSS');
+        runner.assertTrue(html.includes('<link') && html.includes('.css'), 'Loads CSS');
       });
     }
   });

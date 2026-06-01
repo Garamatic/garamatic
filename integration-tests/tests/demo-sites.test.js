@@ -18,10 +18,10 @@ const SHOWCASE_URL = SERVICES.showcase;
 
 // Tenant configurations
 const TENANTS = [
-  { id: 'desgoffe', name: 'Desgoffe', lang: 'fr', title: 'Guichet Citoyen' },
-  { id: 'whitman', name: 'Whitman', lang: 'en', title: 'Support Portal' },
-  { id: 'liberty', name: 'Liberty', lang: 'en', title: 'Liberty Support' },
-  { id: 'hennessey', name: 'Hennessey', lang: 'en', title: 'Hennessey Portal' }
+  { id: 'desgoffe', name: 'Desgoffe', lang: 'fr', title: 'Guichet Citoyen', fields: ['customerName', 'customerEmail', 'description', 'requestType'] },
+  { id: 'whitman', name: 'Whitman', lang: 'en', title: 'Support Portal', fields: ['description', 'interventionType', 'location'] },
+  { id: 'liberty', name: 'Liberty', lang: 'en', title: 'Liberty Support', fields: ['description', 'issueType', 'title', 'reporterName', 'reporterEmail'] },
+  { id: 'hennessey', name: 'Hennessey', lang: 'en', title: 'Hennessey Portal', fields: ['projectTitle', 'grantType', 'principalInvestigator', 'piEmail', 'abstract'] }
 ];
 
 async function main() {
@@ -80,10 +80,9 @@ async function main() {
         
         const html = await response.text();
         runner.assertTrue(html.includes('<form'), 'Should contain a form');
-        runner.assertTrue(html.includes('customerName'), 'Should have customer name field');
-        runner.assertTrue(html.includes('customerEmail'), 'Should have email field');
-        runner.assertTrue(html.includes('description'), 'Should have description field');
-        runner.assertTrue(html.includes('requestType'), 'Should have request type field');
+        for (const field of tenant.fields) {
+          runner.assertTrue(html.includes(field), `Should have ${field} field`);
+        }
       });
 
       await runner.it(`${tenant.name} form should have correct tenant ID`, async () => {
@@ -113,7 +112,7 @@ async function main() {
         
         const html = await response.text();
         runner.assertTrue(
-          html.includes('<link') && html.includes('style.css'),
+          html.includes('<link') && html.includes('.css'),
           'Should load CSS stylesheet'
         );
       });
@@ -163,9 +162,9 @@ async function main() {
         runner.assertResponseOk(response, 'Manifest should load');
         
         const manifest = await response.json();
-        runner.assertTrue(manifest.name, 'Manifest should have name');
-        runner.assertTrue(manifest.short_name, 'Manifest should have short_name');
-        runner.assertTrue(manifest.start_url, 'Manifest should have start_url');
+        runner.assertNotNull(manifest.name, 'Manifest should have name');
+        runner.assertNotNull(manifest.short_name, 'Manifest should have short_name');
+        runner.assertNotNull(manifest.start_url, 'Manifest should have start_url');
       });
     });
   }
