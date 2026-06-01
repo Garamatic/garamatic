@@ -55,12 +55,13 @@ services:
     ports:
       - "8085:8080"
     environment:
-      - ASPNETCORE_ENVIRONMENT=Testing
-      - ConnectionStrings__DefaultConnection=Data Source=/app/data/masala_test.db;Cache=Shared;Mode=ReadWriteCreate
+      - ASPNETCORE_ENVIRONMENT=Production
+      - TICKETMASALA_ALLOW_SEED_BYPASS=true
+      - ConnectionStrings__DefaultConnection=Data Source=/app/data/masala.db;Cache=Shared;Mode=ReadWriteCreate
       - MASALA_CONFIG_PATH=/app/config
       - MasalaConfig__ConfigPath=/app/config
       - MASALA_TENANT=desgoffe
-      - MASALA_DB_PATH=/app/data/masala_test.db
+      - MASALA_DB_PATH=/app/data/masala.db
       - RabbitMQ__HostName=rabbitmq
       - RabbitMQ__Port=5672
       - RabbitMQ__Username=guest
@@ -70,6 +71,7 @@ services:
     volumes:
       - ./ticket-masala/config:/app/config:ro
       - ticket_masala_data:/app/data
+      - ticket_masala_keys:/app/keys
     networks:
       - garamatic-network
     depends_on:
@@ -309,6 +311,7 @@ networks:
 
 volumes:
   ticket_masala_data:
+  ticket_masala_keys:
   event_planner_db_data:
   odoo_data:
   odoo_db_data:
