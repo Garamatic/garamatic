@@ -192,6 +192,27 @@ services:
       - garamatic-network
 
   # ════════════════════════════════════════════════════════════
+  # OLLAMA - Local LLM Inference
+  # ════════════════════════════════════════════════════════════
+  ollama:
+    image: ollama/ollama:latest
+    container_name: garamatic_ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - garamatic-network
+    # Optional: enable GPU (works on CPU too, just slower)
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+
+  # ════════════════════════════════════════════════════════════
   # AGENTIC SERVICE - MCP Server
   # ════════════════════════════════════════════════════════════
   agentic-service:
@@ -209,12 +230,15 @@ services:
       - RABBITMQ_PASS=guest
       - RABBITMQ_VHOST=/
       - LOG_LEVEL=INFO
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - OLLAMA_MODEL=qwen3.5:2b
       - *agentic_api_key
     networks:
       - garamatic-network
     depends_on:
       - ticket-masala
       - rabbitmq
+      - ollama
 
   # ════════════════════════════════════════════════════════════
   # ODOO - ERP / CRM
@@ -316,3 +340,4 @@ volumes:
   odoo_data:
   odoo_db_data:
   odoo_bridge_data:
+  ollama_data:

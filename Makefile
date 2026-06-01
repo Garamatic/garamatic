@@ -38,12 +38,21 @@ up:
 	@echo "   • Masala Web     → http://localhost:8091"
 	@echo "   • Odoo          → http://localhost:8092"
 	@echo "   • Odoo Bridge   → http://localhost:8089/health"
+	@echo "   • Agentic API    → http://localhost:3001/docs"
+	@echo "   • Ollama LLM     → http://localhost:11434"
 	@echo "   • RabbitMQ Mgmt  → http://localhost:15672  (guest/guest)"
 	@echo "   • Mailhog UI     → http://localhost:8025"
+	@echo ""
+	@echo "   💡 Run 'make pull-model' to download the local LLM"
 
 down:
 	@echo "🛑 Stopping Garamatic stack..."
 	docker compose down -v
+
+pull-model:
+	@echo "📥 Pulling Ollama model (qwen3.5:2b) — first download may take a while..."
+	@docker compose exec ollama ollama pull qwen3.5:2b
+	@echo "✅ Local LLM ready. Agentic chat uses http://ollama:11434"
 
 dev:
 	@echo "🚀 Starting Garamatic stack (attached)..."
@@ -102,6 +111,7 @@ help:
 	@echo "  make setup      Initialize submodules and env"
 	@echo "  make up         Start the full Docker stack (detached)"
 	@echo "  make dev        Start the full Docker stack (attached)"
+	@echo "  make pull-model Download the local LLM (llama3.2) for Ollama"
 	@echo "  make down       Stop and remove the stack"
 	@echo "  make logs       Tail Docker logs"
 	@echo "  make test       Run integration tests in Docker"
