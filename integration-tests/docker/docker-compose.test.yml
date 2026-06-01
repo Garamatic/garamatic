@@ -189,6 +189,21 @@ services:
     networks:
       - garamatic_test_net
 
+  showcase:
+    image: nginx:1.27-alpine
+    container_name: garamatic_showcase_test
+    ports:
+      - "8092:80"
+    volumes:
+      - ../../demo/showcase:/usr/share/nginx/html:ro
+    networks:
+      - garamatic_test_net
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:80/"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   test-runner:
     build:
       context: ..
@@ -209,6 +224,7 @@ services:
       - RABBITMQ_URL=http://rabbitmq:15672
       - MAILHOG_URL=http://mailhog:8025
       - TEST_RECEIVER_URL=http://test-receiver:8080
+      - SHOWCASE_URL=http://showcase:80
       - TEST_RESULTS_DIR=/test-results
     networks:
       - garamatic_test_net
@@ -222,6 +238,8 @@ services:
       event-planner:
         condition: service_started
       agentic-service:
+        condition: service_started
+      showcase:
         condition: service_started
 
 networks:

@@ -126,7 +126,8 @@ export const SERVICES = {
   testReceiver: process.env.TEST_RECEIVER_URL || 'http://localhost:19999',
   agenticService: process.env.AGENTIC_SERVICE_URL || 'http://localhost:3001',
   odooIntegration: process.env.ODOO_INTEGRATION_URL || 'http://localhost:8089',
-  rabbitmq: process.env.RABBITMQ_URL || 'http://localhost:15672'
+  rabbitmq: process.env.RABBITMQ_URL || 'http://localhost:15672',
+  showcase: process.env.SHOWCASE_URL || 'http://localhost:8092'
 };
 
 /**

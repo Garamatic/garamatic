@@ -32,6 +32,11 @@ const SUITES = [
   { name: 'Cross-Service', file: 'cross-service.test.js' },
   { name: 'End-to-End Workflows', file: 'e2e-workflows.test.js' },
   { name: 'RabbitMQ Connectivity', file: 'rabbitmq-connectivity.test.js' },
+  { name: 'RabbitMQ Message Flow', file: 'rabbitmq-message-flow.test.js' },
+  { name: 'Demo Sites', file: 'demo-sites.test.js' },
+  { name: 'Mail Integration', file: 'mail-integration.test.js' },
+  { name: 'Tenant Form Submission', file: 'tenant-form-submission.test.js' },
+  { name: 'Demo Mail Flow', file: 'demo-mail-flow.test.js' },
   { name: 'Webhook Receiver', file: 'webhook-receiver.test.js' },
   { name: 'Odoo Integration', file: 'odoo-integration.test.js' },
   { name: 'Agentic Service Deep', file: 'agentic-service-deep.test.js' },
@@ -202,7 +207,8 @@ async function main() {
       agentic: process.env.AGENTIC_SERVICE_URL || 'http://localhost:3001',
       odoo_integration: process.env.ODOO_INTEGRATION_URL || 'http://localhost:8089',
       rabbitmq: process.env.RABBITMQ_URL || 'http://localhost:15672',
-      mailhog: process.env.MAILHOG_URL || 'http://localhost:8025'
+      mailhog: process.env.MAILHOG_URL || 'http://localhost:8025',
+      showcase: process.env.SHOWCASE_URL || 'http://localhost:8092'
     }
   };
 
