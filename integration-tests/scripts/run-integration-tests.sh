@@ -50,6 +50,13 @@ run_test() {
     fi
 }
 
+# Install integration-contracts dependencies
+if [ -f "/integration-contracts/package.json" ]; then
+    echo -e "${YELLOW}📦 Installing integration-contracts dependencies...${NC}"
+    cd /integration-contracts && npm install 2>&1 | tail -5
+    cd /runner
+fi
+
 # Wait for services to be ready
 echo -e "${YELLOW}⏳ Waiting for services to be ready...${NC}"
 sleep 10

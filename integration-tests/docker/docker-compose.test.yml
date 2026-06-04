@@ -213,7 +213,7 @@ services:
       - ..:/integration-tests:ro
       - ./test-results:/test-results
       - ./test-logs:/test-logs
-      - ../../integration-contracts:/integration-contracts:ro
+      - ../../integration-contracts:/integration-contracts:rw
     environment:
       - TICKET_MASALA_URL=http://ticket-masala:8080
       - GATEKEEPER_URL=http://gatekeeper-api:8080
