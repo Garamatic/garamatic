@@ -1,209 +1,2185 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Ticket Masala Showcase</title>
-        <style>
-            :root {
-                color-scheme: dark;
-                --bg: #07111f;
-                --panel: rgba(10, 18, 34, 0.82);
-                --panel-border: rgba(148, 163, 184, 0.2);
-                --text: #e5eefb;
-                --muted: #90a4bf;
-                --accent: #7dd3fc;
-                --shadow: 0 24px 90px rgba(0, 0, 0, 0.35);
-            }
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Garamatic Demo — Microservices Architecture</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        :root {
+            --bg: #F8FAFC;
+            --bg-elevated: #FFFFFF;
+            --bg-subtle: #F1F5F9;
+            --text-heading: #0F172A;
+            --text-body: #475569;
+            --text-muted: #94A3B8;
+            --border: #E2E8F0;
+            --primary: #6366F1;
+            --primary-dark: #4F46E5;
+            --primary-glow: rgba(99, 102, 241, 0.12);
+            --accent: #F97316;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --info: #3B82F6;
+            --radius-sm: 6px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
 
-            * {
-                box-sizing: border-box;
-            }
+        [data-theme="dark"] {
+            --bg: #0F172A;
+            --bg-elevated: #1E293B;
+            --bg-subtle: #1E293B;
+            --text-heading: #F1F5F9;
+            --text-body: #CBD5E1;
+            --text-muted: #64748B;
+            --border: #334155;
+            --primary: #818CF8;
+            --primary-dark: #6366F1;
+            --primary-glow: rgba(99, 102, 241, 0.2);
+            --accent: #F97316;
+            --success: #34D399;
+            --warning: #FBBF24;
+            --danger: #F87171;
+            --info: #60A5FA;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.4);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.4);
+        }
 
-            body {
-                margin: 0;
-                min-height: 100vh;
-                font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-                color: var(--text);
-                background:
-                    radial-gradient(circle at top left, rgba(125, 211, 252, 0.22), transparent 38%),
-                    radial-gradient(circle at top right, rgba(167, 139, 250, 0.18), transparent 34%),
-                    linear-gradient(180deg, #081122 0%, #040916 100%);
-            }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
-            .shell {
-                max-width: 1120px;
-                margin: 0 auto;
-                padding: 48px 20px 64px;
-            }
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text-body);
+            line-height: 1.5;
+            min-height: 100vh;
+        }
 
-            .hero {
-                display: grid;
-                gap: 16px;
-                margin-bottom: 28px;
-                padding: 28px;
-                border: 1px solid var(--panel-border);
-                border-radius: 24px;
-                background: var(--panel);
-                box-shadow: var(--shadow);
-                backdrop-filter: blur(16px);
-            }
+        h1, h2, h3, h4 {
+            font-family: 'Rajdhani', system-ui, sans-serif;
+            color: var(--text-heading);
+            font-weight: 600;
+            line-height: 1.2;
+        }
 
-            .eyebrow {
-                display: inline-flex;
-                width: fit-content;
-                padding: 6px 10px;
-                border-radius: 999px;
-                border: 1px solid rgba(125, 211, 252, 0.25);
-                background: rgba(8, 15, 30, 0.7);
-                color: var(--accent);
-                text-transform: uppercase;
-                letter-spacing: 0.12em;
-                font-size: 12px;
-                font-weight: 700;
-            }
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
 
-            h1 {
-                margin: 0;
-                font-size: clamp(2rem, 6vw, 4.4rem);
-                line-height: 0.95;
-                letter-spacing: -0.05em;
-            }
+        /* Header */
+        .site-header {
+            background: var(--bg-elevated);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(8px);
+        }
 
-            .lede {
-                max-width: 70ch;
-                margin: 0;
-                color: var(--muted);
-                font-size: 1.05rem;
-                line-height: 1.7;
-            }
+        .header-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
 
-            .meta {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 12px;
-                margin-top: 10px;
-            }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
 
-            .chip {
-                padding: 8px 12px;
-                border-radius: 999px;
-                border: 1px solid rgba(148, 163, 184, 0.18);
-                background: rgba(15, 23, 42, 0.6);
-                color: #cbd5e1;
-                font-size: 0.92rem;
-            }
+        .brand-mark {
+            width: 36px;
+            height: 36px;
+            background: var(--primary);
+            border-radius: var(--radius-md);
+            display: grid;
+            place-items: center;
+            color: white;
+            font-weight: 700;
+            font-size: 14px;
+            font-family: 'Rajdhani', sans-serif;
+        }
 
-            .grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-                gap: 18px;
-                margin-top: 24px;
-            }
+        .brand-text {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--text-heading);
+            letter-spacing: -0.01em;
+        }
 
-            .card {
-                position: relative;
-                overflow: hidden;
-                padding: 20px;
-                border-radius: 22px;
-                border: 1px solid var(--panel-border);
-                background: rgba(9, 16, 30, 0.9);
-                box-shadow: var(--shadow);
-                text-decoration: none;
-                color: inherit;
-                transition:
-                    transform 180ms ease,
-                    border-color 180ms ease,
-                    background 180ms ease;
-            }
+        .brand-text span {
+            color: var(--primary);
+        }
 
-            .card:hover {
-                transform: translateY(-3px);
-                border-color: rgba(125, 211, 252, 0.38);
-                background: rgba(11, 20, 38, 0.98);
-            }
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
 
-            .card h2 {
-                margin: 0 0 8px;
-                font-size: 1.3rem;
-                letter-spacing: -0.03em;
-            }
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            border: 1px solid var(--border);
+            background: var(--bg-subtle);
+            color: var(--text-body);
+        }
 
-            .card p {
-                margin: 0;
-                color: var(--muted);
-                line-height: 1.6;
-            }
+        .chip-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
 
-            .card .cta {
-                display: inline-flex;
-                margin-top: 16px;
-                color: var(--accent);
-                font-weight: 700;
-            }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
 
-            .footer {
-                margin-top: 28px;
-                color: var(--muted);
-                font-size: 0.95rem;
-            }
+        /* Hero */
+        .hero {
+            padding: 40px 0 24px;
+        }
 
-            code {
-                font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco, Consolas, monospace;
-                color: #dbeafe;
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 32px;
+            align-items: start;
+        }
+
+        .hero-title {
+            font-size: clamp(1.75rem, 4vw, 2.5rem);
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+        }
+
+        .hero-lede {
+            font-size: 1rem;
+            color: var(--text-body);
+            max-width: 60ch;
+        }
+
+        .hero-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .hero-card {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .hero-card h3 {
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .stat-row {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+        }
+
+        .stat-value {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-heading);
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .stat-change {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--success);
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 4px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 24px;
+            overflow-x: auto;
+            padding-bottom: 1px;
+        }
+
+        .tab {
+            padding: 10px 16px;
+            border: none;
+            background: none;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+            white-space: nowrap;
+            transition: all 0.15s;
+        }
+
+        .tab:hover {
+            color: var(--text-body);
+            background: var(--bg-subtle);
+        }
+
+        .tab.active {
+            color: var(--primary);
+            background: var(--primary-glow);
+            box-shadow: inset 0 -2px 0 0 var(--primary);
+        }
+
+        /* Panels */
+        .panel {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-subtle);
+        }
+
+        .panel-header h2 {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .panel-body {
+            padding: 20px;
+        }
+
+        /* Architecture Map */
+        .arch-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+        }
+
+        .service-card {
+            position: relative;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            background: var(--bg-elevated);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .service-card:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        }
+
+        .service-card.healthy::before { background: var(--success); }
+        .service-card.unhealthy::before { background: var(--danger); }
+        .service-card.unknown::before { background: var(--warning); }
+        .service-card.infrastructure::before { background: var(--info); }
+
+        .service-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .service-name {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--text-heading);
+        }
+
+        .service-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 0.6875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .service-status.healthy {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .service-status.unhealthy {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        .service-status.unknown {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .service-meta {
+            font-size: 0.8125rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .service-meta code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            background: var(--bg-subtle);
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+        }
+
+        .service-links {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .service-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-decoration: none;
+            border: 1px solid var(--border);
+            color: var(--text-body);
+            background: var(--bg);
+            transition: all 0.15s;
+        }
+
+        .service-link:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Flow Diagram */
+        .flow-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .flow-layer {
+            display: flex;
+            gap: 12px;
+            align-items: stretch;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .flow-node {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 16px;
+            min-width: 120px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            background: var(--bg-elevated);
+            font-size: 0.8125rem;
+            font-weight: 500;
+            color: var(--text-heading);
+            transition: all 0.2s;
+        }
+
+        .flow-node.infrastructure {
+            background: var(--bg-subtle);
+            border-style: dashed;
+        }
+
+        .flow-node.highlight {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+
+        .flow-node .node-icon {
+            font-size: 1.25rem;
+            margin-bottom: 4px;
+        }
+
+        .flow-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+            color: var(--text-muted);
+            font-size: 1.25rem;
+        }
+
+        .flow-arrow.down {
+            transform: rotate(90deg);
+        }
+
+        .flow-connector {
+            position: relative;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .flow-connector::before {
+            content: '';
+            width: 1px;
+            height: 100%;
+            background: var(--border);
+        }
+
+        /* Animated packet */
+        .packet {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--primary);
+            opacity: 0;
+        }
+
+        @keyframes packet-flow {
+            0% { transform: translateY(-12px); opacity: 0; }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { transform: translateY(12px); opacity: 0; }
+        }
+
+        .packet-flowing {
+            animation: packet-flow 1.5s ease-in-out infinite;
+        }
+
+        /* Narrative Steps */
+        .narrative {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .narrative-step {
+            display: flex;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            background: var(--bg-elevated);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .narrative-step:hover {
+            border-color: var(--primary);
+            background: var(--primary-glow);
+        }
+
+        .narrative-step.active {
+            border-color: var(--primary);
+            background: var(--primary-glow);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .step-number {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: grid;
+            place-items: center;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 0.875rem;
+            flex-shrink: 0;
+        }
+
+        .narrative-step.active .step-number {
+            background: var(--primary-dark);
+        }
+
+        .step-content h4 {
+            font-size: 0.9375rem;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .step-content p {
+            font-size: 0.8125rem;
+            color: var(--text-muted);
+        }
+
+        .step-time {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-left: auto;
+            white-space: nowrap;
+        }
+
+        /* API Explorer */
+        .api-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8125rem;
+        }
+
+        .api-table th {
+            text-align: left;
+            padding: 10px 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-size: 0.6875rem;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-subtle);
+        }
+
+        .api-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: top;
+        }
+
+        .api-table tr:hover td {
+            background: var(--bg-subtle);
+        }
+
+        .api-method {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.6875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .api-method.get { background: rgba(59, 130, 246, 0.1); color: var(--info); }
+        .api-method.post { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+        .api-method.put { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+        .api-method.delete { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+
+        .api-path {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8125rem;
+            color: var(--text-heading);
+        }
+
+        .api-desc {
+            color: var(--text-muted);
+        }
+
+        .api-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .api-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Tenant cards */
+        .tenant-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 16px;
+        }
+
+        .tenant-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 24px;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            background: var(--bg-elevated);
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.2s;
+        }
+
+        .tenant-card:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .tenant-logo {
+            width: 64px;
+            height: 64px;
+            border-radius: var(--radius-lg);
+            object-fit: contain;
+            margin-bottom: 12px;
+            background: var(--bg-subtle);
+            padding: 8px;
+        }
+
+        .tenant-name {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--text-heading);
+            margin-bottom: 4px;
+        }
+
+        .tenant-desc {
+            font-size: 0.8125rem;
+            color: var(--text-muted);
+        }
+
+        .tenant-cta {
+            margin-top: 12px;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            color: var(--primary);
+        }
+
+        /* RabbitMQ Metrics */
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+        }
+
+        .metric-box {
+            padding: 16px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            background: var(--bg-elevated);
+            text-align: center;
+        }
+
+        .metric-value {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-heading);
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* Two-column layout */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 24px;
+            margin-top: 24px;
+        }
+
+        .dashboard-main {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .dashboard-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            background: var(--text-heading);
+            color: white;
+            font-size: 0.875rem;
+            font-weight: 500;
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .hero-grid {
+                grid-template-columns: 1fr;
             }
-        </style>
-    </head>
-    <body>
-        <main class="shell">
-            <section class="hero">
-                <span class="eyebrow">Showcase</span>
-                <h1>Static form sites that talk to the Masala stack.</h1>
-                <p class="lede">
-                    These are the public-facing demo sites for the school project. They are
-                    served from the demo environment and submit into the Ticket Masala API so you
-                    can show integrations, theming, and route-level personality without keeping
-                    the demo inside the marketing site.
-                </p>
-                <div class="meta">
-                    <span class="chip">Ticket Masala API: <code>http://localhost:8085</code></span>
-                    <span class="chip">Showcase host: <code>http://localhost:8092</code></span>
-                    <span class="chip">Config viewer available for each tenant</span>
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .container { padding: 0 16px; }
+            .header-inner { flex-wrap: wrap; }
+            .arch-grid { grid-template-columns: 1fr; }
+            .flow-layer { flex-direction: column; align-items: stretch; }
+        }
+
+        /* Hidden utility */
+        .hidden { display: none !important; }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 200;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            max-width: 560px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+        }
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+        .modal-header h2 {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-muted);
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: grid;
+            place-items: center;
+            border-radius: var(--radius-sm);
+        }
+        .modal-close:hover {
+            background: var(--bg-subtle);
+            color: var(--text-heading);
+        }
+        .modal-body {
+            padding: 20px;
+        }
+        .modal-body h3 {
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+        .modal-body p {
+            font-size: 0.875rem;
+            color: var(--text-body);
+            margin-bottom: 16px;
+            line-height: 1.6;
+        }
+        .modal-body .service-link {
+            margin-bottom: 8px;
+        }
+
+        /* Mermaid diagram */
+        .mermaid {
+            background: var(--bg-subtle);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            overflow-x: auto;
+        }
+        .mermaid svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Code block */
+        pre {
+            background: var(--bg-subtle);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 12px 16px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            line-height: 1.6;
+        }
+
+        .code-block {
+            position: relative;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            padding: 4px 10px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            background: var(--bg-elevated);
+            font-size: 0.6875rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .copy-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <div class="container header-inner">
+            <div class="brand">
+                <div class="brand-mark">G</div>
+                <div class="brand-text">Garamatic <span>Demo</span></div>
+            </div>
+            <div class="header-actions">
+                <button id="theme-toggle" class="chip" style="cursor: pointer; background: none;" title="Toggle dark mode">
+                    <span id="theme-icon">🌙</span>
+                </button>
+                <span class="chip" id="health-summary">
+                    <span class="chip-dot"></span>
+                    <span id="health-count">Checking...</span>
+                </span>
+                <span class="chip" id="rabbitmq-summary">
+                    <span class="chip-dot" style="background: var(--info);"></span>
+                    <span id="rabbitmq-status">RabbitMQ: ...</span>
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Hero -->
+        <section class="hero">
+            <div class="hero-grid">
+                <div>
+                    <h1 class="hero-title">Microservices Architecture Demo</h1>
+                    <p class="hero-lede">
+                        One ticket ripples through eight services. Watch events fan out via RabbitMQ,
+                        see AI-assisted ticket handling, and trace invoices from resolution to Odoo ERP.
+                        All orchestrated from a single <code>docker compose up</code>.
+                    </p>
+                    <div class="hero-meta">
+                        <span class="chip" id="system-status-badge">Checking...</span>
+                        <span class="chip">8 Services</span>
+                        <span class="chip">RabbitMQ Event Bus</span>
+                        <span class="chip">MCP / AI Agent</span>
+                        <span class="chip">Odoo ERP Bridge</span>
+                        <span class="chip">Outbox Pattern</span>
+                    </div>
+                    <div style="margin-top: 8px; font-size: 0.75rem; color: var(--text-muted);">
+                        Last refresh: <span id="last-refresh">—</span>
+                    </div>
                 </div>
-            </section>
+                <div class="hero-card">
+                    <h3>Live Metrics</h3>
+                    <div class="stat-row">
+                        <span class="stat-value" id="metric-services">—</span>
+                        <span class="stat-label">services up</span>
+                    </div>
+                    <div class="stat-row" style="margin-top: 8px;">
+                        <span class="stat-value" id="metric-messages">—</span>
+                        <span class="stat-label">messages queued</span>
+                    </div>
+                    <div class="stat-row" style="margin-top: 8px;">
+                        <span class="stat-value" id="metric-emails">—</span>
+                        <span class="stat-label">emails captured</span>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-            <section class="grid" aria-label="Tenant demos">
-                <a class="card" href="tenants/desgoffe/client/index.html">
-                    <h2>Desgoffe</h2>
-                    <p>Formal civic portal with a guided submission flow and government styling.</p>
-                    <span class="cta">Open demo</span>
-                </a>
-                <a class="card" href="tenants/whitman/client/index.html">
-                    <h2>Whitman</h2>
-                    <p>High-visibility industrial form experience with practical field-worker cues.</p>
-                    <span class="cta">Open demo</span>
-                </a>
-                <a class="card" href="tenants/liberty/client/index.html">
-                    <h2>Liberty</h2>
-                    <p>Technical, markdown-friendly workflow example for fast-moving teams.</p>
-                    <span class="cta">Open demo</span>
-                </a>
-                <a class="card" href="tenants/hennessey/client/index.html">
-                    <h2>Hennessey</h2>
-                    <p>Grant application flow with multi-step validation and draft recovery.</p>
-                    <span class="cta">Open demo</span>
-                </a>
-                <a class="card" href="config-viewer.html?tenant=desgoffe">
-                    <h2>Config viewer</h2>
-                    <p>Inspect the tenant configuration files that drive the demo styling and routes.</p>
-                    <span class="cta">Open viewer</span>
-                </a>
-            </section>
+        <!-- Tabs -->
+        <div class="tabs" role="tablist">
+            <button class="tab active" data-tab="architecture" role="tab">Architecture</button>
+            <button class="tab" data-tab="flow" role="tab">Event Flow</button>
+            <button class="tab" data-tab="narrative" role="tab">Demo Narrative</button>
+            <button class="tab" data-tab="apis" role="tab">API Explorer</button>
+            <button class="tab" data-tab="tenants" role="tab">Tenant Portals</button>
+        </div>
 
-            <p class="footer">
-                Tip: open one of the forms, submit a request, and follow the event flow through
-                RabbitMQ, mailing, and the rest of the demo environment.
-            </p>
-        </main>
-    </body>
+        <div class="dashboard-grid">
+            <div class="dashboard-main">
+                <!-- Architecture Panel -->
+                <div id="panel-architecture" class="panel">
+                    <div class="panel-header">
+                        <h2>Service Topology</h2>
+                        <span class="chip" style="cursor: pointer;" onclick="refreshHealth()">↻ Refresh</span>
+                    </div>
+                    <div class="panel-body">
+                        <div class="arch-grid" id="services-grid">
+                            <!-- Filled by JS -->
+                        </div>
+                        <div style="margin-top: 24px;">
+                            <h3 style="font-size: 0.875rem; margin-bottom: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Architecture Diagram</h3>
+                            <div class="mermaid">
+graph TB
+    subgraph Frontends["🎨 Frontends"]
+        A[Showcase<br/>localhost:8092]
+        B[Desgoffe Portal]
+        C[Whitman Portal]
+        D[Liberty Portal]
+        E[Hennessey Portal]
+    end
+
+    subgraph Core["🎫 Core Service"]
+        TM[Ticket Masala<br/>localhost:8085]
+    end
+
+    subgraph Ingestion["🛡️ Ingestion"]
+        GK[Gatekeeper<br/>localhost:8086]
+    end
+
+    subgraph EventBus["🐰 Event Bus"]
+        RMQ[RabbitMQ<br/>localhost:15672]
+        EX[event_exchange<br/>topic]
+        Q1[agentic_consumer]
+        Q2[mailing.queue]
+        Q3[odoo-bridge]
+    end
+
+    subgraph Consumers["📬 Consumers"]
+        AS[Agentic Service<br/>localhost:3001]
+        MS[Mailing Service<br/>localhost:8087]
+        OB[Odoo Bridge<br/>localhost:8089]
+    end
+
+    subgraph External["🔗 External"]
+        MH[Mailhog<br/>localhost:8025]
+        OD[Odoo ERP<br/>localhost:8069]
+    end
+
+    subgraph Content["📅 Content"]
+        EP[Event Planner<br/>localhost:8088]
+    end
+
+    A -->|POST /api/portal/submit| TM
+    B -->|POST /api/portal/submit| TM
+    C -->|POST /api/portal/submit| TM
+    D -->|POST /api/portal/submit| TM
+    E -->|POST /api/portal/submit| TM
+    GK -->|publish| RMQ
+    TM -->|outbox pattern| RMQ
+    RMQ --> EX
+    EX -->|event.ticket.*| Q1
+    EX -->|event.ticket.*| Q2
+    EX -->|event.ticket.resolved| Q3
+    Q1 -->|consume| AS
+    Q2 -->|consume| MS
+    Q3 -->|consume| OB
+    AS -->|send email| MH
+    MS -->|send email| MH
+    OB -->|JSON-RPC| OD
+    OD -->|payment.received| RMQ
+    TM -->|GET /api/tickets| A
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Event Flow Panel -->
+                <div id="panel-flow" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>Event Flow — One Ticket, Seven Services</h2>
+                        <span class="chip" style="cursor: pointer;" onclick="refreshRabbitMQ()">↻ Refresh</span>
+                    </div>
+                    <div class="panel-body">
+                        <div class="flow-container" id="flow-diagram">
+                            <!-- Filled by JS -->
+                        </div>
+                        <div style="margin-top: 24px;">
+                            <h3 style="font-size: 0.875rem; margin-bottom: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">RabbitMQ Exchange Bindings</h3>
+                            <div class="metric-grid" id="rabbitmq-bindings">
+                                <!-- Filled by JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Narrative Panel -->
+                <div id="panel-narrative" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>Demo Narrative — 18 Minutes, 9 Steps</h2>
+                        <span class="chip" style="cursor: pointer;" onclick="resetNarrative()">Reset</span>
+                    </div>
+                    <div class="panel-body">
+                        <div class="narrative" id="narrative-steps">
+                            <!-- Filled by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- API Explorer Panel -->
+                <div id="panel-apis" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>API Endpoints</h2>
+                    </div>
+                    <div class="panel-body" style="padding: 0;">
+                        <div style="padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--bg-subtle);">
+                            <input type="text" id="apiSearch" placeholder="Filter endpoints..."
+                                style="width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.875rem; background: var(--bg-elevated); color: var(--text-heading);" />
+                        </div>
+                        <table class="api-table">
+                            <thead>
+                                <tr>
+                                    <th>Method</th>
+                                    <th>Endpoint</th>
+                                    <th>Service</th>
+                                    <th>Description</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="api-table-body">
+                                <!-- Filled by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Tenants Panel -->
+                <div id="panel-tenants" class="panel hidden">
+                    <div class="panel-header">
+                        <h2>Public Tenant Portals</h2>
+                    </div>
+                    <div class="panel-body">
+                        <div class="tenant-grid" id="tenant-grid">
+                            <!-- Filled by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="dashboard-sidebar">
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2>🚀 Getting Started</h2>
+                    </div>
+                    <div class="panel-body">
+                        <p style="font-size: 0.8125rem; color: var(--text-muted); margin-bottom: 12px;">
+                            Start the full stack with one command:
+                        </p>
+                        <div class="code-block">
+                            <button class="copy-btn" onclick="copyCurl(this)">Copy</button>
+                            <pre>cd /path/to/garamatic/demo
+docker compose up --build</pre>
+                        </div>
+                        <p style="font-size: 0.8125rem; color: var(--text-muted); margin-top: 12px;">
+                            Then verify everything is healthy:
+                        </p>
+                        <div class="code-block">
+                            <button class="copy-btn" onclick="copyCurl(this)">Copy</button>
+                            <pre>./scripts/verify.sh</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2>Quick Links</h2>
+                    </div>
+                    <div class="panel-body" style="display: flex; flex-direction: column; gap: 8px;">
+                        <a href="http://localhost:8085" target="_blank" class="service-link" style="justify-content: space-between;">
+                            <span>🎫 Ticket Masala</span>
+                            <code style="font-size: 0.6875rem;">:8085</code>
+                        </a>
+                        <a href="http://localhost:8086" target="_blank" class="service-link" style="justify-content: space-between;">
+                            <span>🛡️ Gatekeeper</span>
+                            <code style="font-size: 0.6875rem;">:8086</code>
+                        </a>
+                        <a href="http://localhost:8087/health" target="_blank" class="service-link" style="justify-content: space-between;">
+                            <span>📧 Mailing Service</span>
+                            <code style="font-size: 0.6875rem;">:8087</code>
+                        </a>
+                        <a href="http://localhost:3001/docs" target="_blank" class="service-link" style="justify-content: space-between;">
+                            <span>🤖 Agentic Service</span>
+                            <code style="font-size: 0.6875rem;">:3001</code>
+                        </a>
+                        <a href="http://localhost:8089/health" target="_blank" class="service-link" style="justify-content: space-between;">
+                            <span>🔌 Odoo Bridge</span>
+                            <code style="font-size: 0.6875rem;">:8089</code>
+                        </a>
+                        <a href="http://localhost:8088" target="_blank" class="service-link" style="justify-content: space-between;">
+                            <span>📅 Event Planner</span>
+                            <code style="font-size: 0.6875rem;">:8088</code>
+                        </a>
+                        <a href="http://localhost:15672" target="_blank" class="service-link" style="justify-content: space-between;">
+                            <span>🐰 RabbitMQ</span>
+                            <code style="font-size: 0.6875rem;">:15672</code>
+                        </a>
+                        <a href="http://localhost:8025" target="_blank" class="service-link" style="justify-content: space-between;">
+                            <span>📬 Mailhog</span>
+                            <code style="font-size: 0.6875rem;">:8025</code>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2>💡 Demo Tips</h2>
+                    </div>
+                    <div class="panel-body" style="font-size: 0.8125rem; color: var(--text-body); line-height: 1.6;">
+                        <div style="margin-bottom: 12px;">
+                            <strong style="color: var(--text-heading); display: block; margin-bottom: 4px;">Screen Layout</strong>
+                            Left: Dashboard, Right: RabbitMQ, Center: Ticket Masala
+                        </div>
+                        <div style="margin-bottom: 12px;">
+                            <strong style="color: var(--text-heading); display: block; margin-bottom: 4px;">Wow Moments</strong>
+                            1. MCP Chat — open AI chat from ticket detail<br/>
+                            2. RabbitMQ Fan-Out — one message, three queues<br/>
+                            3. Odoo JSON-RPC — show the actual syntax
+                        </div>
+                        <div>
+                            <strong style="color: var(--text-heading); display: block; margin-bottom: 4px;">Timing</strong>
+                            Setup: 2 min, Full demo: ~18 min
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2>🚀 Quick Ticket</h2>
+                    </div>
+                    <div class="panel-body">
+                        <p style="font-size: 0.8125rem; color: var(--text-muted); margin-bottom: 12px;">
+                            Create a ticket directly and watch it ripple through the event bus.
+                        </p>
+                        <form id="quickTicketForm" style="display: flex; flex-direction: column; gap: 10px;">
+                            <input type="text" id="qtName" placeholder="Customer name" required
+                                style="padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.875rem; background: var(--bg-elevated); color: var(--text-heading);" />
+                            <input type="email" id="qtEmail" placeholder="Email" required
+                                style="padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.875rem; background: var(--bg-elevated); color: var(--text-heading);" />
+                            <textarea id="qtDesc" placeholder="Description" rows="3" required
+                                style="padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.875rem; background: var(--bg-elevated); color: var(--text-heading); resize: vertical;"></textarea>
+                            <select id="qtTenant" required
+                                style="padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.875rem; background: var(--bg-elevated); color: var(--text-heading);">
+                                <option value="desgoffe">Ville de Desgoffe</option>
+                                <option value="whitman">Whitman Spoor</option>
+                                <option value="liberty">Liberty Systems</option>
+                                <option value="hennessey">Fonds Hennessey</option>
+                            </select>
+                            <button type="submit" class="btn btn-primary" style="justify-content: center;">
+                                Create Ticket
+                            </button>
+                        </form>
+                        <div id="qtResult" style="margin-top: 12px; font-size: 0.8125rem; display: none;">
+                            <span id="qtResultText"></span>
+                            <a href="http://localhost:8085" target="_blank" class="api-link">View in Ticket Masala →</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2>📡 Recent Events</h2>
+                        <span class="chip" style="font-size: 0.6875rem; cursor: pointer;" onclick="refreshRecentEvents()">↻ Refresh</span>
+                    </div>
+                    <div class="panel-body" style="padding: 12px;">
+                        <div id="recentEvents" style="display: flex; flex-direction: column; gap: 8px;">
+                            <p style="font-size: 0.8125rem; color: var(--text-muted); text-align: center;">Loading events...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2>Curl Quickies</h2>
+                    </div>
+                    <div class="panel-body" style="display: flex; flex-direction: column; gap: 12px;">
+                        <div class="code-block">
+                            <button class="copy-btn" onclick="copyCurl(this)">Copy</button>
+                            <pre>curl http://localhost:8085/health</pre>
+                        </div>
+                        <div class="code-block">
+                            <button class="copy-btn" onclick="copyCurl(this)">Copy</button>
+                            <pre>curl http://localhost:8085/api/tickets</pre>
+                        </div>
+                        <div class="code-block">
+                            <button class="copy-btn" onclick="copyCurl(this)">Copy</button>
+                            <pre>curl -u guest:guest \
+  http://localhost:15672/api/queues</pre>
+                        </div>
+                        <div class="code-block">
+                            <button class="copy-btn" onclick="copyCurl(this)">Copy</button>
+                            <pre>curl http://localhost:3001/customers/\
+  alice@example.com/context</pre>
+                        </div>
+                        <div class="code-block">
+                            <button class="copy-btn" onclick="copyCurl(this)">Copy</button>
+                            <pre>curl http://localhost:8025/api/v2/messages</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2>Reset Demo</h2>
+                    </div>
+                    <div class="panel-body">
+                        <p style="font-size: 0.8125rem; color: var(--text-muted); margin-bottom: 12px;">
+                            Tear down all containers and volumes, then rebuild from scratch.
+                        </p>
+                        <div class="code-block">
+                            <button class="copy-btn" onclick="copyCurl(this)">Copy</button>
+                            <pre>cd /path/to/garamatic/demo
+docker compose down -v
+docker compose up --build</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2>Smoke Test</h2>
+                    </div>
+                    <div class="panel-body">
+                        <p style="font-size: 0.8125rem; color: var(--text-muted); margin-bottom: 12px;">
+                            Run the verification script to check all services and API endpoints.
+                        </p>
+                        <div class="code-block">
+                            <button class="copy-btn" onclick="copyCurl(this)">Copy</button>
+                            <pre>cd /path/to/garamatic/demo
+./scripts/verify.sh</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer style="border-top: 1px solid var(--border); padding: 24px 0; margin-top: 48px; background: var(--bg-subtle);">
+        <div class="container" style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px;">
+            <div style="font-size: 0.8125rem; color: var(--text-muted);">
+                <strong style="color: var(--text-heading);">Garamatic Demo</strong> — One ticket, eight services.
+            </div>
+            <div style="display: flex; gap: 16px; font-size: 0.8125rem;">
+                <a href="https://github.com/Garamatic/garamatic" target="_blank" style="color: var(--text-muted); text-decoration: none;">GitHub</a>
+                <a href="http://localhost:8085" target="_blank" style="color: var(--text-muted); text-decoration: none;">Ticket Masala</a>
+                <a href="http://localhost:15672" target="_blank" style="color: var(--text-muted); text-decoration: none;">RabbitMQ</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Service Detail Modal -->
+    <div class="modal-overlay" id="serviceModal" onclick="closeModal(event)">
+        <div class="modal" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h2 id="modalTitle">Service Details</h2>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Filled by JS -->
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ─────────────────────────────────────────────────────────────
+        // Configuration
+        // ─────────────────────────────────────────────────────────────
+
+        const SERVICES = [
+            {
+                id: 'ticket-masala',
+                name: 'Ticket Masala',
+                icon: '🎫',
+                port: 8085,
+                healthPath: '/health',
+                type: 'backend',
+                description: 'Core ticket engine — outbox pattern, SQLite, GERDA AI',
+                links: [
+                    { label: 'Health', url: 'http://localhost:8085/health' },
+                    { label: 'App', url: 'http://localhost:8085' },
+                    { label: 'API', url: 'http://localhost:8085/api/tickets' }
+                ]
+            },
+            {
+                id: 'gatekeeper-api',
+                name: 'Gatekeeper',
+                icon: '🛡️',
+                port: 8086,
+                healthPath: '/health',
+                type: 'backend',
+                description: 'Event ingestion API — publishes to RabbitMQ',
+                links: [
+                    { label: 'Health', url: 'http://localhost:8086/health' },
+                    { label: 'Ingest', url: 'http://localhost:8086/ingest' }
+                ]
+            },
+            {
+                id: 'mailing-service',
+                name: 'Mailing Service',
+                icon: '📧',
+                port: 8087,
+                healthPath: '/health',
+                type: 'backend',
+                description: 'Email worker — consumes RabbitMQ events',
+                links: [
+                    { label: 'Health', url: 'http://localhost:8087/health' }
+                ]
+            },
+            {
+                id: 'agentic-service',
+                name: 'Agentic Service',
+                icon: '🤖',
+                port: 3001,
+                healthPath: '/sse',
+                type: 'backend',
+                description: 'MCP server + AI notification composer',
+                links: [
+                    { label: 'Health', url: 'http://localhost:3001/health' },
+                    { label: 'Docs', url: 'http://localhost:3001/docs' },
+                    { label: 'SSE', url: 'http://localhost:3001/sse' }
+                ]
+            },
+            {
+                id: 'odoo-integration',
+                name: 'Odoo Bridge',
+                icon: '🔌',
+                port: 8089,
+                healthPath: '/health',
+                type: 'backend',
+                description: 'JSON-RPC bridge to Odoo ERP — state machine, polling',
+                links: [
+                    { label: 'Health', url: 'http://localhost:8089/health' },
+                    { label: 'Odoo', url: 'http://localhost:8069' }
+                ]
+            },
+            {
+                id: 'event-planner',
+                name: 'Event Planner',
+                icon: '📅',
+                port: 8088,
+                healthPath: '/',
+                type: 'backend',
+                description: 'Drupal CMS — contact forms, event content',
+                links: [
+                    { label: 'Site', url: 'http://localhost:8088' }
+                ]
+            },
+            {
+                id: 'rabbitmq',
+                name: 'RabbitMQ',
+                icon: '🐰',
+                port: 15672,
+                healthPath: '/api/overview',
+                type: 'infrastructure',
+                description: 'AMQP event bus — topic exchange, fan-out consumers',
+                links: [
+                    { label: 'Mgmt', url: 'http://localhost:15672' },
+                    { label: 'API', url: 'http://localhost:15672/api/queues' }
+                ],
+                auth: 'guest:guest'
+            },
+            {
+                id: 'mailhog',
+                name: 'Mailhog',
+                icon: '📬',
+                port: 8025,
+                healthPath: '/api/v2/messages',
+                type: 'infrastructure',
+                description: 'Test email capture — SMTP + web UI',
+                links: [
+                    { label: 'UI', url: 'http://localhost:8025' },
+                    { label: 'API', url: 'http://localhost:8025/api/v2/messages' }
+                ]
+            }
+        ];
+
+        const TENANTS = [
+            {
+                id: 'desgoffe',
+                name: 'Ville de Desgoffe',
+                desc: 'Formal civic portal with government styling',
+                logo: 'tenants/assets/desgoffe.png',
+                url: 'tenants/desgoffe/client/index.html'
+            },
+            {
+                id: 'whitman',
+                name: 'Whitman Spoor',
+                desc: 'High-visibility industrial form experience',
+                logo: 'tenants/assets/whitman.png',
+                url: 'tenants/whitman/client/index.html'
+            },
+            {
+                id: 'liberty',
+                name: 'Liberty Systems',
+                desc: 'Technical markdown-friendly workflow',
+                logo: 'tenants/assets/liberty.png',
+                url: 'tenants/liberty/client/index.html'
+            },
+            {
+                id: 'hennessey',
+                name: 'Fonds Hennessey',
+                desc: 'Grant application with multi-step validation',
+                logo: 'tenants/assets/hennessey.png',
+                url: 'tenants/hennessey/client/index.html'
+            }
+        ];
+
+        const NARRATIVE = [
+            {
+                title: 'Portal Submission',
+                desc: 'Citizen submits a ticket via the tenant portal. Form POSTs to /api/portal/submit.',
+                services: ['showcase', 'ticket-masala'],
+                time: '1 min'
+            },
+            {
+                title: 'Outbox Pattern',
+                desc: 'Ticket Masala atomically writes the ticket + queues ticket.created to the outbox.',
+                services: ['ticket-masala'],
+                time: '30 sec'
+            },
+            {
+                title: 'RabbitMQ Fan-Out',
+                desc: 'OutboxPublisher publishes to event_exchange. Three queues receive the event simultaneously.',
+                services: ['rabbitmq', 'ticket-masala'],
+                time: '2 min'
+            },
+            {
+                title: 'Agentic Notification',
+                desc: 'Agentic service consumes the event, renders an email, and sends it via the MCP layer.',
+                services: ['agentic-service', 'mailhog'],
+                time: '1 min'
+            },
+            {
+                title: 'Mailing Worker',
+                desc: 'Mailing service also consumes the event — dedicated email worker with template registry.',
+                services: ['mailing-service'],
+                time: '30 sec'
+            },
+            {
+                title: 'GERDA Assignment',
+                desc: 'Manager assigns ticket. GERDA AI recommends the best agent based on workload and affinity.',
+                services: ['ticket-masala'],
+                time: '2 min'
+            },
+            {
+                title: 'Resolution & Billing',
+                desc: 'Agent resolves with billable amount. ticket.resolved event triggers the entire billing workflow.',
+                services: ['ticket-masala'],
+                time: '2 min'
+            },
+            {
+                title: 'Odoo Bridge',
+                desc: 'Odoo Bridge receives the event, deduplicates, creates customer + invoice via JSON-RPC, then publishes invoice.created.',
+                services: ['odoo-integration', 'rabbitmq'],
+                time: '4 min'
+            },
+            {
+                title: 'Invoice Email',
+                desc: 'invoice.created fans out to agentic and mailing services. Customer gets invoice + email.',
+                services: ['agentic-service', 'mailing-service', 'mailhog'],
+                time: '1 min'
+            },
+            {
+                title: 'Payment Detection (Bonus)',
+                desc: 'Poller detects paid status in Odoo, publishes payment.received, sends thank-you email.',
+                services: ['odoo-integration', 'rabbitmq', 'agentic-service', 'mailhog'],
+                time: '2 min'
+            }
+        ];
+
+        const API_ENDPOINTS = [
+            { method: 'GET', path: '/health', service: 'All', desc: 'Health check', url: 'http://localhost:8085/health' },
+            { method: 'POST', path: '/api/portal/submit', service: 'Ticket Masala', desc: 'Submit ticket from portal', url: 'http://localhost:8085/api/portal/submit' },
+            { method: 'GET', path: '/api/tickets', service: 'Ticket Masala', desc: 'List tickets', url: 'http://localhost:8085/api/tickets' },
+            { method: 'POST', path: '/ingest', service: 'Gatekeeper', desc: 'Ingest event', url: 'http://localhost:8086/ingest' },
+            { method: 'GET', path: '/customers/:email/context', service: 'Agentic', desc: 'Customer context (MCP)', url: 'http://localhost:3001/customers/alice@example.com/context' },
+            { method: 'GET', path: '/docs', service: 'Agentic', desc: 'OpenAPI docs', url: 'http://localhost:3001/docs' },
+            { method: 'GET', path: '/sse', service: 'Agentic', desc: 'MCP SSE transport', url: 'http://localhost:3001/sse' },
+            { method: 'GET', path: '/health', service: 'Odoo Bridge', desc: 'Health + LiteDB state', url: 'http://localhost:8089/health' },
+            { method: 'GET', path: '/api/v2/messages', service: 'Mailhog', desc: 'Captured emails', url: 'http://localhost:8025/api/v2/messages' },
+            { method: 'GET', path: '/api/queues', service: 'RabbitMQ', desc: 'Queue list', url: 'http://localhost:15672/api/queues', auth: 'guest:guest' },
+            { method: 'GET', path: '/api/exchanges', service: 'RabbitMQ', desc: 'Exchange list', url: 'http://localhost:15672/api/exchanges', auth: 'guest:guest' },
+            { method: 'GET', path: '/api/overview', service: 'RabbitMQ', desc: 'Cluster overview', url: 'http://localhost:15672/api/overview', auth: 'guest:guest' }
+        ];
+
+        // ─────────────────────────────────────────────────────────────
+        // State
+        // ─────────────────────────────────────────────────────────────
+
+        let healthState = {};
+        let rabbitMQState = {};
+        let activeTab = 'architecture';
+        let activeNarrativeStep = 0;
+
+        // ─────────────────────────────────────────────────────────────
+        // Tab Switching
+        // ─────────────────────────────────────────────────────────────
+
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const target = tab.dataset.tab;
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                document.querySelectorAll('.panel[id^="panel-"]').forEach(p => p.classList.add('hidden'));
+                document.getElementById(`panel-${target}`).classList.remove('hidden');
+                activeTab = target;
+                if (target === 'flow') renderFlow();
+                if (target === 'narrative') renderNarrative();
+            });
+        });
+
+        // ─────────────────────────────────────────────────────────────
+        // Health Checks
+        // ─────────────────────────────────────────────────────────────
+
+        async function checkHealth(service) {
+            const url = `http://localhost:${service.port}${service.healthPath}`;
+            const options = { method: 'GET', signal: AbortSignal.timeout(3000) };
+            if (service.auth) {
+                const [u, p] = service.auth.split(':');
+                options.headers = { 'Authorization': 'Basic ' + btoa(u + ':' + p) };
+            }
+            try {
+                const response = await fetch(url, options);
+                return response.ok;
+            } catch {
+                return false;
+            }
+        }
+
+        async function refreshHealth() {
+            const results = await Promise.all(
+                SERVICES.map(async svc => {
+                    const ok = await checkHealth(svc);
+                    healthState[svc.id] = ok;
+                    return { id: svc.id, ok };
+                })
+            );
+
+            const healthy = results.filter(r => r.ok).length;
+            const total = results.length;
+
+            document.getElementById('health-count').textContent = `${healthy}/${total} healthy`;
+            document.getElementById('metric-services').textContent = `${healthy}`;
+            const dot = document.querySelector('#health-summary .chip-dot');
+            dot.style.background = healthy === total ? 'var(--success)' : healthy > 0 ? 'var(--warning)' : 'var(--danger)';
+
+            const lastRefresh = document.getElementById('last-refresh');
+            if (lastRefresh) {
+                lastRefresh.textContent = new Date().toLocaleTimeString();
+            }
+
+            const statusBadge = document.getElementById('system-status-badge');
+            if (statusBadge) {
+                if (healthy === total) {
+                    statusBadge.textContent = '✅ All Healthy';
+                    statusBadge.style.background = 'rgba(16, 185, 129, 0.1)';
+                    statusBadge.style.color = 'var(--success)';
+                    statusBadge.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+                } else if (healthy > 0) {
+                    statusBadge.textContent = `⚠️ ${total - healthy} Down`;
+                    statusBadge.style.background = 'rgba(245, 158, 11, 0.1)';
+                    statusBadge.style.color = 'var(--warning)';
+                    statusBadge.style.borderColor = 'rgba(245, 158, 11, 0.3)';
+                } else {
+                    statusBadge.textContent = '❌ All Down';
+                    statusBadge.style.background = 'rgba(239, 68, 68, 0.1)';
+                    statusBadge.style.color = 'var(--danger)';
+                    statusBadge.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+                }
+            }
+
+            renderServices();
+        }
+
+        // ─────────────────────────────────────────────────────────────
+        // RabbitMQ Metrics
+        // ─────────────────────────────────────────────────────────────
+
+        async function refreshRabbitMQ() {
+            try {
+                const response = await fetch('http://localhost:15672/api/overview', {
+                    headers: { 'Authorization': 'Basic ' + btoa('guest:guest') },
+                    signal: AbortSignal.timeout(3000)
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    rabbitMQState = data;
+                    const msgs = data.queue_totals?.messages || data.message_stats?.publish || 0;
+                    document.getElementById('metric-messages').textContent = msgs.toString();
+                    document.getElementById('rabbitmq-status').textContent = `RabbitMQ: ${data.rabbitmq_version || 'up'}`;
+                    renderRabbitMQBindings();
+                } else {
+                    throw new Error('RabbitMQ API error');
+                }
+            } catch {
+                document.getElementById('rabbitmq-status').textContent = 'RabbitMQ: down';
+                document.getElementById('metric-messages').textContent = '—';
+            }
+        }
+
+        async function refreshMailhog() {
+            try {
+                const response = await fetch('http://localhost:8025/api/v2/messages', {
+                    signal: AbortSignal.timeout(3000)
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    const count = data.count || data.total || 0;
+                    document.getElementById('metric-emails').textContent = count.toString();
+                }
+            } catch {
+                document.getElementById('metric-emails').textContent = '—';
+            }
+        }
+
+        // ─────────────────────────────────────────────────────────────
+        // Rendering
+        // ─────────────────────────────────────────────────────────────
+
+        function renderServices() {
+            const grid = document.getElementById('services-grid');
+            grid.innerHTML = SERVICES.map(svc => {
+                const ok = healthState[svc.id];
+                const statusClass = ok === true ? 'healthy' : ok === false ? 'unhealthy' : 'unknown';
+                const statusText = ok === true ? 'healthy' : ok === false ? 'unreachable' : 'checking';
+                const infraClass = svc.type === 'infrastructure' ? 'infrastructure' : '';
+
+                return `
+                    <div class="service-card ${statusClass} ${infraClass}" data-service="${svc.id}" onclick="openModal('${svc.id}')">
+                        <div class="service-header">
+                            <span class="service-name">${svc.icon} ${svc.name}</span>
+                            <span class="service-status ${statusClass}">${statusText}</span>
+                        </div>
+                        <div class="service-meta">
+                            <code>localhost:${svc.port}</code> · ${svc.description}
+                        </div>
+                        <div class="service-links">
+                            ${svc.links.map(l => `<a href="${l.url}" target="_blank" class="service-link" onclick="event.stopPropagation()">${l.label}</a>`).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderFlow() {
+            const container = document.getElementById('flow-diagram');
+            container.innerHTML = `
+                <div class="flow-layer">
+                    <div class="flow-node infrastructure" data-service="showcase">
+                        <div class="node-icon">🏛️</div>
+                        <div>Tenant Portal</div>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-node" data-service="ticket-masala">
+                        <div class="node-icon">🎫</div>
+                        <div>Ticket Masala</div>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-node" data-service="rabbitmq">
+                        <div class="node-icon">🐰</div>
+                        <div>RabbitMQ</div>
+                    </div>
+                </div>
+                <div class="flow-connector">
+                    <div class="packet packet-flowing"></div>
+                </div>
+                <div class="flow-layer">
+                    <div class="flow-node" data-service="agentic-service">
+                        <div class="node-icon">🤖</div>
+                        <div>Agentic</div>
+                    </div>
+                    <div class="flow-node" data-service="mailing-service">
+                        <div class="node-icon">📧</div>
+                        <div>Mailing</div>
+                    </div>
+                    <div class="flow-node" data-service="odoo-integration">
+                        <div class="node-icon">🔌</div>
+                        <div>Odoo Bridge</div>
+                    </div>
+                </div>
+                <div class="flow-connector">
+                    <div class="packet packet-flowing" style="animation-delay: 0.5s;"></div>
+                </div>
+                <div class="flow-layer">
+                    <div class="flow-node infrastructure" data-service="mailhog">
+                        <div class="node-icon">📬</div>
+                        <div>Mailhog</div>
+                    </div>
+                    <div class="flow-node infrastructure" data-service="odoo">
+                        <div class="node-icon">📊</div>
+                        <div>Odoo ERP</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderRabbitMQBindings() {
+            const bindings = [
+                { name: 'event_exchange', type: 'topic', desc: 'Fan-out publisher' },
+                { name: 'agentic_consumer', type: 'queue', desc: 'AI + notifications' },
+                { name: 'mailing.queue', type: 'queue', desc: 'Email worker' },
+                { name: 'odoo-bridge', type: 'queue', desc: 'Invoice creation' }
+            ];
+
+            const grid = document.getElementById('rabbitmq-bindings');
+            grid.innerHTML = bindings.map(b => `
+                <div class="metric-box">
+                    <div class="metric-value" style="font-size: 1.25rem;">${b.name}</div>
+                    <div class="metric-label">${b.type} · ${b.desc}</div>
+                </div>
+            `).join('');
+        }
+
+        function renderNarrative() {
+            const container = document.getElementById('narrative-steps');
+            container.innerHTML = NARRATIVE.map((step, i) => `
+                <div class="narrative-step ${i === activeNarrativeStep ? 'active' : ''}" data-step="${i}">
+                    <div class="step-number">${i + 1}</div>
+                    <div class="step-content">
+                        <h4>${step.title}</h4>
+                        <p>${step.desc}</p>
+                    </div>
+                    <div class="step-time">${step.time}</div>
+                </div>
+            `).join('');
+
+            container.querySelectorAll('.narrative-step').forEach(el => {
+                el.addEventListener('click', () => {
+                    activeNarrativeStep = parseInt(el.dataset.step);
+                    renderNarrative();
+                    highlightServicesForStep(activeNarrativeStep);
+                });
+            });
+        }
+
+        function highlightServicesForStep(stepIndex) {
+            const step = NARRATIVE[stepIndex];
+            if (!step) return;
+
+            // Highlight in architecture tab
+            document.querySelectorAll('.service-card').forEach(card => {
+                const svcId = card.dataset.service;
+                const shouldHighlight = step.services.includes(svcId);
+                card.style.borderColor = shouldHighlight ? 'var(--primary)' : '';
+                card.style.boxShadow = shouldHighlight ? '0 0 0 3px var(--primary-glow)' : '';
+            });
+
+            // Also switch to architecture tab to show the highlight
+            // (optional — let user stay on narrative if they prefer)
+        }
+
+        function resetNarrative() {
+            activeNarrativeStep = 0;
+            renderNarrative();
+        }
+
+        // ─────────────────────────────────────────────────────────────
+        // Service Detail Modal
+        // ─────────────────────────────────────────────────────────────
+
+        function openModal(serviceId) {
+            const svc = SERVICES.find(s => s.id === serviceId);
+            if (!svc) return;
+
+            const modal = document.getElementById('serviceModal');
+            const title = document.getElementById('modalTitle');
+            const body = document.getElementById('modalBody');
+
+            title.textContent = `${svc.icon} ${svc.name}`;
+            body.innerHTML = `
+                <h3>Description</h3>
+                <p>${svc.description}</p>
+                <h3>Health Status</h3>
+                <p style="display: flex; align-items: center; gap: 8px;">
+                    <span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: ${healthState[svc.id] ? 'var(--success)' : 'var(--danger)'};"></span>
+                    ${healthState[svc.id] ? 'Healthy' : 'Unreachable'}
+                </p>
+                <h3>Links</h3>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    ${svc.links.map(l => `<a href="${l.url}" target="_blank" class="service-link">${l.label} →</a>`).join('')}
+                </div>
+                <h3>Port</h3>
+                <p><code>localhost:${svc.port}</code></p>
+            `;
+
+            modal.classList.add('active');
+        }
+
+        function closeModal(event) {
+            if (!event || event.target === document.getElementById('serviceModal') || event.target.closest('.modal-close')) {
+                document.getElementById('serviceModal').classList.remove('active');
+            }
+        }
+
+        function renderAPIs(filter = '') {
+            const tbody = document.getElementById('api-table-body');
+            const term = filter.toLowerCase();
+            const filtered = term
+                ? API_ENDPOINTS.filter(api =>
+                    api.path.toLowerCase().includes(term) ||
+                    api.service.toLowerCase().includes(term) ||
+                    api.desc.toLowerCase().includes(term) ||
+                    api.method.toLowerCase().includes(term)
+                  )
+                : API_ENDPOINTS;
+            tbody.innerHTML = filtered.map(api => {
+                const curlCmd = api.auth
+                    ? `curl -u ${api.auth} ${api.url}`
+                    : `curl ${api.url}`;
+                return `
+                <tr>
+                    <td><span class="api-method ${api.method.toLowerCase()}">${api.method}</span></td>
+                    <td><code class="api-path">${api.path}</code></td>
+                    <td>${api.service}</td>
+                    <td class="api-desc">${api.desc}</td>
+                    <td style="display: flex; gap: 8px; align-items: center;">
+                        <a href="${api.url}" target="_blank" class="api-link">Try →</a>
+                        <button onclick="navigator.clipboard.writeText('${curlCmd.replace(/'/g, "\\'")}'); showToast('Copied curl');" style="padding: 2px 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg-subtle); font-size: 0.6875rem; cursor: pointer; color: var(--text-muted);">Copy</button>
+                    </td>
+                </tr>
+            `;
+            }).join('');
+        }
+
+        function renderTenants() {
+            const grid = document.getElementById('tenant-grid');
+            grid.innerHTML = TENANTS.map(t => `
+                <a href="${t.url}" class="tenant-card">
+                    <img src="${t.logo}" alt="${t.name}" class="tenant-logo" />
+                    <div class="tenant-name">${t.name}</div>
+                    <div class="tenant-desc">${t.desc}</div>
+                    <div class="tenant-cta">Open portal →</div>
+                </a>
+            `).join('');
+        }
+
+        // ─────────────────────────────────────────────────────────────
+        // Utilities
+        // ─────────────────────────────────────────────────────────────
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
+        function copyCurl(btn) {
+            const pre = btn.nextElementSibling;
+            const text = pre.textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('Copied to clipboard');
+            });
+        }
+
+        // ─────────────────────────────────────────────────────────────
+        // Quick Ticket Form
+        // ─────────────────────────────────────────────────────────────
+
+        function initQuickTicket() {
+            const form = document.getElementById('quickTicketForm');
+            if (!form) return;
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = form.querySelector('button[type="submit"]');
+                const originalText = btn.textContent;
+                btn.textContent = 'Creating...';
+                btn.disabled = true;
+
+                try {
+                    const formData = new FormData();
+                    formData.append('CustomerName', document.getElementById('qtName').value);
+                    formData.append('CustomerEmail', document.getElementById('qtEmail').value);
+                    formData.append('Description', document.getElementById('qtDesc').value);
+                    formData.append('Tenant', document.getElementById('qtTenant').value);
+                    formData.append('WorkItemType', 'DEMANDE');
+                    formData.append('PriorityScore', '10');
+
+                    const response = await fetch('http://localhost:8085/api/portal/submit', {
+                        method: 'POST',
+                        body: formData,
+                    });
+
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    const result = await response.json();
+
+                    const resultDiv = document.getElementById('qtResult');
+                    const resultText = document.getElementById('qtResultText');
+                    resultDiv.style.display = 'block';
+                    resultText.textContent = `✅ Ticket ${result.ticketId || 'created'}! `;
+                    showToast('Ticket created successfully');
+
+                    // Reset form
+                    form.reset();
+
+                    // Refresh metrics
+                    refreshHealth();
+                    refreshRabbitMQ();
+                    refreshMailhog();
+                } catch (err) {
+                    showToast('Error: ' + err.message);
+                } finally {
+                    btn.textContent = originalText;
+                    btn.disabled = false;
+                }
+            });
+        }
+
+        // ─────────────────────────────────────────────────────────────
+        // Recent Events
+        // ─────────────────────────────────────────────────────────────
+
+        async function refreshRecentEvents() {
+            const container = document.getElementById('recentEvents');
+            if (!container) return;
+
+            let events = [];
+
+            try {
+                const ticketsResponse = await fetch('http://localhost:8085/api/tickets?limit=5', { signal: AbortSignal.timeout(3000) });
+                if (ticketsResponse.ok) {
+                    const tickets = await ticketsResponse.json();
+                    const ticketList = Array.isArray(tickets) ? tickets : (tickets.tickets || []);
+                    ticketList.slice(0, 3).forEach(t => {
+                        events.push({
+                            icon: '🎫',
+                            text: `Ticket #${t.id || t.ticketId || '?'} — ${t.title || t.subject || 'New ticket'}`,
+                            time: t.createdAt || t.created_at || 'just now',
+                            color: 'var(--text-body)'
+                        });
+                    });
+                }
+            } catch { /* ignore */ }
+
+            try {
+                const emailsResponse = await fetch('http://localhost:8025/api/v2/messages?limit=3', { signal: AbortSignal.timeout(3000) });
+                if (emailsResponse.ok) {
+                    const emails = await emailsResponse.json();
+                    const items = emails.items || [];
+                    items.slice(0, 2).forEach(e => {
+                        const subject = e.Content?.Headers?.Subject?.[0] || 'Email';
+                        events.push({
+                            icon: '📧',
+                            text: subject.length > 35 ? subject.slice(0, 35) + '...' : subject,
+                            time: 'captured',
+                            color: 'var(--text-muted)'
+                        });
+                    });
+                }
+            } catch { /* ignore */ }
+
+            if (events.length === 0) {
+                container.innerHTML = `<p style="font-size: 0.8125rem; color: var(--text-muted); text-align: center;">No events yet — create a ticket or seed the demo.</p>`;
+            } else {
+                container.innerHTML = events.map(e => `
+                    <div style="display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: var(--radius-sm); background: var(--bg-subtle); font-size: 0.8125rem;">
+                        <span style="font-size: 1rem;">${e.icon}</span>
+                        <div style="flex: 1; min-width: 0;">
+                            <div style="color: var(--text-heading); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${e.text}</div>
+                            <div style="color: var(--text-muted); font-size: 0.6875rem;">${e.time}</div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // ─────────────────────────────────────────────────────────────
+        // Theme Toggle
+        // ─────────────────────────────────────────────────────────────
+
+        function initTheme() {
+            const toggle = document.getElementById('theme-toggle');
+            const icon = document.getElementById('theme-icon');
+            const saved = localStorage.getItem('garamatic-theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const isDark = saved === 'dark' || (!saved && prefersDark);
+
+            if (isDark) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+            }
+
+            toggle.addEventListener('click', () => {
+                const isDarkNow = document.documentElement.getAttribute('data-theme') === 'dark';
+                if (isDarkNow) {
+                    document.documentElement.removeAttribute('data-theme');
+                    localStorage.setItem('garamatic-theme', 'light');
+                    icon.textContent = '🌙';
+                } else {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    localStorage.setItem('garamatic-theme', 'dark');
+                    icon.textContent = '☀️';
+                }
+                // Re-render mermaid diagram if visible
+                const mermaidContainer = document.querySelector('.mermaid');
+                if (mermaidContainer && mermaidContainer.offsetParent !== null) {
+                    mermaid.init(undefined, mermaidContainer);
+                }
+            });
+        }
+
+        // ─────────────────────────────────────────────────────────────
+        // Init
+        // ─────────────────────────────────────────────────────────────
+
+        function init() {
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            mermaid.initialize({
+                startOnLoad: true,
+                theme: isDark ? 'dark' : 'base',
+                themeVariables: isDark ? {
+                    primaryColor: '#1E293B',
+                    primaryTextColor: '#F1F5F9',
+                    primaryBorderColor: '#334155',
+                    lineColor: '#64748B',
+                    secondaryColor: '#0F172A',
+                    tertiaryColor: '#1E293B',
+                    fontFamily: 'Inter, system-ui, sans-serif',
+                    fontSize: '14px',
+                } : {
+                    primaryColor: '#F8FAFC',
+                    primaryTextColor: '#0F172A',
+                    primaryBorderColor: '#E2E8F0',
+                    lineColor: '#94A3B8',
+                    secondaryColor: '#F1F5F9',
+                    tertiaryColor: '#FFFFFF',
+                    fontFamily: 'Inter, system-ui, sans-serif',
+                    fontSize: '14px',
+                },
+                flowchart: {
+                    curve: 'basis',
+                    padding: 16,
+                    nodeSpacing: 40,
+                    rankSpacing: 60,
+                }
+            });
+
+            renderServices();
+            renderFlow();
+            renderNarrative();
+            renderAPIs();
+            renderTenants();
+            renderRabbitMQBindings();
+            initQuickTicket();
+            initTheme();
+
+            refreshHealth();
+            refreshRabbitMQ();
+            refreshMailhog();
+
+            // Poll every 5s
+            setInterval(() => {
+                refreshHealth();
+                refreshRabbitMQ();
+                refreshMailhog();
+            }, 5000);
+
+            // Poll recent events every 10s
+            refreshRecentEvents();
+            setInterval(refreshRecentEvents, 10000);
+
+            // Keyboard shortcuts for tab switching
+            document.addEventListener('keydown', (e) => {
+                if (e.altKey || e.ctrlKey || e.metaKey) return;
+                const tabs = ['architecture', 'flow', 'narrative', 'apis', 'tenants'];
+                const key = parseInt(e.key, 10);
+                if (key >= 1 && key <= 5) {
+                    const tabBtn = document.querySelector(`.tab[data-tab="${tabs[key - 1]}"]`);
+                    if (tabBtn) tabBtn.click();
+                }
+            });
+
+            // API search filter
+            const apiSearch = document.getElementById('apiSearch');
+            if (apiSearch) {
+                apiSearch.addEventListener('input', (e) => {
+                    renderAPIs(e.target.value);
+                });
+            }
+        }
+
+        init();
+    </script>
+</body>
 </html>

@@ -2,7 +2,7 @@
 
 > **Focus:** MCP, RabbitMQ event bus, Odoo ERP integration, mailing service, and AI-driven automation.
 > **Assumption:** Basic Ticket Masala capabilities (ticket CRUD, assignment, resolution) were demoed in the previous round.
-> **Entry point:** `http://localhost:8092` (Showcase) → `tenants/desgoffe/client/index.html`
+> **Entry point:** `http://localhost:8092` — **Architecture Dashboard** (new). Start here for the interactive service topology, live health, and demo narrative.
 
 ---
 
@@ -27,13 +27,14 @@ docker compose -f demo/docker-compose.yml ps
 
 | Service | URL | What to show |
 |---------|-----|--------------|
+| **Architecture Dashboard** | **`http://localhost:8092`** | **Start here** — live topology, health, event flow, narrative |
 | Showcase (Desgoffe) | `http://localhost:8092/tenants/desgoffe/client/index.html` | Customer portal entry point |
 | Ticket Masala | `http://localhost:8085` | Ticket lifecycle UI + **AI Chat** |
 | RabbitMQ Mgmt | `http://localhost:15672` (guest/guest) | Event bus, bindings, message flow |
 | Agentic Service API | `http://localhost:3001/docs` | MCP tools, OpenAPI docs |
 | Mailhog | `http://localhost:8025` | All captured emails |
 | Odoo Bridge | `http://localhost:8089/health` | Health + LiteDB state |
-| Odoo ERP | `http://localhost:8092` (admin/admin) | Invoices, customers |
+| Odoo ERP | `http://localhost:8069` (admin/admin) | Invoices, customers |
 | Mailing Service | `http://localhost:8087/health` | Email worker health |
 
 > **Screen layout suggestion:** Browser tabs: Showcase (left), RabbitMQ (right), Ticket Masala (center), Mailhog (secondary). Terminal: `docker compose logs -f` for each service.
@@ -334,7 +335,7 @@ curl -u guest:guest http://localhost:15672/api/queues/%2f/odoo-bridge | jq '.mes
 ### Demo
 
 1. **Terminal:** `docker compose -f demo/docker-compose.yml logs -f odoo-integration`
-2. **Browser:** Open `http://localhost:8092` (Odoo ERP) — log in `admin` / `admin`
+2. **Browser:** Open `http://localhost:8069` (Odoo ERP) — log in `admin` / `admin`
 3. Navigate to **Invoicing** → **Customers** → search `Alice Johnson` (auto-created)
 4. Navigate to **Invoicing** → **Invoices** — see the new invoice
 
@@ -562,7 +563,7 @@ docker compose -f demo/docker-compose.yml logs -f
 - [ ] All services show healthy
 - [ ] RabbitMQ dashboard loads at `localhost:15672`
 - [ ] Mailhog has at least one test email
-- [ ] Odoo loads at `localhost:8092` (admin/admin)
+- [ ] Odoo loads at `localhost:8069` (admin/admin)
 - [ ] Ticket Masala has a pre-created ticket for the chat demo
 - [ ] `OPENAI_API_KEY` is set (or accept the graceful error)
 

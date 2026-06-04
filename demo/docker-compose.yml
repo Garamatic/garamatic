@@ -57,7 +57,7 @@ services:
       rabbitmq:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      test: ["CMD", "/usr/bin/healthcheck", "http://localhost:8080/health"]
       interval: 5s
       timeout: 3s
       retries: 10
@@ -149,16 +149,16 @@ services:
       ollama:
         condition: service_started
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      test: ["CMD", "sh", "-c", "curl -s -o /dev/null -w '%{http_code}' --max-time 2 http://localhost:3001/sse | grep -q 200"]
       interval: 5s
-      timeout: 3s
+      timeout: 5s
       retries: 10
 
   odoo-integration:
     build:
       context: ../odoo-integration
       dockerfile: Dockerfile
-    container_name: garamatic_demo_odoo
+    container_name: garamatic_demo_odoo_bridge
     ports:
       - "8089:8080"
     environment:
@@ -169,15 +169,17 @@ services:
       - RabbitMQ__Password=guest
       - HealthChecks__Port=8080
       - LiteDb__ConnectionString=Filename=/app/data/seeded_state.db;Connection=shared
-      - OdooOptions__BaseUrl=${ODOO_URL:-http://localhost:8069}
-      - OdooOptions__Database=${ODOO_DB:-odoo}
-      - OdooOptions__Username=${ODOO_USER:-admin}
-      - OdooOptions__Password=${ODOO_PASS:-admin}
+      - Odoo__BaseUrl=http://odoo:8069
+      - Odoo__Database=odoo
+      - Odoo__Username=admin
+      - Odoo__Password=admin
     volumes:
       - odoo_demo_data:/app/data
     networks:
       - garamatic_demo_net
     depends_on:
+      odoo:
+        condition: service_started
       rabbitmq:
         condition: service_healthy
     healthcheck:
@@ -234,6 +236,49 @@ services:
     networks:
       - garamatic_demo_net
 
+  # ════════════════════════════════════════════════════════════
+  # ODOO ERP - Invoice & CRM backend
+  # Heavy service — may take 60-90s to become ready on first boot
+  # ════════════════════════════════════════════════════════════
+  odoo:
+    image: odoo:17.0
+    container_name: garamatic_demo_odoo
+    ports:
+      - "8069:8069"
+    environment:
+      - HOST=odoo-db
+      - USER=odoo
+      - PASSWORD=odoo
+      - DATABASE=odoo
+    volumes:
+      - odoo_demo_app_data:/var/lib/odoo
+      - ../odoo-integration/config:/etc/odoo:ro
+      - ../odoo-integration/addons:/mnt/extra-addons:ro
+      - ../scripts/odoo-init.sh:/odoo-init.sh:ro
+    command: ["/bin/bash", "/odoo-init.sh"]
+    networks:
+      - garamatic_demo_net
+    depends_on:
+      odoo-db:
+        condition: service_healthy
+
+  odoo-db:
+    image: postgres:15-alpine
+    container_name: garamatic_demo_odoo_db
+    environment:
+      - POSTGRES_DB=odoo
+      - POSTGRES_USER=odoo
+      - POSTGRES_PASSWORD=odoo
+    volumes:
+      - odoo_demo_db_data:/var/lib/postgresql/data
+    networks:
+      - garamatic_demo_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U odoo -d odoo"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   seeder:
     build:
       context: ./seeding
@@ -282,4 +327,6 @@ volumes:
   ticket_masala_demo_data:
   event_planner_demo_db_data:
   odoo_demo_data:
+  odoo_demo_app_data:
+  odoo_demo_db_data:
   ollama_demo_data:

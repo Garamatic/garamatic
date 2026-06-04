@@ -1,53 +1,40 @@
-Garamatic Demo Flow
-Scenario
-A customer creates a support ticket through the frontend.
-The system processes the ticket through multiple independent services using RabbitMQ events.
+# Garamatic Demo — Basic Flow
 
-1. Customer Creates Ticket
-Demo
-•	Open frontend ticket form
-•	Fill in data
-•	Submit ticket
-What happens
-•	Frontend calls Ticket Masala
-•	Ticket Masala publishes ticket.created
+> **Entry point:** `http://localhost:8092` — the **Architecture Dashboard** shows the full topology, live health, and guides you through this flow interactively.
 
-2. RabbitMQ Processes Event
-Demo
-•	Show RabbitMQ dashboard briefly
-•	Show message/event flow
-Explain
-RabbitMQ acts as the communication hub between services.
+## Scenario
+A customer creates a support ticket through a tenant portal. The system processes the ticket through multiple independent microservices using RabbitMQ events.
 
-3. Mailing Service Sends Confirmation
-Demo
-•	Show mailing service logs
-•	Show confirmation email received
-Explain
-The mailing service listens for ticket.created events and automatically sends emails.
+---
 
-4. Ticket Gets Assigned
-Demo
-•	Assign technician to ticket in Ticket Masala
-•	Trigger ticket.assigned
-Result
-•	Mailing service sends assignment email
+## 1. Customer Creates Ticket
+**Demo:** Open a tenant portal form (e.g., Desgoffe) → fill in data → submit ticket.
+**What happens:** Frontend calls Ticket Masala → Ticket Masala publishes `ticket.created` via the outbox pattern.
 
-5. Ticket Gets Resolved
-Demo
-•	Resolve ticket in ticket masala
-•	Trigger ticket.resolved
-Explain
-Resolving a ticket emits another business event.
+## 2. RabbitMQ Processes Event
+**Demo:** Open the Architecture Dashboard's "Event Flow" tab or the RabbitMQ dashboard at `http://localhost:15672`.
+**What happens:** One message is published to `event_exchange` and fans out to three independent queues.
 
-6. Invoice Automatically Created in Odoo
-Demo
-•	Show invoice appearing in Odoo
-Explain
-The Invoice Service listens for ticket.resolved and creates an invoice automatically in Odoo.
+## 3. Mailing Service Sends Confirmation
+**Demo:** Check Mailhog at `http://localhost:8025` or the dashboard's live metrics.
+**What happens:** The mailing service listens for `ticket.created` and automatically sends confirmation emails.
 
-7. Invoice Email Sent
-Demo
-•	Show invoice email received
-Explain
-After invoice creation, an invoice.created event is published and the mailing service sends the invoice email.
+## 4. Ticket Gets Assigned
+**Demo:** Log in to Ticket Masala (`http://localhost:8085`) and assign a technician.
+**What happens:** `ticket.assigned` event is published → both mailing and agentic services react independently.
+
+## 5. Ticket Gets Resolved
+**Demo:** Resolve the ticket with a billable amount.
+**What happens:** `ticket.resolved` event is emitted — this is the trigger for the entire billing workflow.
+
+## 6. Invoice Automatically Created in Odoo
+**Demo:** Open the Odoo ERP at `http://localhost:8069` (admin/admin) and navigate to Invoicing.
+**What happens:** The Odoo Bridge receives `ticket.resolved`, creates a customer and invoice via JSON-RPC, then publishes `invoice.created`.
+
+## 7. Invoice Email Sent
+**Demo:** Refresh Mailhog — the invoice email appears.
+**What happens:** `invoice.created` fans out to agentic and mailing services. The customer now has an invoice in Odoo and an email notification.
+
+---
+
+**For the full 18-minute narrative with MCP chat, GERDA AI, and payment detection, see [DEMO-FLOW.md](DEMO-FLOW.md).**
