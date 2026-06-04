@@ -21,10 +21,6 @@ COPY package.json package-lock.json* ./
 # Install dependencies
 RUN npm install
 
-# Copy integration-contracts package and install its deps
-COPY docker/test-deps-install.sh /tmp/
-RUN chmod +x /tmp/test-deps-install.sh
-
 # Copy test files
 COPY tests/ ./tests/
 COPY scripts/ ./scripts/
