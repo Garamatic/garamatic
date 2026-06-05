@@ -1,24 +1,24 @@
 [submodule "ticket-masala"]
 	path = ticket-masala
-	url = https://github.com/Garamatic/ticket-masala.git
+	url = git@github.com:Garamatic/ticket-masala.git
 [submodule "mailing-service"]
 	path = mailing-service
-	url = https://github.com/Garamatic/mailing-service.git
+	url = git@github.com:Garamatic/mailing-service.git
 [submodule "event-planner"]
 	path = event-planner
-	url = https://github.com/Garamatic/event-planner.git
+	url = git@github.com:Garamatic/event-planner.git
 [submodule "garamatic-web"]
 	path = garamatic-web
-	url = https://github.com/Garamatic/garamatic-web.git
+	url = git@github.com:Garamatic/garamatic-web.git
 [submodule "masala-web"]
 	path = masala-web
-	url = https://github.com/Garamatic/masala-web.git
+	url = git@github.com:Garamatic/masala-web.git
 [submodule "agentic-service"]
 	path = agentic-service
-	url = https://github.com/Garamatic/agentic-service.git
+	url = git@github.com:Garamatic/agentic-service.git
 [submodule "odoo-integration"]
 	path = odoo-integration
-	url = https://github.com/Garamatic/odoo-integration.git
+	url = git@github.com:Garamatic/odoo-integration.git
 [submodule "integration-contracts"]
 	path = integration-contracts
-	url = https://github.com/Garamatic/integration-contracts.git
+	url = git@github.com:Garamatic/integration-contracts.git

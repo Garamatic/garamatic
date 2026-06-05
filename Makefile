@@ -136,6 +136,18 @@ stack-down:
 	make down
 	make monitor-down
 
+# ─── Backup & Restore ──────────────────────────────────────────────────────
+backup:
+	@echo "💾 Creating backup..."
+	@scripts/backup.sh
+
+restore:
+	@echo "📦 Available backups:"
+	@ls -1 backups/*_* 2>/dev/null | grep -oE '[0-9]{8}_[0-9]{6}' | sort -u | head -10 || echo "No backups found"
+	@echo ""
+	@echo "Usage: make restore TIMESTAMP=YYYYMMDD_HHMMSS"
+	@if [ -n "$(TIMESTAMP)" ]; then scripts/restore.sh $(TIMESTAMP); fi
+
 # ─── Help ──────────────────────────────────────────────────────────────────
 help:
 	@echo "Garamatic Meta-Repo Commands"
@@ -148,11 +160,13 @@ help:
 	@echo "  make logs         Tail Docker logs"
 	@echo "  make test         Run integration tests in Docker"
 	@echo "  make test-local   Run integration tests against local services"
-	@echo "  make monitor-up   Start monitoring stack (Prometheus + Grafana)"
+	@echo "  make monitor-up   Start monitoring stack (Grafana + health dashboard)"
 	@echo "  make monitor-down Stop monitoring stack"
 	@echo "  make monitor-logs Tail monitoring logs"
 	@echo "  make stack-up     Start full stack (services + monitoring)"
 	@echo "  make stack-down   Stop full stack"
+	@echo "  make backup       Create backup of all volumes and databases"
+	@echo "  make restore      Restore from backup (TIMESTAMP=YYYYMMDD_HHMMSS)"
 	@echo "  make update       Pull latest commits for all submodules"
 	@echo "  make pull         Pull root repo and submodules"
 	@echo "  make push         Push root repo and submodule commits"

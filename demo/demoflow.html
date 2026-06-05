@@ -1,0 +1,1140 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Demo Flow — Garamatic Ecosystem</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+    mermaid.initialize({ startOnLoad: true, theme: "neutral", securityLevel: "loose" });
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+    .font-serif { font-family: 'Playfair Display', serif; }
+    .service-badge {
+      font-size: 0.65rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+    .icon-sm { width: 16px; height: 16px; }
+    .icon-md { width: 20px; height: 20px; }
+    .icon-lg { width: 24px; height: 24px; }
+    .icon-xl { width: 32px; height: 32px; }
+    .lucid-icon {
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }
+    .step-connector { stroke: #94a3b8; stroke-width: 2; stroke-dasharray: 6 4; }
+    .event-tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .event-tag.inbound { background: #DCFCE7; color: #166534; }
+    .event-tag.outbound { background: #E0E7FF; color: #3730A3; }
+    .status-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+    .status-badge.ok { background: #DCFCE7; color: #166534; }
+    .status-badge.warning { background: #FEF3C7; color: #92400E; }
+    .status-badge.error { background: #FEE2E2; color: #991B1B; }
+    .topology-service {
+      background: white;
+      border: 2px solid #E2E8F0;
+      border-radius: 12px;
+      padding: 16px 20px;
+      min-width: 180px;
+      text-align: center;
+      position: relative;
+      transition: all 0.2s ease;
+    }
+    .topology-service:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      border-color: #6366F1;
+    }
+    .topology-service.active {
+      border-color: #6366F1;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+    .arrow-line {
+      width: 2px;
+      height: 32px;
+      background: linear-gradient(to bottom, #6366F1, #10B981);
+      position: relative;
+    }
+    .arrow-line::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-top: 8px solid #10B981;
+    }
+    .event-flow-line {
+      height: 2px;
+      background: linear-gradient(to right, #6366F1, #10B981);
+      position: relative;
+      flex: 1;
+    }
+    .event-flow-line::after {
+      content: '';
+      position: absolute;
+      right: -6px;
+      top: 50%;
+      transform: translateY(-50%);
+      border-top: 6px solid transparent;
+      border-bottom: 6px solid transparent;
+      border-left: 8px solid #10B981;
+    }
+    .legend-dot {
+      width: 12px; height: 12px; border-radius: 50%;
+    }
+    .legend-dot.outbound { background: #6366F1; }
+    .legend-dot.inbound { background: #10B981; }
+    .legend-dot.both { background: linear-gradient(135deg, #6366F1 50%, #10B981 50%); }
+    .legend-dot.leaf { background: #94A3B8; }
+    .legend-dot.entry { background: #F59E0B; }
+    .service-badge-dot {
+      position: absolute; top: -8px; right: -8px;
+      width: 16px; height: 16px; border-radius: 50%; border: 2px solid white;
+    }
+    .service-badge-dot.outbound { background: #6366F1; }
+    .service-badge-dot.inbound { background: #10B981; }
+    .service-badge-dot.both { background: linear-gradient(135deg, #6366F1 50%, #10B981 50%); }
+    .service-badge-dot.leaf { background: #94A3B8; }
+    .service-badge-dot.entry { background: #F59E0B; }
+    .info-box {
+      background: #E0E7FF;
+      border-left: 4px solid #6366F1;
+      padding: 16px 20px;
+      border-radius: 8px;
+    }
+    .info-box.success {
+      border-left-color: #10B981;
+      background: #DCFCE7;
+    }
+    .info-box h3 {
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .events-table table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .events-table th {
+      background: #F8FAFC;
+      padding: 12px 24px;
+      text-align: left;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #64748B;
+      border-bottom: 1px solid #E2E8F0;
+    }
+    .events-table td {
+      padding: 12px 24px;
+      font-size: 0.875rem;
+      color: #475569;
+      border-bottom: 1px solid #F1F5F9;
+    }
+    .events-table tr:hover td {
+      background: #F8FAFC;
+    }
+  </style>
+</head>
+<body class="bg-stone-50 text-slate-900">
+
+  <!-- SVG Icon Library -->
+  <svg style="position: absolute; width: 0; height: 0;">
+    <defs>
+      <!-- Globe -->
+      <symbol id="icon-globe" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="10"/>
+        <ellipse cx="12" cy="12" rx="4" ry="10"/>
+        <path d="M2 12h20M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20"/>
+      </symbol>
+      <!-- Ticket -->
+      <symbol id="icon-ticket" viewBox="0 0 24 24">
+        <path d="M3 9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4V9z"/>
+        <path d="M9 7v10"/>
+      </symbol>
+      <!-- Broadcast / Antenna -->
+      <symbol id="icon-broadcast" viewBox="0 0 24 24">
+        <path d="M12 2a4 4 0 0 1 4 4M12 2a4 4 0 0 0-4 4M12 8v13"/>
+        <path d="M17 7a7 7 0 0 1 0 10M7 7a7 7 0 0 0 0 10"/>
+        <path d="M2 12h20"/>
+      </symbol>
+      <!-- Robot / Bot -->
+      <symbol id="icon-bot" viewBox="0 0 24 24">
+        <rect x="4" y="6" width="16" height="12" rx="2"/>
+        <path d="M9 6V4a3 3 0 0 1 6 0v2"/>
+        <circle cx="9" cy="12" r="1.5" fill="currentColor"/>
+        <circle cx="15" cy="12" r="1.5" fill="currentColor"/>
+        <path d="M10 16h4"/>
+      </symbol>
+      <!-- Mail -->
+      <symbol id="icon-mail" viewBox="0 0 24 24">
+        <rect x="2" y="4" width="20" height="16" rx="2"/>
+        <path d="M22 4l-8.5 6.5a3 3 0 0 1-3 0L2 4"/>
+      </symbol>
+      <!-- Building / Institution -->
+      <symbol id="icon-building" viewBox="0 0 24 24">
+        <path d="M6 22V10l6-4 6 4v12"/>
+        <path d="M6 10h12"/>
+        <rect x="9" y="14" width="2" height="4" rx=".5"/>
+        <rect x="13" y="14" width="2" height="4" rx=".5"/>
+        <path d="M4 22h16"/>
+      </symbol>
+      <!-- Coins / Cash -->
+      <symbol id="icon-coins" viewBox="0 0 24 24">
+        <circle cx="8" cy="8" r="6"/>
+        <circle cx="16" cy="16" r="6"/>
+        <path d="M8 14v4a6 6 0 0 0 6 6"/>
+      </symbol>
+      <!-- Receipt / Document -->
+      <symbol id="icon-receipt" viewBox="0 0 24 24">
+        <path d="M4 2v20l4-2 4 2 4-2 4 2V2"/>
+        <path d="M8 6h8M8 10h6M8 14h4"/>
+      </symbol>
+      <!-- User / Person -->
+      <symbol id="icon-user" viewBox="0 0 24 24">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+        <circle cx="12" cy="7" r="4"/>
+      </symbol>
+      <!-- Zap / Lightning -->
+      <symbol id="icon-zap" viewBox="0 0 24 24">
+        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10"/>
+      </symbol>
+      <!-- Star -->
+      <symbol id="icon-star" viewBox="0 0 24 24">
+        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/>
+      </symbol>
+      <!-- Check -->
+      <symbol id="icon-check" viewBox="0 0 24 24">
+        <path d="M20 6L9 17l-5-5"/>
+      </symbol>
+      <!-- Alert / Warning -->
+      <symbol id="icon-alert" viewBox="0 0 24 24">
+        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+        <path d="M12 9v4M12 17h.01"/>
+      </symbol>
+      <!-- Plug / Connect -->
+      <symbol id="icon-plug" viewBox="0 0 24 24">
+        <path d="M12 22v-5M12 13V2M12 13a4 4 0 0 1 4 4v2a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-2a4 4 0 0 1 4-4z"/>
+        <path d="M8 5h8M8 8h8"/>
+      </symbol>
+      <!-- Lightbulb -->
+      <symbol id="icon-lightbulb" viewBox="0 0 24 24">
+        <path d="M9 18h6M10 22h4"/>
+        <path d="M15 14a5 5 0 0 0-6 0"/>
+        <path d="M12 2a7 7 0 0 0-7 7c0 2 2 3 2 5h10c0-2 2-3 2-5a7 7 0 0 0-7-7z"/>
+      </symbol>
+      <!-- List / Catalog -->
+      <symbol id="icon-list" viewBox="0 0 24 24">
+        <path d="M9 6h12M9 12h12M9 18h12"/>
+        <path d="M3 6h2M3 12h2M3 18h2"/>
+      </symbol>
+      <!-- Refresh / Cycle -->
+      <symbol id="icon-refresh" viewBox="0 0 24 24">
+        <path d="M21 12a9 9 0 0 0-9-9 9 9 0 0 0-9 9"/>
+        <path d="M21 3v9h-9"/>
+      </symbol>
+      <!-- Inbox -->
+      <symbol id="icon-inbox" viewBox="0 0 24 24">
+        <path d="M22 12h-6l-2 3h-8l-2-3H2"/>
+        <path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>
+      </symbol>
+      <!-- Arrow Right -->
+      <symbol id="icon-arrow-right" viewBox="0 0 24 24">
+        <path d="M5 12h14M12 5l7 7-7 7"/>
+      </symbol>
+      <!-- Arrow Up -->
+      <symbol id="icon-arrow-up" viewBox="0 0 24 24">
+        <path d="M12 19V5M5 12l7-7 7 7"/>
+      </symbol>
+      <!-- Arrow marker -->
+      <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+        <polygon points="0 0, 10 3.5, 0 7" fill="#94a3b8" />
+      </marker>
+      <marker id="arrowhead-teal" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+        <polygon points="0 0, 10 3.5, 0 7" fill="#0d9488" />
+      </marker>
+    </defs>
+  </svg>
+
+  <main class="max-w-6xl mx-auto px-6 py-12 space-y-16">
+
+    <!-- Header -->
+    <header class="space-y-6">
+      <div class="flex items-baseline justify-between">
+        <div>
+          <p class="text-xs uppercase tracking-wider text-slate-500 font-semibold mb-2">Live Demo Narrative</p>
+          <h1 class="text-4xl font-serif font-bold text-slate-900">Garamatic Ecosystem Demo</h1>
+        </div>
+        <div class="text-right">
+          <p class="text-sm text-slate-500">June 2026</p>
+          <p class="text-xs text-slate-400 mt-1">One ticket, seven services</p>
+        </div>
+      </div>
+
+      <!-- Legend -->
+      <div class="flex flex-wrap gap-3 pt-4 border-t border-stone-200">
+        <span class="service-badge bg-emerald-100 text-emerald-800 inline-flex items-center gap-1">
+          <svg class="icon-sm lucid-icon"><use href="#icon-globe"/></svg> Portal
+        </span>
+        <span class="service-badge bg-indigo-100 text-indigo-800 inline-flex items-center gap-1">
+          <svg class="icon-sm lucid-icon"><use href="#icon-ticket"/></svg> Ticket Masala
+        </span>
+        <span class="service-badge bg-orange-100 text-orange-800 inline-flex items-center gap-1">
+          <svg class="icon-sm lucid-icon"><use href="#icon-broadcast"/></svg> RabbitMQ
+        </span>
+        <span class="service-badge bg-purple-100 text-purple-800 inline-flex items-center gap-1">
+          <svg class="icon-sm lucid-icon"><use href="#icon-bot"/></svg> Agentic
+        </span>
+        <span class="service-badge bg-blue-100 text-blue-800 inline-flex items-center gap-1">
+          <svg class="icon-sm lucid-icon"><use href="#icon-mail"/></svg> Mailing
+        </span>
+        <span class="service-badge bg-amber-100 text-amber-800 inline-flex items-center gap-1">
+          <svg class="icon-sm lucid-icon"><use href="#icon-building"/></svg> Odoo Bridge
+        </span>
+        <span class="service-badge bg-rose-100 text-rose-800 inline-flex items-center gap-1">
+          <svg class="icon-sm lucid-icon"><use href="#icon-coins"/></svg> Odoo ERP
+        </span>
+      </div>
+    </header>
+
+    <!-- Event Topology -->
+    <section class="space-y-6">
+      <div class="flex items-center gap-2">
+        <svg class="icon-lg lucid-icon text-slate-700"><use href="#icon-plug"/></svg>
+        <h2 class="text-sm uppercase tracking-wider font-semibold text-slate-500">Event Topology</h2>
+      </div>
+
+      <!-- Topology Legend -->
+      <div class="flex flex-wrap gap-5">
+        <div class="flex items-center gap-2 text-sm text-slate-600">
+          <div class="legend-dot outbound"></div>
+          <span>Outbound only</span>
+        </div>
+        <div class="flex items-center gap-2 text-sm text-slate-600">
+          <div class="legend-dot inbound"></div>
+          <span>Inbound only</span>
+        </div>
+        <div class="flex items-center gap-2 text-sm text-slate-600">
+          <div class="legend-dot both"></div>
+          <span>Both directions</span>
+        </div>
+        <div class="flex items-center gap-2 text-sm text-slate-600">
+          <div class="legend-dot entry"></div>
+          <span>Entry point</span>
+        </div>
+        <div class="flex items-center gap-2 text-sm text-slate-600">
+          <div class="legend-dot leaf"></div>
+          <span>Leaf node</span>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <h3 class="text-indigo-800 inline-flex items-center gap-2">
+          <svg class="icon-sm lucid-icon text-indigo-600"><use href="#icon-lightbulb"/></svg>
+          Key Insight
+        </h3>
+        <p class="text-sm text-slate-600 mt-1">
+          <strong>TicketMasala</strong> is the source of truth. External systems submit via <code>event.ticket.submitted</code>, which TicketMasala consumes and converts to <code>event.ticket.created</code> after domain validation. This prevents circular loops.
+        </p>
+      </div>
+
+      <!-- Topology Diagram -->
+      <div class="rounded-xl border border-stone-200 bg-white p-8 shadow-sm">
+        <!-- Entry Layer -->
+        <div class="flex items-center justify-center gap-6 relative py-4">
+          <span class="absolute left-0 text-xs font-semibold uppercase tracking-wider text-slate-400 w-28 text-right pr-4">Entry Points</span>
+          <div class="topology-service" data-service="gatekeeper">
+            <div class="service-badge-dot entry"></div>
+            <div class="text-sm font-semibold text-slate-900">GatekeeperApi</div>
+            <div class="text-xs text-slate-400 uppercase tracking-wider mt-1">Ingestion API</div>
+          </div>
+          <div class="topology-service" data-service="portal">
+            <div class="service-badge-dot entry"></div>
+            <div class="text-sm font-semibold text-slate-900">Customer Portal</div>
+            <div class="text-xs text-slate-400 uppercase tracking-wider mt-1">Web UI</div>
+          </div>
+        </div>
+
+        <div class="flex justify-center py-2">
+          <div class="relative">
+            <div class="arrow-line"></div>
+            <span class="absolute left-1/2 -translate-x-1/2 -top-1 bg-white px-2 text-xs font-medium text-indigo-600 border border-slate-200 rounded whitespace-nowrap">event.ticket.submitted</span>
+          </div>
+        </div>
+
+        <!-- Core Layer -->
+        <div class="flex items-center justify-center gap-6 relative py-4">
+          <span class="absolute left-0 text-xs font-semibold uppercase tracking-wider text-slate-400 w-28 text-right pr-4">Core Domain</span>
+          <div class="topology-service active" data-service="ticketmasala">
+            <div class="service-badge-dot both"></div>
+            <div class="text-sm font-semibold text-slate-900">TicketMasala</div>
+            <div class="text-xs text-slate-400 uppercase tracking-wider mt-1">Ticket System</div>
+          </div>
+        </div>
+
+        <div class="flex justify-center py-2">
+          <div class="relative">
+            <div class="arrow-line"></div>
+            <span class="absolute left-1/2 -translate-x-1/2 -top-1 bg-white px-2 text-xs font-medium text-indigo-600 border border-slate-200 rounded whitespace-nowrap">event.ticket.created / assigned / resolved</span>
+          </div>
+        </div>
+
+        <!-- Processing Layer -->
+        <div class="flex items-center justify-center gap-6 relative py-4">
+          <span class="absolute left-0 text-xs font-semibold uppercase tracking-wider text-slate-400 w-28 text-right pr-4">Processing</span>
+          <div class="topology-service" data-service="mailing">
+            <div class="service-badge-dot leaf"></div>
+            <div class="text-sm font-semibold text-slate-900">MailingService</div>
+            <div class="text-xs text-slate-400 uppercase tracking-wider mt-1">Email Worker</div>
+          </div>
+          <div class="topology-service" data-service="odoo">
+            <div class="service-badge-dot both"></div>
+            <div class="text-sm font-semibold text-slate-900">Odoo Bridge</div>
+            <div class="text-xs text-slate-400 uppercase tracking-wider mt-1">Invoice Sync</div>
+          </div>
+          <div class="topology-service" data-service="agentic">
+            <div class="service-badge-dot both"></div>
+            <div class="text-sm font-semibold text-slate-900">Agentic Service</div>
+            <div class="text-xs text-slate-400 uppercase tracking-wider mt-1">AI Notifications</div>
+          </div>
+        </div>
+
+        <!-- Feedback Loop -->
+        <div class="flex justify-center py-4 mt-2">
+          <div class="flex items-center gap-4 w-full max-w-lg">
+            <div class="flex-1 relative">
+              <div class="event-flow-line"></div>
+              <span class="absolute left-1/2 -translate-x-1/2 -top-1 bg-white px-2 text-xs font-medium text-indigo-600 border border-slate-200 rounded whitespace-nowrap">invoice.created / payment.received</span>
+            </div>
+            <svg class="icon-sm lucid-icon text-slate-400"><use href="#icon-arrow-right"/></svg>
+            <div class="flex-1 relative">
+              <div class="event-flow-line" style="background: linear-gradient(to right, #10B981, #F59E0B);"></div>
+              <div class="event-flow-line" style="position: absolute; right: -6px; top: 50%; transform: translateY(-50%); border-top: 6px solid transparent; border-bottom: 6px solid transparent; border-left: 8px solid #F59E0B;"></div>
+              <span class="absolute left-1/2 -translate-x-1/2 -top-1 bg-white px-2 text-xs font-medium text-amber-600 border border-slate-200 rounded whitespace-nowrap">invoice.overdue</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Event Catalog -->
+    <section class="space-y-4">
+      <div class="flex items-center gap-2">
+        <svg class="icon-lg lucid-icon text-slate-700"><use href="#icon-list"/></svg>
+        <h2 class="text-sm uppercase tracking-wider font-semibold text-slate-500">Event Catalog</h2>
+      </div>
+
+      <div class="rounded-xl border border-stone-200 bg-white overflow-hidden shadow-sm events-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Event</th>
+              <th>Direction</th>
+              <th>Producer</th>
+              <th>Consumers</th>
+              <th>Routing Key</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>ticket.submitted</code></td>
+              <td><span class="event-tag inbound">inbound</span></td>
+              <td>GatekeeperApi</td>
+              <td>TicketMasala</td>
+              <td><code>event.ticket.submitted</code></td>
+              <td><span class="status-badge ok"><svg class="icon-sm inline lucid-icon" style="display:inline;vertical-align:middle;margin-right:2px"><use href="#icon-check"/></svg> Active</span></td>
+            </tr>
+            <tr>
+              <td><code>ticket.created</code></td>
+              <td><span class="event-tag outbound">outbound</span></td>
+              <td>TicketMasala</td>
+              <td>MailingService, Agentic</td>
+              <td><code>event.ticket.created</code></td>
+              <td><span class="status-badge ok"><svg class="icon-sm inline lucid-icon" style="display:inline;vertical-align:middle;margin-right:2px"><use href="#icon-check"/></svg> Active</span></td>
+            </tr>
+            <tr>
+              <td><code>ticket.assigned</code></td>
+              <td><span class="event-tag outbound">outbound</span></td>
+              <td>TicketMasala</td>
+              <td>MailingService</td>
+              <td><code>event.ticket.assigned</code></td>
+              <td><span class="status-badge ok"><svg class="icon-sm inline lucid-icon" style="display:inline;vertical-align:middle;margin-right:2px"><use href="#icon-check"/></svg> Active</span></td>
+            </tr>
+            <tr>
+              <td><code>ticket.resolved</code></td>
+              <td><span class="event-tag outbound">outbound</span></td>
+              <td>TicketMasala</td>
+              <td>MailingService, Odoo Bridge</td>
+              <td><code>event.ticket.resolved</code></td>
+              <td><span class="status-badge ok"><svg class="icon-sm inline lucid-icon" style="display:inline;vertical-align:middle;margin-right:2px"><use href="#icon-check"/></svg> Active</span></td>
+            </tr>
+            <tr>
+              <td><code>invoice.created</code></td>
+              <td><span class="event-tag outbound">outbound</span></td>
+              <td>Odoo Bridge</td>
+              <td>MailingService</td>
+              <td><code>event.invoice.created</code></td>
+              <td><span class="status-badge ok"><svg class="icon-sm inline lucid-icon" style="display:inline;vertical-align:middle;margin-right:2px"><use href="#icon-check"/></svg> Active</span></td>
+            </tr>
+            <tr>
+              <td><code>payment.received</code></td>
+              <td><span class="event-tag outbound">outbound</span></td>
+              <td>Odoo Bridge</td>
+              <td>MailingService</td>
+              <td><code>event.payment.received</code></td>
+              <td><span class="status-badge ok"><svg class="icon-sm inline lucid-icon" style="display:inline;vertical-align:middle;margin-right:2px"><use href="#icon-check"/></svg> Active</span></td>
+            </tr>
+            <tr>
+              <td><code>invoice.overdue</code></td>
+              <td><span class="event-tag outbound">outbound</span></td>
+              <td>Odoo Bridge</td>
+              <td>MailingService</td>
+              <td><code>event.invoice.overdue</code></td>
+              <td><span class="status-badge ok"><svg class="icon-sm inline lucid-icon" style="display:inline;vertical-align:middle;margin-right:2px"><use href="#icon-check"/></svg> Active</span></td>
+            </tr>
+            <tr>
+              <td><code>email.send</code></td>
+              <td><span class="event-tag outbound">outbound</span></td>
+              <td>Agentic Service</td>
+              <td>MailingService</td>
+              <td><code>event.email.send</code></td>
+              <td><span class="status-badge warning"><svg class="icon-sm inline lucid-icon" style="display:inline;vertical-align:middle;margin-right:2px"><use href="#icon-alert"/></svg> Planned</span></td>
+            </tr>
+            <tr>
+              <td><code>ticket.grouped</code></td>
+              <td><span class="event-tag outbound">outbound</span></td>
+              <td>TicketMasala</td>
+              <td><em>none</em></td>
+              <td><code>event.ticket.grouped</code></td>
+              <td><span class="status-badge warning"><svg class="icon-sm inline lucid-icon" style="display:inline;vertical-align:middle;margin-right:2px"><use href="#icon-alert"/></svg> No mapper</span></td>
+            </tr>
+            <tr>
+              <td><code>ticket.status_changed</code></td>
+              <td><span class="event-tag outbound">outbound</span></td>
+              <td>TicketMasala</td>
+              <td><em>none</em></td>
+              <td><code>event.ticket.status_changed</code></td>
+              <td><span class="status-badge warning"><svg class="icon-sm inline lucid-icon" style="display:inline;vertical-align:middle;margin-right:2px"><use href="#icon-alert"/></svg> No mapper</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Service Topology (Mermaid) -->
+    <section class="space-y-4">
+      <div class="flex items-center gap-2">
+        <svg class="icon-lg lucid-icon text-slate-700"><use href="#icon-refresh"/></svg>
+        <h2 class="text-sm uppercase tracking-wider font-semibold text-slate-500">Service Topology</h2>
+      </div>
+      <div class="rounded-xl border border-stone-200 bg-white p-6 shadow-sm">
+        <pre class="mermaid">
+flowchart LR
+    subgraph PORTAL["Portal"]
+        A[Showcase Form]
+    end
+    subgraph TM["Ticket Masala"]
+        B[Ticket Lifecycle]
+        C[OutboxPublisher]
+    end
+    subgraph RMQ["RabbitMQ"]
+        E[event_exchange]
+    end
+    subgraph AGT["Agentic Service"]
+        F[NotificationComposer]
+        G[MCP Server]
+        H[AI Chat]
+    end
+    subgraph MAIL["Mailing Service"]
+        I[Email Worker]
+    end
+    subgraph ODOO["Odoo Bridge"]
+        J[JSON-RPC Client]
+        K[State Machine]
+        L[InvoicePoller]
+    end
+    subgraph ERP["Odoo ERP"]
+        M[Invoices]
+    end
+
+    A -->|"POST /api/portal/submit"| B
+    B -->|"queue outbox"| C
+    C -->|"publish"| E
+    E -->|"fan-out"| F
+    E -->|"fan-out"| I
+    E -->|"ticket.resolved"| J
+    J -->|"JSON-RPC"| M
+    L -->|"poll every 5m"| M
+    M -->|"status change"| K
+    K -->|"publish"| E
+    G -->|"MCP tools"| H
+    style E fill:#fff7ed,stroke:#f97316,stroke-width:2px
+    style B fill:#eef2ff,stroke:#6366f1,stroke-width:2px
+    style J fill:#fffbeb,stroke:#f59e0b,stroke-width:2px
+        </pre>
+      </div>
+    </section>
+
+    <!-- The Steps -->
+    <section id="steps" class="space-y-10">
+      <div class="flex items-center gap-2">
+        <svg class="icon-lg lucid-icon text-slate-700"><use href="#icon-refresh"/></svg>
+        <h2 class="text-sm uppercase tracking-wider font-semibold text-slate-500">The Narrative — Step by Step</h2>
+      </div>
+
+      <!-- Step 1 -->
+      <article class="rounded-xl border border-stone-200 bg-white shadow-sm overflow-hidden">
+        <div class="p-6 space-y-6">
+          <div class="flex items-start justify-between">
+            <div>
+              <div class="flex items-center gap-2 mb-2">
+                <span class="text-xs font-bold text-white bg-slate-800 px-2 py-0.5 rounded">STEP 1</span>
+                <span class="text-xs uppercase tracking-wider text-slate-400 font-semibold">1 min</span>
+              </div>
+              <h3 class="text-xl font-serif font-bold text-slate-900">Citizen Submits Complaint</h3>
+            </div>
+            <span class="service-badge bg-emerald-100 text-emerald-800 inline-flex items-center gap-1">
+              <svg class="icon-sm lucid-icon"><use href="#icon-globe"/></svg> Portal
+            </span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div class="rounded-lg border border-stone-200 bg-stone-50 p-4">
+              <p class="text-xs uppercase tracking-wider text-slate-400 font-semibold mb-3">Before</p>
+              <div class="space-y-2">
+                <div class="h-8 bg-emerald-200 rounded border border-emerald-300 flex items-center px-3 text-xs font-semibold text-emerald-900">Portal Form</div>
+                <div class="flex justify-center"><svg width="20" height="20" class="text-slate-400"><line x1="10" y1="0" x2="10" y2="20" stroke="currentColor" stroke-width="2" stroke-dasharray="3 2"/></svg></div>
+                <div class="h-8 bg-indigo-200 rounded border border-indigo-300 flex items-center px-3 text-xs font-semibold text-indigo-900">Ticket Masala</div>
+                <div class="flex justify-center"><svg width="20" height="20" class="text-slate-400"><line x1="10" y1="0" x2="10" y2="20" stroke="currentColor" stroke-width="2" stroke-dasharray="3 2"/></svg></div>
+                <div class="h-8 bg-orange-200 rounded border border-orange-300 flex items-center px-3 text-xs font-semibold text-orange-900">RabbitMQ</div>
+              </div>
+            </div>
+            <div class="rounded-lg border border-stone-200 bg-stone-50 p-4">
+              <p class="text-xs uppercase tracking-wider text-slate-400 font-semibold mb-3">After</p>
+              <div class="space-y-3">
+                <div class="rounded border border-emerald-300 bg-emerald-50 p-3">
+                  <div class="text-xs font-semibold text-emerald-900">Portal Form</div>
+                  <div class="text-xs text-emerald-700 mt-1">multipart/form-data POST</div>
+                </div>
+                <div class="rounded border border-indigo-300 bg-indigo-50 p-3">
+                  <div class="text-xs font-semibold text-indigo-900">Ticket Masala</div>
+                  <div class="text-xs text-indigo-700 mt-1">SQLite + outbox (atomic)</div>
+                </div>
+                <div class="rounded border border-orange-300 bg-orange-50 p-3">
+                  <div class="text-xs font-semibold text-orange-900">RabbitMQ</div>
+                  <div class="text-xs text-orange-700 mt-1">event.ticket.created</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-2 text-sm text-slate-700">
+            <p><strong>Trigger:</strong> Alice fills the Desgoffe portal form.</p>
+            <ul class="list-disc list-inside space-y-1 text-slate-600 text-xs">
+              <li>Atomic: ticket + outbox message in one transaction</li>
+              <li>Survives crash: outbox retries until RabbitMQ confirms</li>
+            </ul>
+          </div>
+        </div>
+      </article>
+
+      <!-- Step 2 -->
+      <article class="rounded-xl border border-stone-200 bg-white shadow-sm overflow-hidden">
+        <div class="p-6 space-y-6">
+          <div class="flex items-start justify-between">
+            <div>
+              <div class="flex items-center gap-2 mb-2">
+                <span class="text-xs font-bold text-white bg-slate-800 px-2 py-0.5 rounded">STEP 2</span>
+                <span class="text-xs uppercase tracking-wider text-slate-400 font-semibold">2 min</span>
+              </div>
+              <h3 class="text-xl font-serif font-bold text-slate-900">The Event Bus — Fan-Out</h3>
+            </div>
+            <div class="flex gap-2">
+              <span class="service-badge bg-orange-100 text-orange-800 inline-flex items-center gap-1">
+                <svg class="icon-sm lucid-icon"><use href="#icon-broadcast"/></svg> RabbitMQ
+              </span>
+              <span class="service-badge bg-emerald-100 text-emerald-800 inline-flex items-center gap-1">
+                <svg class="icon-sm lucid-icon"><use href="#icon-star"/></svg> WOW
+              </span>
+            </div>
+          </div>
+
+          <div class="rounded-lg border border-stone-200 bg-white p-4">
+            <pre class="mermaid">
+flowchart LR
+    E[event_exchange<br/>topic] -->|"event.ticket.*"| Q1[agentic_consumer]
+    E -->|"event.ticket.*"| Q2[mailing.queue]
+    E -->|"event.ticket.resolved"| Q3[odoo-bridge]
+    style E fill:#fff7ed,stroke:#f97316,stroke-width:3px
+    style Q1 fill:#f3e8ff,stroke:#9333ea,stroke-width:2px
+    style Q2 fill:#dbeafe,stroke:#2563eb,stroke-width:2px
+    style Q3 fill:#fffbeb,stroke:#f59e0b,stroke-width:2px
+            </pre>
+          </div>
+
+          <div class="space-y-2 text-sm text-slate-700">
+            <p><strong>What happens:</strong> One message → three copies. Zero coupling.</p>
+            <ul class="list-disc list-inside space-y-1 text-slate-600 text-xs">
+              <li>Agentic down? Mailing and Odoo still process</li>
+              <li>Queue depth is the only coupling metric</li>
+            </ul>
+          </div>
+        </div>
+      </article>
+
+      <!-- Step 3 -->
+      <article class="rounded-xl border border-stone-200 bg-white shadow-sm overflow-hidden">
+        <div class="p-6 space-y-6">
+          <div class="flex items-start justify-between">
+            <div>
+              <div class="flex items-center gap-2 mb-2">
+                <span class="text-xs font-bold text-white bg-slate-800 px-2 py-0.5 rounded">STEP 3</span>
+                <span class="text-xs uppercase tracking-wider text-slate-400 font-semibold">3 min</span>
+              </div>
+              <h3 class="text-xl font-serif font-bold text-slate-900">MCP + AI Chat — The Wow Moment</h3>
+            </div>
+            <div class="flex gap-2">
+              <span class="service-badge bg-purple-100 text-purple-800 inline-flex items-center gap-1">
+                <svg class="icon-sm lucid-icon"><use href="#icon-bot"/></svg> Agentic
+              </span>
+              <span class="service-badge bg-emerald-100 text-emerald-800 inline-flex items-center gap-1">
+                <svg class="icon-sm lucid-icon"><use href="#icon-star"/></svg> WOW
+              </span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-3">
+            <div class="rounded-lg border border-purple-200 bg-purple-50 p-4 text-center">
+              <svg class="icon-xl lucid-icon text-purple-500 mx-auto mb-2"><use href="#icon-ticket"/></svg>
+              <div class="text-xs font-semibold text-purple-900 uppercase tracking-wider">get_ticket</div>
+              <div class="text-xs text-purple-700 mt-1">Query any ticket</div>
+            </div>
+            <div class="rounded-lg border border-purple-200 bg-purple-50 p-4 text-center">
+              <svg class="icon-xl lucid-icon text-purple-500 mx-auto mb-2"><use href="#icon-receipt"/></svg>
+              <div class="text-xs font-semibold text-purple-900 uppercase tracking-wider">create_invoice</div>
+              <div class="text-xs text-purple-700 mt-1">Bill via Odoo</div>
+            </div>
+            <div class="rounded-lg border border-purple-200 bg-purple-50 p-4 text-center">
+              <svg class="icon-xl lucid-icon text-purple-500 mx-auto mb-2"><use href="#icon-mail"/></svg>
+              <div class="text-xs font-semibold text-purple-900 uppercase tracking-wider">send_email</div>
+              <div class="text-xs text-purple-700 mt-1">Notify customer</div>
+            </div>
+            <div class="rounded-lg border border-purple-200 bg-purple-50 p-4 text-center">
+              <svg class="icon-xl lucid-icon text-purple-500 mx-auto mb-2"><use href="#icon-user"/></svg>
+              <div class="text-xs font-semibold text-purple-900 uppercase tracking-wider">customer_context</div>
+              <div class="text-xs text-purple-700 mt-1">Full history</div>
+            </div>
+            <div class="rounded-lg border border-purple-200 bg-purple-50 p-4 text-center">
+              <svg class="icon-xl lucid-icon text-purple-500 mx-auto mb-2"><use href="#icon-bot"/></svg>
+              <div class="text-xs font-semibold text-purple-900 uppercase tracking-wider">AI Chat</div>
+              <div class="text-xs text-purple-700 mt-1">Floating button</div>
+            </div>
+            <div class="rounded-lg border border-purple-200 bg-purple-50 p-4 text-center">
+              <svg class="icon-xl lucid-icon text-purple-500 mx-auto mb-2"><use href="#icon-zap"/></svg>
+              <div class="text-xs font-semibold text-purple-900 uppercase tracking-wider">Quick Actions</div>
+              <div class="text-xs text-purple-700 mt-1">One-click prompts</div>
+            </div>
+          </div>
+
+          <div class="space-y-2 text-sm text-slate-700">
+            <p><strong>The pitch:</strong> "The AI doesn't just read — it acts. Same tools for Claude, GPT, and the user."</p>
+            <ul class="list-disc list-inside space-y-1 text-slate-600 text-xs">
+              <li>MCP server exposes all business tools as callable functions</li>
+              <li>Chat opens from any ticket page with pre-loaded context</li>
+              <li>Quick actions: "Invoice this ticket €150" in one click</li>
+            </ul>
+          </div>
+        </div>
+      </article>
+
+      <!-- Step 4 -->
+      <article class="rounded-xl border border-stone-200 bg-white shadow-sm overflow-hidden">
+        <div class="p-6 space-y-6">
+          <div class="flex items-start justify-between">
+            <div>
+              <div class="flex items-center gap-2 mb-2">
+                <span class="text-xs font-bold text-white bg-slate-800 px-2 py-0.5 rounded">STEP 4</span>
+                <span class="text-xs uppercase tracking-wider text-slate-400 font-semibold">1 min</span>
+              </div>
+              <h3 class="text-xl font-serif font-bold text-slate-900">Mailing Service — Dedicated Worker</h3>
+            </div>
+            <span class="service-badge bg-blue-100 text-blue-800 inline-flex items-center gap-1">
+              <svg class="icon-sm lucid-icon"><use href="#icon-mail"/></svg> Mailing
+            </span>
+          </div>
+
+          <div class="flex items-center gap-4 rounded-lg border border-stone-200 bg-stone-50 p-4">
+            <div class="flex-1 text-center">
+              <div class="text-xs uppercase tracking-wider text-slate-500 font-semibold">RabbitMQ</div>
+              <div class="text-xs text-slate-400">mailing.queue</div>
+            </div>
+            <svg width="40" height="20" class="text-slate-400">
+              <line x1="0" y1="10" x2="35" y2="10" stroke="currentColor" stroke-width="2" stroke-dasharray="4 2"/>
+              <polygon points="35,10 30,6 30,14" fill="currentColor"/>
+            </svg>
+            <div class="flex-1 text-center">
+              <div class="text-xs uppercase tracking-wider text-slate-500 font-semibold">Email Worker</div>
+              <div class="text-xs text-slate-400">renders + sends</div>
+            </div>
+            <svg width="40" height="20" class="text-slate-400">
+              <line x1="0" y1="10" x2="35" y2="10" stroke="currentColor" stroke-width="2" stroke-dasharray="4 2"/>
+              <polygon points="35,10 30,6 30,14" fill="currentColor"/>
+            </svg>
+            <div class="flex-1 text-center">
+              <div class="text-xs uppercase tracking-wider text-slate-500 font-semibold">Mailhog</div>
+              <div class="text-xs text-slate-400">captured</div>
+            </div>
+          </div>
+
+          <div class="text-sm text-slate-700">
+            <p>Separate worker isolates email rendering from the critical path. No SendGrid? Logs still show the event.</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Step 5 -->
+      <article class="rounded-xl border border-stone-200 bg-white shadow-sm overflow-hidden">
+        <div class="p-6 space-y-6">
+          <div class="flex items-start justify-between">
+            <div>
+              <div class="flex items-center gap-2 mb-2">
+                <span class="text-xs font-bold text-white bg-slate-800 px-2 py-0.5 rounded">STEP 5</span>
+                <span class="text-xs uppercase tracking-wider text-slate-400 font-semibold">2 min</span>
+              </div>
+              <h3 class="text-xl font-serif font-bold text-slate-900">GERDA AI — Assignment</h3>
+            </div>
+            <span class="service-badge bg-indigo-100 text-indigo-800 inline-flex items-center gap-1">
+              <svg class="icon-sm lucid-icon"><use href="#icon-ticket"/></svg> Ticket Masala
+            </span>
+          </div>
+
+          <div class="grid grid-cols-4 gap-3">
+            <div class="rounded border border-stone-200 bg-stone-50 p-3 text-center">
+              <div class="text-xs font-semibold text-slate-700 uppercase tracking-wider">Complexity</div>
+              <div class="text-lg font-bold text-slate-900 mt-1">5 pts</div>
+              <div class="text-xs text-slate-500">Effort estimate</div>
+            </div>
+            <div class="rounded border border-stone-200 bg-stone-50 p-3 text-center">
+              <div class="text-xs font-semibold text-slate-700 uppercase tracking-wider">Priority</div>
+              <div class="text-lg font-bold text-slate-900 mt-1">WSJF</div>
+              <div class="text-xs text-slate-500">Ranked</div>
+            </div>
+            <div class="rounded border border-stone-200 bg-stone-50 p-3 text-center">
+              <div class="text-xs font-semibold text-slate-700 uppercase tracking-wider">AI Tags</div>
+              <div class="text-lg font-bold text-slate-900 mt-1">Auto</div>
+              <div class="text-xs text-slate-500">From description</div>
+            </div>
+            <div class="rounded border border-emerald-200 bg-emerald-50 p-3 text-center">
+              <div class="text-xs font-semibold text-emerald-800 uppercase tracking-wider">Recommended</div>
+              <div class="text-lg font-bold text-emerald-900 mt-1">Sarah</div>
+              <div class="text-xs text-emerald-700">12/35 pts load</div>
+            </div>
+          </div>
+
+          <div class="space-y-2 text-sm text-slate-700">
+            <p>Assignment publishes <code class="bg-stone-100 px-1 rounded text-xs">event.ticket.assigned</code> — the cycle continues.</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Step 6 -->
+      <article class="rounded-xl border border-stone-200 bg-white shadow-sm overflow-hidden">
+        <div class="p-6 space-y-6">
+          <div class="flex items-start justify-between">
+            <div>
+              <div class="flex items-center gap-2 mb-2">
+                <span class="text-xs font-bold text-white bg-slate-800 px-2 py-0.5 rounded">STEP 6</span>
+                <span class="text-xs uppercase tracking-wider text-slate-400 font-semibold">2 min</span>
+              </div>
+              <h3 class="text-xl font-serif font-bold text-slate-900">Resolution — The Billing Trigger</h3>
+            </div>
+            <span class="service-badge bg-indigo-100 text-indigo-800 inline-flex items-center gap-1">
+              <svg class="icon-sm lucid-icon"><use href="#icon-ticket"/></svg> Ticket Masala
+            </span>
+          </div>
+
+          <div class="rounded-lg border border-stone-200 bg-stone-50 p-4">
+            <div class="flex items-center gap-2 mb-4">
+              <div class="h-3 w-3 rounded-full bg-emerald-500"></div>
+              <span class="text-xs font-semibold uppercase tracking-wider text-slate-700">Status = Completed</span>
+              <span class="text-xs text-slate-400">+</span>
+              <span class="text-xs font-semibold uppercase tracking-wider text-slate-700">Billable = €150</span>
+            </div>
+            <div class="flex gap-4">
+              <div class="flex-1 rounded border border-stone-300 bg-white p-3">
+                <div class="text-xs uppercase tracking-wider text-slate-400 font-semibold mb-2">Payload</div>
+                <pre class="text-xs text-slate-700 overflow-x-auto">{
+  "event_type": "ticket.resolved",
+  "customer_email": "alice@example.com",
+  "amount": 150.00,
+  "resolution_notes": "..."
+}</pre>
+              </div>
+              <div class="flex-1 rounded border border-orange-300 bg-orange-50 p-3">
+                <div class="text-xs uppercase tracking-wider text-orange-600 font-semibold mb-2">Result</div>
+                <div class="text-xs text-orange-900 space-y-1">
+                  <div>→ Odoo Bridge receives</div>
+                  <div>→ Invoice creation starts</div>
+                  <div>→ Email sent on completion</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="text-sm text-slate-700">
+            <p>Resolution is the trigger. The ticket carries the full billing context — no extra queries needed.</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Step 7 -->
+      <article class="rounded-xl border border-stone-200 bg-white shadow-sm overflow-hidden">
+        <div class="p-6 space-y-6">
+          <div class="flex items-start justify-between">
+            <div>
+              <div class="flex items-center gap-2 mb-2">
+                <span class="text-xs font-bold text-white bg-slate-800 px-2 py-0.5 rounded">STEP 7</span>
+                <span class="text-xs uppercase tracking-wider text-slate-400 font-semibold">4 min</span>
+              </div>
+              <h3 class="text-xl font-serif font-bold text-slate-900">Odoo Bridge — The Complex Integration</h3>
+            </div>
+            <div class="flex gap-2">
+              <span class="service-badge bg-amber-100 text-amber-800 inline-flex items-center gap-1">
+                <svg class="icon-sm lucid-icon"><use href="#icon-building"/></svg> Odoo Bridge
+              </span>
+              <span class="service-badge bg-emerald-100 text-emerald-800 inline-flex items-center gap-1">
+                <svg class="icon-sm lucid-icon"><use href="#icon-star"/></svg> WOW
+              </span>
+            </div>
+          </div>
+
+          <div class="rounded-lg border border-stone-200 bg-stone-50 p-4">
+            <div class="space-y-1">
+              <div class="flex items-center gap-3 h-10 border-l-4 border-amber-400 bg-white px-3 rounded-r">
+                <span class="text-xs font-bold text-slate-500 w-20">1. DEDUP</span>
+                <span class="text-xs text-slate-700">LiteDB — "Has this ticket been processed?"</span>
+              </div>
+              <div class="flex items-center gap-3 h-10 border-l-4 border-amber-500 bg-white px-3 rounded-r">
+                <span class="text-xs font-bold text-slate-500 w-20">2. AUTH</span>
+                <span class="text-xs text-slate-700">JSON-RPC authenticate() → UID</span>
+              </div>
+              <div class="flex items-center gap-3 h-10 border-l-4 border-amber-600 bg-white px-3 rounded-r">
+                <span class="text-xs font-bold text-slate-500 w-20">3. CUSTOMER</span>
+                <span class="text-xs text-slate-700">res.partner search — create if missing</span>
+              </div>
+              <div class="flex items-center gap-3 h-10 border-l-4 border-amber-700 bg-white px-3 rounded-r">
+                <span class="text-xs font-bold text-slate-500 w-20">4. INVOICE</span>
+                <span class="text-xs text-slate-700">account.move — [0, 0, {...}] nested create</span>
+              </div>
+              <div class="flex items-center gap-3 h-10 border-l-4 border-amber-800 bg-white px-3 rounded-r">
+                <span class="text-xs font-bold text-slate-500 w-20">5. POST</span>
+                <span class="text-xs text-slate-700">action_post — draft → posted</span>
+              </div>
+              <div class="flex items-center gap-3 h-10 border-l-4 border-amber-900 bg-white px-3 rounded-r">
+                <span class="text-xs font-bold text-slate-500 w-20">6. PUBLISH</span>
+                <span class="text-xs text-slate-700">invoice.created event via outbox</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-2 text-sm text-slate-700">
+            <p><strong>Why this matters:</strong> Odoo CE has no REST API. Every call is JSON-RPC with session auth. The <code class="bg-stone-100 px-1 rounded text-xs">[0, 0, {...}]</code> syntax is real — nested array means "create new relation record."</p>
+            <ul class="list-disc list-inside space-y-1 text-slate-600 text-xs">
+              <li>Circuit breaker: Odoo down → bridge backs off, no cascade</li>
+              <li>State machine: LiteDB tracks every processed ticket</li>
+              <li>Poller: every 5 min, detects payment status changes</li>
+            </ul>
+          </div>
+        </div>
+      </article>
+
+      <!-- Step 8 -->
+      <article class="rounded-xl border border-stone-200 bg-white shadow-sm overflow-hidden">
+        <div class="p-6 space-y-6">
+          <div class="flex items-start justify-between">
+            <div>
+              <div class="flex items-center gap-2 mb-2">
+                <span class="text-xs font-bold text-white bg-slate-800 px-2 py-0.5 rounded">STEP 8</span>
+                <span class="text-xs uppercase tracking-wider text-slate-400 font-semibold">1 min</span>
+              </div>
+              <h3 class="text-xl font-serif font-bold text-slate-900">Invoice Email — Closing the Loop</h3>
+            </div>
+            <div class="flex gap-2">
+              <span class="service-badge bg-purple-100 text-purple-800 inline-flex items-center gap-1">
+                <svg class="icon-sm lucid-icon"><use href="#icon-bot"/></svg> Agentic
+              </span>
+              <span class="service-badge bg-blue-100 text-blue-800 inline-flex items-center gap-1">
+                <svg class="icon-sm lucid-icon"><use href="#icon-mail"/></svg> Mailing
+              </span>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3 rounded-lg border border-stone-200 bg-stone-50 p-4">
+            <div class="text-center px-4">
+              <div class="text-xs uppercase tracking-wider text-slate-500 font-semibold">Invoice</div>
+              <div class="text-xs text-slate-400">in Odoo</div>
+            </div>
+            <svg width="30" height="20" class="text-teal-600">
+              <line x1="0" y1="10" x2="25" y2="10" stroke="currentColor" stroke-width="2" marker-end="url(#arrowhead-teal)"/>
+            </svg>
+            <div class="text-center px-4">
+              <div class="text-xs uppercase tracking-wider text-slate-500 font-semibold">event</div>
+              <div class="text-xs text-slate-400">invoice.created</div>
+            </div>
+            <svg width="30" height="20" class="text-teal-600">
+              <line x1="0" y1="10" x2="25" y2="10" stroke="currentColor" stroke-width="2" marker-end="url(#arrowhead-teal)"/>
+            </svg>
+            <div class="text-center px-4">
+              <div class="text-xs uppercase tracking-wider text-slate-500 font-semibold">Email</div>
+              <div class="text-xs text-slate-400">in Mailhog</div>
+            </div>
+          </div>
+
+          <div class="text-sm text-slate-700">
+            <p>One event, two consumers. Customer has an invoice + notification. Loop is open — waiting for payment.</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Step 9 -->
+      <article class="rounded-xl border border-stone-200 bg-white shadow-sm overflow-hidden">
+        <div class="p-6 space-y-6">
+          <div class="flex items-start justify-between">
+            <div>
+              <div class="flex items-center gap-2 mb-2">
+                <span class="text-xs font-bold text-white bg-slate-800 px-2 py-0.5 rounded">STEP 9</span>
+                <span class="text-xs uppercase tracking-wider text-slate-400 font-semibold">2 min</span>
+              </div>
+              <h3 class="text-xl font-serif font-bold text-slate-900">Payment Detection — Polling + Thank You</h3>
+            </div>
+            <div class="flex gap-2">
+              <span class="service-badge bg-amber-100 text-amber-800 inline-flex items-center gap-1">
+                <svg class="icon-sm lucid-icon"><use href="#icon-building"/></svg> Odoo Bridge
+              </span>
+              <span class="service-badge bg-emerald-100 text-emerald-800 inline-flex items-center gap-1">
+                <svg class="icon-sm lucid-icon"><use href="#icon-inbox"/></svg> BONUS
+              </span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div class="rounded-lg border border-stone-200 bg-stone-50 p-4">
+              <p class="text-xs uppercase tracking-wider text-slate-400 font-semibold mb-3">The Problem</p>
+              <div class="space-y-2">
+                <div class="h-8 bg-rose-100 border border-rose-200 rounded flex items-center px-3 text-xs font-semibold text-rose-800">No webhooks</div>
+                <div class="text-xs text-slate-500 text-center">↓</div>
+                <div class="h-8 bg-amber-100 border border-amber-200 rounded flex items-center px-3 text-xs font-semibold text-amber-800">Poll every 5 min</div>
+              </div>
+            </div>
+            <div class="rounded-lg border border-stone-200 bg-stone-50 p-4">
+              <p class="text-xs uppercase tracking-wider text-slate-400 font-semibold mb-3">The Result</p>
+              <div class="space-y-2">
+                <div class="h-8 bg-emerald-100 border border-emerald-200 rounded flex items-center px-3 text-xs font-semibold text-emerald-800">Status: posted → paid</div>
+                <div class="text-xs text-slate-500 text-center">↓</div>
+                <div class="h-8 bg-emerald-100 border border-emerald-200 rounded flex items-center px-3 text-xs font-semibold text-emerald-800">payment.received event</div>
+                <div class="text-xs text-slate-500 text-center">↓</div>
+                <div class="h-8 bg-emerald-100 border border-emerald-200 rounded flex items-center px-3 text-xs font-semibold text-emerald-800">Thank-you email</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="text-sm text-slate-700">
+            <p>Odoo doesn't tell us. We ask. When the answer changes, the event fires. The loop closes.</p>
+          </div>
+        </div>
+      </article>
+
+    </section>
+
+    <!-- Top Recommendation -->
+    <section id="top-recommendation" class="rounded-xl border-2 border-emerald-200 bg-emerald-50 p-8">
+      <div class="flex items-start gap-4">
+        <svg class="icon-xl lucid-icon text-emerald-600 flex-shrink-0 mt-1"><use href="#icon-star"/></svg>
+        <div class="space-y-2">
+          <p class="text-xs uppercase tracking-wider text-emerald-700 font-bold">Top Recommendation</p>
+          <h3 class="text-2xl font-serif font-bold text-emerald-900">Open the AI Chat from a Ticket Detail</h3>
+          <p class="text-sm text-emerald-800">This is the moment the architecture becomes tangible. The agent already knows the ticket. Ask it to create an invoice. One click. No typing. The MCP tools are the same ones Claude uses — the demo proves the business layer is AI-ready.</p>
+          <div class="flex gap-2 pt-2">
+            <span class="text-xs font-semibold bg-emerald-200 text-emerald-900 px-2 py-1 rounded">3 min</span>
+            <span class="text-xs font-semibold bg-emerald-200 text-emerald-900 px-2 py-1 rounded">Never skip</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Patterns Summary -->
+    <section class="space-y-4">
+      <div class="flex items-center gap-2">
+        <svg class="icon-lg lucid-icon text-slate-700"><use href="#icon-list"/></svg>
+        <h2 class="text-sm uppercase tracking-wider font-semibold text-slate-500">Patterns in Play</h2>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div class="rounded-lg border border-stone-200 bg-white p-4">
+          <div class="text-xs uppercase tracking-wider text-slate-500 font-semibold">Outbox</div>
+          <div class="text-sm text-slate-900 mt-1">Atomic publish — events survive crashes</div>
+        </div>
+        <div class="rounded-lg border border-stone-200 bg-white p-4">
+          <div class="text-xs uppercase tracking-wider text-slate-500 font-semibold">Fan-Out</div>
+          <div class="text-sm text-slate-900 mt-1">One event, N consumers, zero coupling</div>
+        </div>
+        <div class="rounded-lg border border-stone-200 bg-white p-4">
+          <div class="text-xs uppercase tracking-wider text-slate-500 font-semibold">Circuit Breaker</div>
+          <div class="text-sm text-slate-900 mt-1">Odoo down? Bridge backs off</div>
+        </div>
+        <div class="rounded-lg border border-stone-200 bg-white p-4">
+          <div class="text-xs uppercase tracking-wider text-slate-500 font-semibold">MCP</div>
+          <div class="text-sm text-slate-900 mt-1">AI calls the same tools as humans</div>
+        </div>
+        <div class="rounded-lg border border-stone-200 bg-white p-4">
+          <div class="text-xs uppercase tracking-wider text-slate-500 font-semibold">State Machine</div>
+          <div class="text-sm text-slate-900 mt-1">LiteDB tracks every processed ticket</div>
+        </div>
+        <div class="rounded-lg border border-stone-200 bg-white p-4">
+          <div class="text-xs uppercase tracking-wider text-slate-500 font-semibold">Polling</div>
+          <div class="text-sm text-slate-900 mt-1">No webhooks? We ask every 5 min</div>
+        </div>
+        <div class="rounded-lg border border-stone-200 bg-white p-4">
+          <div class="text-xs uppercase tracking-wider text-slate-500 font-semibold">JSON-RPC</div>
+          <div class="text-sm text-slate-900 mt-1">Odoo CE has no REST — we adapt</div>
+        </div>
+        <div class="rounded-lg border border-stone-200 bg-white p-4">
+          <div class="text-xs uppercase tracking-wider text-slate-500 font-semibold">Template Registry</div>
+          <div class="text-sm text-slate-900 mt-1">Events decoupled from rendering</div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="text-center text-xs text-slate-400 pt-8 pb-4">
+      Garamatic Ecosystem Demo — One Ticket, Seven Services — June 2026
+    </footer>
+
+  </main>
+
+</body>
+</html>
