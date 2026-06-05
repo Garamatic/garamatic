@@ -1,9 +1,11 @@
 {
-  "timestamp": "2026-05-30T11:16:40Z",
+  "timestamp": "2026-06-05T17:45:57Z",
+  "overall": "failed",
   "summary": {
-    "passed": 10,
-    "failed": 1,
+    "passed": 7,
+    "failed": 4,
     "skipped": 0,
+    "missing": 0,
     "total": 11
   },
   "services": {

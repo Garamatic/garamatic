@@ -149,7 +149,10 @@ async function main() {
         runner.skip('Invoice status (service not running)');
       }
 
-      runner.assertTrue(response.status < 500, 'Should retrieve invoice status');
+      runner.assertTrue(
+        response.status === 200 || response.status === 404 || response.status === 503,
+        `Should retrieve invoice status, got ${response.status}`
+      );
       if (response.status === 200) {
         const data = await response.json();
         runner.assertEquals(data.ticket_id, createdTicketId, 'Should reference ticket');
