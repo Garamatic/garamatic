@@ -1,9 +1,9 @@
 {
-  "timestamp": "2026-06-05T17:45:57Z",
-  "overall": "failed",
+  "timestamp": "2026-06-05T17:48:20Z",
+  "overall": "passed",
   "summary": {
-    "passed": 7,
-    "failed": 4,
+    "passed": 11,
+    "failed": 0,
     "skipped": 0,
     "missing": 0,
     "total": 11

@@ -104,23 +104,60 @@ lint:
 	@echo "🔍 Running code quality checks across services..."
 	@echo "   (Add per-service lint commands here as needed)"
 
+# ─── Monitoring ────────────────────────────────────────────────────────────
+monitor-up:
+	@echo "📊 Starting monitoring stack (Prometheus + Grafana + Loki)..."
+	docker compose -f docker-compose.monitoring.yml up -d
+	@echo ""
+	@echo "   Monitoring Services:"
+	@echo "   • Grafana Dashboard → http://localhost:3000  (admin/${GRAFANA_ADMIN_PASSWORD:-admin})"
+	@echo "   • Prometheus       → http://localhost:9090"
+	@echo "   • Loki Logs        → http://localhost:3100"
+	@echo "   • Alertmanager     → http://localhost:9093"
+	@echo ""
+	@echo "   💡 Dashboard: Garamatic — Service Health"
+	@echo "   💡 Default login: admin / ${GRAFANA_ADMIN_PASSWORD:-admin}"
+
+monitor-down:
+	@echo "🛑 Stopping monitoring stack..."
+	docker compose -f docker-compose.monitoring.yml down -v
+
+monitor-logs:
+	docker compose -f docker-compose.monitoring.yml logs -f
+
+# ─── Full Stack (App + Monitoring) ─────────────────────────────────────────
+stack-up:
+	@echo "🚀 Starting full stack (services + monitoring)..."
+	make up
+	make monitor-up
+
+stack-down:
+	@echo "🛑 Stopping full stack..."
+	make down
+	make monitor-down
+
 # ─── Help ──────────────────────────────────────────────────────────────────
 help:
 	@echo "Garamatic Meta-Repo Commands"
 	@echo ""
-	@echo "  make setup      Initialize submodules and env"
-	@echo "  make up         Start the full Docker stack (detached)"
-	@echo "  make dev        Start the full Docker stack (attached)"
-	@echo "  make pull-model Download the local LLM (llama3.2) for Ollama"
-	@echo "  make down       Stop and remove the stack"
-	@echo "  make logs       Tail Docker logs"
-	@echo "  make test       Run integration tests in Docker"
-	@echo "  make test-local Run integration tests against local services"
-	@echo "  make update     Pull latest commits for all submodules"
-	@echo "  make pull       Pull root repo and submodules"
-	@echo "  make push       Push root repo and submodule commits"
-	@echo "  make sync       Pull then push root repo and submodules"
-	@echo "  make status     Show current submodule commits"
-	@echo "  make bump       Update submodules and commit the root repo"
-	@echo "  make lint       Run code quality checks"
-	@echo "  make help       Show this help message"
+	@echo "  make setup        Initialize submodules and env"
+	@echo "  make up           Start the full Docker stack (detached)"
+	@echo "  make dev          Start the full Docker stack (attached)"
+	@echo "  make pull-model   Download the local LLM (llama3.2) for Ollama"
+	@echo "  make down         Stop and remove the stack"
+	@echo "  make logs         Tail Docker logs"
+	@echo "  make test         Run integration tests in Docker"
+	@echo "  make test-local   Run integration tests against local services"
+	@echo "  make monitor-up   Start monitoring stack (Prometheus + Grafana)"
+	@echo "  make monitor-down Stop monitoring stack"
+	@echo "  make monitor-logs Tail monitoring logs"
+	@echo "  make stack-up     Start full stack (services + monitoring)"
+	@echo "  make stack-down   Stop full stack"
+	@echo "  make update       Pull latest commits for all submodules"
+	@echo "  make pull         Pull root repo and submodules"
+	@echo "  make push         Push root repo and submodule commits"
+	@echo "  make sync         Pull then push root repo and submodules"
+	@echo "  make status       Show current submodule commits"
+	@echo "  make bump         Update submodules and commit the root repo"
+	@echo "  make lint         Run code quality checks"
+	@echo "  make help         Show this help message"
