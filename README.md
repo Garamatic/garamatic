@@ -110,6 +110,24 @@ make test        # Run integration tests in Docker
 make test-local  # Run tests against local services
 ```
 
+### Monitoring & Health
+
+```bash
+make monitor-up      # Start health dashboard (Grafana)
+make monitor-down    # Stop health dashboard
+make monitor-logs    # Tail monitoring logs
+make stack-up        # Start full stack + monitoring
+make stack-down      # Stop full stack + monitoring
+```
+
+### Backup & Restore
+
+```bash
+make backup          # Backup all volumes and databases
+make restore         # List available backups
+make restore TIMESTAMP=20250605_120000  # Restore specific backup
+```
+
 ### Submodule Management
 
 ```bash
@@ -134,6 +152,9 @@ make bump        # Update submodules and commit root repo
 ./scripts/status.sh                   # Full ecosystem dashboard
 ./scripts/pull.sh                     # Pull root repo and submodules
 ./scripts/push.sh                     # Push root repo and submodule commits
+./scripts/backup.sh                   # Backup all volumes and databases
+./scripts/restore.sh <timestamp>      # Restore from backup
+./scripts/health-check.sh           # Quick health check
 ```
 
 ## Working with Submodules
@@ -214,7 +235,20 @@ Copy `.env.example` → `.env` and configure:
 | `SENDGRID_API_KEY` | No | SendGrid API key (mailing service) |
 | `SENDGRID_FROM_EMAIL` | No | Default sender email |
 | `GATEKEEPER_API_KEY` | No | Ingestion API key |
-| `GRAFANA_ADMIN_PASSWORD` | No | Grafana admin password |
+| `AGENTIC_API_KEY` | No | Agentic service API key |
+| `GRAFANA_ADMIN_PASSWORD` | No | Grafana admin password (default: admin) |
+| `OPENAI_API_KEY` | No | OpenAI API key (optional, uses Ollama by default) |
+| `OLLAMA_BASE_URL` | No | Ollama API URL (default: http://ollama:11434/v1) |
+| `BACKUP_DIR` | No | Backup directory (default: ./backups) |
+
+## Monitoring & Health
+
+The monitoring stack includes:
+
+- **Grafana Dashboard** → http://localhost:3000 (admin/`${GRAFANA_ADMIN_PASSWORD}`)
+- **Health Dashboard** → http://localhost:3002 (simple HTML/JS, auto-refreshes every 30s)
+
+All services have `restart: unless-stopped` enabled for automatic recovery after crashes.
 
 ## Troubleshooting
 
@@ -250,26 +284,21 @@ docker compose -f integration-tests/docker/docker-compose.test.yml logs
 
 ## CI/CD
 
-### GitHub Actions Example
+We use **3 separate pipelines** for different branches, following the DevOps best practice of separating dev, test, and production environments:
 
-```yaml
-# .github/workflows/integration.yml
-name: Integration Tests
+| Pipeline | Branch | Jobs | Purpose |
+|----------|--------|------|---------|
+| **ci-dev.yml** | `dev` | Lint, Secret Scan | Fast feedback on feature branches |
+| **ci-test.yml** | `test`/`acc` | Lint, Integration Tests, Smoke Tests, Contract Compliance | Full validation before production |
+| **ci-prod.yml** | `main` | Lint, Integration Tests, Artifacts | Production gate with test results |
 
-on:
-  push:
-    branches: [main]
-  pull_request:
+### GitHub Actions
 
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: recursive
-      - run: make setup
-      - run: make test
+All pipelines run automatically on push/PR. Test results and logs are uploaded as artifacts.
+
+```bash
+# View pipeline status
+gh workflow list
 ```
 
 ## License
