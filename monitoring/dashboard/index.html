@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Garamatic Health Dashboard</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --ok: #22c55e;
+      --warn: #f59e0b;
+      --err: #ef4444;
+      --border: #334155;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, sans-serif;
+      line-height: 1.5;
+      padding: 2rem;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    h1 { font-size: 1.5rem; font-weight: 600; }
+    .timestamp { color: var(--muted); font-size: 0.875rem; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      transition: transform 0.2s;
+    }
+    .card:hover { transform: translateY(-2px); }
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+    }
+    .name { font-size: 0.875rem; font-weight: 500; color: var(--muted); }
+    .status {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--muted);
+    }
+    .status.ok { background: var(--ok); box-shadow: 0 0 8px var(--ok); }
+    .status.err { background: var(--err); box-shadow: 0 0 8px var(--err); }
+    .status.warn { background: var(--warn); }
+    .detail { font-size: 0.75rem; color: var(--muted); }
+    .detail b { color: var(--text); }
+    .summary {
+      display: flex;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+      padding: 1rem;
+      background: var(--card);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+    .summary-item { text-align: center; }
+    .summary-item .num { font-size: 1.5rem; font-weight: 700; }
+    .summary-item .num.ok { color: var(--ok); }
+    .summary-item .num.err { color: var(--err); }
+    .summary-item .num.warn { color: var(--warn); }
+    .summary-item .label { font-size: 0.75rem; color: var(--muted); }
+    .logs {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+    }
+    .logs h2 { font-size: 1rem; margin-bottom: 0.75rem; }
+    .log-entry {
+      font-family: monospace;
+      font-size: 0.8rem;
+      padding: 0.25rem 0;
+      border-bottom: 1px solid var(--border);
+      color: var(--muted);
+    }
+    .log-entry:last-child { border-bottom: none; }
+    .log-time { color: var(--muted); margin-right: 0.5rem; }
+    .log-msg { color: var(--text); }
+    .log-err { color: var(--err); }
+    .log-warn { color: var(--warn); }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Garamatic Health Dashboard</h1>
+    <span class="timestamp" id="timestamp">Loading...</span>
+  </header>
+
+  <div class="summary" id="summary">
+    <div class="summary-item">
+      <div class="num ok" id="count-up">-</div>
+      <div class="label">Up</div>
+    </div>
+    <div class="summary-item">
+      <div class="num err" id="count-down">-</div>
+      <div class="label">Down</div>
+    </div>
+    <div class="summary-item">
+      <div class="num" id="count-total">-</div>
+      <div class="label">Total</div>
+    </div>
+  </div>
+
+  <div class="grid" id="services">
+    <!-- Filled by JS -->
+  </div>
+
+  <div class="logs">
+    <h2>Recent Checks</h2>
+    <div id="log-entries"></div>
+  </div>
+
+  <script>
+    const SERVICES = [
+      { name: 'Ticket Masala', url: 'http://localhost:8085/health', fallback: 'http://localhost:8085' },
+      { name: 'Gatekeeper API', url: 'http://localhost:8086/health', fallback: 'http://localhost:8086' },
+      { name: 'Mailing Service', url: 'http://localhost:8087/health', fallback: 'http://localhost:8087' },
+      { name: 'Event Planner', url: 'http://localhost:8088', fallback: null },
+      { name: 'Garamatic Web', url: 'http://localhost:8090', fallback: null },
+      { name: 'Masala Web', url: 'http://localhost:8091', fallback: null },
+      { name: 'Agentic Service', url: 'http://localhost:3001/health', fallback: 'http://localhost:3001' },
+      { name: 'Odoo Bridge', url: 'http://localhost:8089/health', fallback: 'http://localhost:8089' },
+      { name: 'RabbitMQ', url: 'http://localhost:15672', fallback: null },
+      { name: 'Mailhog', url: 'http://localhost:8025', fallback: null },
+    ];
+
+    const logs = [];
+    const MAX_LOGS = 20;
+
+    async function checkService(svc) {
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 5000);
+        const res = await fetch(svc.url, { signal: controller.signal, mode: 'no-cors' });
+        clearTimeout(timeout);
+        return { ok: true, status: res.status };
+      } catch {
+        if (svc.fallback) {
+          try {
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 3000);
+            const res = await fetch(svc.fallback, { signal: controller.signal, mode: 'no-cors' });
+            clearTimeout(timeout);
+            return { ok: true, status: res.status };
+          } catch {
+            return { ok: false, status: 'unreachable' };
+          }
+        }
+        return { ok: false, status: 'unreachable' };
+      }
+    }
+
+    async function checkAll() {
+      const container = document.getElementById('services');
+      container.innerHTML = '<div class="card"><div class="name">Checking...</div></div>';
+      
+      let up = 0, down = 0;
+      const results = [];
+      
+      for (const svc of SERVICES) {
+        const result = await checkService(svc);
+        results.push({ svc, result });
+        if (result.ok) up++; else down++;
+        
+        const now = new Date().toLocaleTimeString();
+        const msg = result.ok ? `OK (${result.status})` : `DOWN (${result.status})`;
+        const cls = result.ok ? 'log-msg' : 'log-err';
+        logs.unshift(`<span class="log-time">${now}</span> <span class="${cls}">${svc.name}: ${msg}</span>`);
+        if (logs.length > MAX_LOGS) logs.pop();
+      }
+      
+      document.getElementById('count-up').textContent = up;
+      document.getElementById('count-down').textContent = down;
+      document.getElementById('count-total').textContent = SERVICES.length;
+      document.getElementById('timestamp').textContent = new Date().toLocaleString();
+      
+      container.innerHTML = results.map(({ svc, result }) => `
+        <div class="card">
+          <div class="card-header">
+            <span class="name">${svc.name}</span>
+            <span class="status ${result.ok ? 'ok' : 'err'}"></span>
+          </div>
+          <div class="detail">
+            Status: <b>${result.ok ? 'Healthy' : 'Unreachable'}</b><br>
+            ${result.status !== 'unreachable' ? `HTTP: ${result.status}` : 'No response'}
+          </div>
+        </div>
+      `).join('');
+      
+      document.getElementById('log-entries').innerHTML = logs.map(l => `<div class="log-entry">${l}</div>`).join('');
+    }
+
+    checkAll();
+    setInterval(checkAll, 30000);
+  </script>
+</body>
+</html>

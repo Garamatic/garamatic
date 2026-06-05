@@ -43,6 +43,7 @@ services:
       retries: 5
     networks:
       - garamatic-network
+    restart: unless-stopped
 
   # ════════════════════════════════════════════════════════════
   # TICKET MASALA - Core Ticket Service
@@ -80,6 +81,7 @@ services:
     depends_on:
       rabbitmq:
         condition: service_healthy
+    restart: unless-stopped
 
   # ════════════════════════════════════════════════════════════
   # GATEKEEPER API - Ingestion Service
@@ -106,6 +108,7 @@ services:
         condition: service_started
       rabbitmq:
         condition: service_healthy
+    restart: unless-stopped
 
   # ════════════════════════════════════════════════════════════
   # MAILING SERVICE - Email Worker + API
@@ -131,6 +134,7 @@ services:
     depends_on:
       rabbitmq:
         condition: service_healthy
+    restart: unless-stopped
 
   # ════════════════════════════════════════════════════════════
   # EVENT PLANNER - Event Management
@@ -149,6 +153,7 @@ services:
       - garamatic-network
     depends_on:
       - event-planner-db
+    restart: unless-stopped
 
   event-planner-db:
     image: mariadb:10.11
@@ -167,6 +172,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
 
   # ════════════════════════════════════════════════════════════
   # GARAMATIC WEB - Main Frontend
@@ -180,6 +186,7 @@ services:
       - "8090:8080"
     networks:
       - garamatic-network
+    restart: unless-stopped
 
   # ════════════════════════════════════════════════════════════
   # MASALA WEB - Marketing Site
@@ -193,6 +200,7 @@ services:
       - "8091:8080"
     networks:
       - garamatic-network
+    restart: unless-stopped
 
   # ════════════════════════════════════════════════════════════
   # OLLAMA - Local LLM Inference
@@ -244,6 +252,7 @@ services:
       - ticket-masala
       - rabbitmq
       - ollama
+    restart: unless-stopped
 
   # ════════════════════════════════════════════════════════════
   # ODOO - ERP / CRM
@@ -269,6 +278,7 @@ services:
     depends_on:
       odoo-db:
         condition: service_healthy
+    restart: unless-stopped
 
   odoo-db:
     image: postgres:15-alpine
@@ -286,6 +296,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
 
   # ════════════════════════════════════════════════════════════
   # ODOO BRIDGE - .NET Worker
@@ -333,6 +344,7 @@ services:
       - "8025:8025"  # Web UI
     networks:
       - garamatic-network
+    restart: unless-stopped
 
 networks:
   garamatic-network:

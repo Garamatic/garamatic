@@ -1,0 +1,73 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "Garamatic Health Dashboard — Links to lightweight health monitor",
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [
+    {
+      "icon": "external link",
+      "tags": [],
+      "targetBlank": true,
+      "title": "Health Dashboard",
+      "type": "link",
+      "url": "http://localhost:3002"
+    }
+  ],
+  "panels": [
+    {
+      "gridPos": { "h": 4, "w": 24, "x": 0, "y": 0 },
+      "id": 1,
+      "options": {
+        "content": "<div style='text-align:center; padding: 20px;'>\n  <h1 style='font-size: 2rem; margin-bottom: 10px;'>Garamatic Health Dashboard</h1>\n  <p style='font-size: 1rem; color: #94a3b8;'>\n    <a href='http://localhost:3002' target='_blank' style='color: #6366f1; text-decoration: none;'>\n      Open Health Dashboard → http://localhost:3002\n    </a>\n  </p>\n  <p style='font-size: 0.875rem; color: #64748b; margin-top: 10px;'>\n    Auto-refreshes every 30s. Checks all 10 services via HTTP health endpoints.\n  </p>\n</div>",
+        "mode": "html"
+      },
+      "pluginVersion": "11.0.0",
+      "title": "",
+      "transparent": true,
+      "type": "text"
+    },
+    {
+      "gridPos": { "h": 12, "w": 24, "x": 0, "y": 4 },
+      "id": 2,
+      "options": {
+        "code": {
+          "language": "html",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "<iframe src='http://localhost:3002' width='100%' height='600px' frameborder='0' style='border-radius: 8px;'></iframe>",
+        "mode": "html"
+      },
+      "pluginVersion": "11.0.0",
+      "title": "Service Health",
+      "transparent": true,
+      "type": "text"
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 40,
+  "style": "dark",
+  "tags": ["garamatic", "health"],
+  "templating": { "list": [] },
+  "time": { "from": "now-1h", "to": "now" },
+  "timepicker": { "refresh_intervals": ["5s", "10s", "30s", "1m"] },
+  "timezone": "",
+  "title": "Garamatic — Health Dashboard",
+  "uid": "garamatic-health",
+  "version": 1,
+  "weekStart": ""
+}
