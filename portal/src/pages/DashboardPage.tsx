@@ -9,6 +9,7 @@ import { StatusBadge, type StatusKey } from '../components/StatusBadge'
 import { StatusTimeline } from '../components/StatusTimeline'
 
 const API_BASE = import.meta.env.VITE_API_BASE ?? ''
+const PORTAL_SECRET = import.meta.env.VITE_PORTAL_SECRET ?? ''
 
 // ── Types ───────────────────────────────────────────────────────────
 interface ApiTicket {
@@ -174,7 +175,10 @@ export function DashboardPage() {
       setApiError(null)
       try {
         const response = await fetch(
-          `${API_BASE}/api/portal/tickets?email=${encodeURIComponent(email)}`
+          `${API_BASE}/api/portal/tickets?email=${encodeURIComponent(email)}`,
+          {
+            headers: PORTAL_SECRET ? { 'X-Portal-Secret': PORTAL_SECRET } : undefined
+          }
         )
         if (!response.ok) {
           throw new Error(`Erreur ${response.status}`)
