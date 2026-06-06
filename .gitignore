@@ -11,6 +11,7 @@
 .pi/
 .ralph/
 .factory/
+.impeccable/
 
 # ─── AI-Generated Design Documents ───────────────────────────────────────
 dev-docs/
@@ -37,6 +38,10 @@ node_modules/
 # ─── Temporary Files ─────────────────────────────────────────────────────
 *.tmp
 *.temp
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
 
 # ─── Integration Test Artifacts ──────────────────────────────────────
 integration-tests/test-reports/

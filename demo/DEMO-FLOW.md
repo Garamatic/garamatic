@@ -28,7 +28,7 @@ docker compose -f demo/docker-compose.yml ps
 | Service | URL | What to show |
 |---------|-----|--------------|
 | **Architecture Dashboard** | **`http://localhost:8092`** | **Start here** — live topology, health, event flow, narrative |
-| Showcase (Desgoffe) | `http://localhost:8092/tenants/desgoffe/client/index.html` | Customer portal entry point |
+| Portal (Desgoffe) | `http://localhost:8093` | Citizen portal entry point |
 | Ticket Masala | `http://localhost:8085` | Ticket lifecycle UI + **AI Chat** |
 | RabbitMQ Mgmt | `http://localhost:15672` (guest/guest) | Event bus, bindings, message flow |
 | Agentic Service API | `http://localhost:3001/docs` | MCP tools, OpenAPI docs |
@@ -54,7 +54,7 @@ docker compose -f demo/docker-compose.yml ps
 
 ### Demo
 
-1. Open `http://localhost:8092/tenants/desgoffe/client/index.html`
+1. Open `http://localhost:8093`
 2. Fill in:
    - **Nom:** `Alice Johnson`
    - **Email:** `alice@example.com`

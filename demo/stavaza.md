@@ -42,7 +42,7 @@ Execution – Implementation
 
     Central RabbitMQ: Started / Roll out -> https://github.com/Garamatic/ticket-masala/tree/feature/rabbit 
 
-    Drupal Frontend: Started -> https://github.com/Garamatic/event-planner  
+    Citizen Portal (React): Started -> https://github.com/Garamatic/ticket-masala-portal (React + Vite, replaced Drupal frontend)  
 
     Sendgrid: Locally Tested -> https://github.com/Garamatic/mailing-service  
 
@@ -52,7 +52,7 @@ Execution – Implementation
 
 Next steps by priority: 
 
-    Drupal Frontend: The page needs to be developed and integrated with RabbitMQ. There is a steep learning curve for the framework and becoming familiar with the environment. 
+    Citizen Portal: The React portal is functional and integrated with Ticket Masala API. Polish UI and ensure all demo flows work end-to-end. 
 
     Testing and integrating all workflows to validate our use cases 
 

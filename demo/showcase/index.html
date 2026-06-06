@@ -945,7 +945,7 @@
                     </p>
                     <div class="hero-meta">
                         <span class="chip" id="system-status-badge">Checking...</span>
-                        <span class="chip">8 Services</span>
+                        <span class="chip">7 Services</span>
                         <span class="chip">RabbitMQ Event Bus</span>
                         <span class="chip">MCP / AI Agent</span>
                         <span class="chip">Odoo ERP Bridge</span>
@@ -979,7 +979,7 @@
             <button class="tab" data-tab="flow" role="tab">Event Flow</button>
             <button class="tab" data-tab="narrative" role="tab">Demo Narrative</button>
             <button class="tab" data-tab="apis" role="tab">API Explorer</button>
-            <button class="tab" data-tab="tenants" role="tab">Tenant Portals</button>
+            <button class="tab" data-tab="tenants" role="tab">Citizen Portal</button>
         </div>
 
         <div class="dashboard-grid">
@@ -1001,9 +1001,6 @@ graph TB
     subgraph Frontends["🎨 Frontends"]
         A[Showcase<br/>localhost:8092]
         B[Desgoffe Portal]
-        C[Whitman Portal]
-        D[Liberty Portal]
-        E[Hennessey Portal]
     end
 
     subgraph Core["🎫 Core Service"]
@@ -1033,15 +1030,8 @@ graph TB
         OD[Odoo ERP<br/>localhost:8069]
     end
 
-    subgraph Content["📅 Content"]
-        EP[Event Planner<br/>localhost:8088]
-    end
-
     A -->|POST /api/portal/submit| TM
     B -->|POST /api/portal/submit| TM
-    C -->|POST /api/portal/submit| TM
-    D -->|POST /api/portal/submit| TM
-    E -->|POST /api/portal/submit| TM
     GK -->|publish| RMQ
     TM -->|outbox pattern| RMQ
     RMQ --> EX
@@ -1123,7 +1113,7 @@ graph TB
                 <!-- Tenants Panel -->
                 <div id="panel-tenants" class="panel hidden">
                     <div class="panel-header">
-                        <h2>Public Tenant Portals</h2>
+                        <h2>Citizen Portal</h2>
                     </div>
                     <div class="panel-body">
                         <div class="tenant-grid" id="tenant-grid">
@@ -1183,10 +1173,6 @@ docker compose up --build</pre>
                             <span>🔌 Odoo Bridge</span>
                             <code style="font-size: 0.6875rem;">:8089</code>
                         </a>
-                        <a href="http://localhost:8088" target="_blank" class="service-link" style="justify-content: space-between;">
-                            <span>📅 Event Planner</span>
-                            <code style="font-size: 0.6875rem;">:8088</code>
-                        </a>
                         <a href="http://localhost:15672" target="_blank" class="service-link" style="justify-content: space-between;">
                             <span>🐰 RabbitMQ</span>
                             <code style="font-size: 0.6875rem;">:15672</code>
@@ -1235,13 +1221,7 @@ docker compose up --build</pre>
                                 style="padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.875rem; background: var(--bg-elevated); color: var(--text-heading);" />
                             <textarea id="qtDesc" placeholder="Description" rows="3" required
                                 style="padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.875rem; background: var(--bg-elevated); color: var(--text-heading); resize: vertical;"></textarea>
-                            <select id="qtTenant" required
-                                style="padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.875rem; background: var(--bg-elevated); color: var(--text-heading);">
-                                <option value="desgoffe">Ville de Desgoffe</option>
-                                <option value="whitman">Whitman Spoor</option>
-                                <option value="liberty">Liberty Systems</option>
-                                <option value="hennessey">Fonds Hennessey</option>
-                            </select>
+                            <input type="hidden" id="qtTenant" value="desgoffe" />
                             <button type="submit" class="btn btn-primary" style="justify-content: center;">
                                 Create Ticket
                             </button>
@@ -1432,18 +1412,6 @@ docker compose up --build</pre>
                 ]
             },
             {
-                id: 'event-planner',
-                name: 'Event Planner',
-                icon: '📅',
-                port: 8088,
-                healthPath: '/',
-                type: 'backend',
-                description: 'Drupal CMS — contact forms, event content',
-                links: [
-                    { label: 'Site', url: 'http://localhost:8088' }
-                ]
-            },
-            {
                 id: 'rabbitmq',
                 name: 'RabbitMQ',
                 icon: '🐰',
@@ -1477,29 +1445,8 @@ docker compose up --build</pre>
                 id: 'desgoffe',
                 name: 'Ville de Desgoffe',
                 desc: 'Formal civic portal with government styling',
-                logo: 'tenants/assets/desgoffe.png',
-                url: 'tenants/desgoffe/client/index.html'
-            },
-            {
-                id: 'whitman',
-                name: 'Whitman Spoor',
-                desc: 'High-visibility industrial form experience',
-                logo: 'tenants/assets/whitman.png',
-                url: 'tenants/whitman/client/index.html'
-            },
-            {
-                id: 'liberty',
-                name: 'Liberty Systems',
-                desc: 'Technical markdown-friendly workflow',
-                logo: 'tenants/assets/liberty.png',
-                url: 'tenants/liberty/client/index.html'
-            },
-            {
-                id: 'hennessey',
-                name: 'Fonds Hennessey',
-                desc: 'Grant application with multi-step validation',
-                logo: 'tenants/assets/hennessey.png',
-                url: 'tenants/hennessey/client/index.html'
+                logo: 'assets/desgoffe.png',
+                url: 'http://localhost:8093'
             }
         ];
 

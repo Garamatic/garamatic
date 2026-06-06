@@ -16,7 +16,6 @@ const SERVICES = {
   mailing: { url: process.env.MAILING_URL || 'http://mailing-service:8080', path: '/health' },
   agentic: { url: process.env.AGENTIC_URL || 'http://agentic-service:3001', path: '/health' },
   odoo: { url: process.env.ODOO_URL || 'http://odoo-integration:8080', path: '/health' },
-  eventPlanner: { url: process.env.EVENT_PLANNER_URL || 'http://event-planner:80', path: '/' },
   mailhog: { url: process.env.MAILHOG_URL || 'http://mailhog:8025', path: '/api/v2/messages' },
   rabbitmq: { url: process.env.RABBITMQ_URL || 'http://rabbitmq:15672', path: '/api/overview', auth: 'guest:guest' }
 };
@@ -126,16 +125,13 @@ async function main() {
   // 2.2: Seed Gatekeeper (events)
   results.push(await runSeedingScript('gatekeeper', './scripts/seed-gatekeeper.js'));
 
-  // 2.3: Seed Event Planner (contact forms)
-  results.push(await runShellScript('event-planner', './scripts/seed-event-planner.sh'));
-
-  // 2.4: Seed Agentic Service (tickets, invoices, emails)
+  // 2.3: Seed Agentic Service (tickets, invoices, emails)
   results.push(await runSeedingScript('agentic-service', './scripts/seed-agentic-service.js'));
 
-  // 2.5: Seed Odoo Integration (LiteDB state)
+  // 2.4: Seed Odoo Integration (LiteDB state)
   results.push(await runShellScript('odoo-integration', './scripts/seed-odoo-integration.sh'));
 
-  // 2.6: Wait for async processing (RabbitMQ events)
+  // 2.5: Wait for async processing (RabbitMQ events)
   console.log(`${COLORS.yellow}Phase 3: Waiting for async processing...${COLORS.reset}\n`);
   await new Promise(r => setTimeout(r, 5000));
 
@@ -153,7 +149,7 @@ async function main() {
   console.log(`  Ticket Masala:    http://localhost:8085`);
   console.log(`  Gatekeeper:       http://localhost:8086`);
   console.log(`  Mailing Service:  http://localhost:8087`);
-  console.log(`  Event Planner:    http://localhost:8088`);
+
   console.log(`  Agentic Service:  http://localhost:3001`);
   console.log(`  Odoo Integration: http://localhost:8089`);
   console.log(`  Mailhog UI:       http://localhost:8025`);
