@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import {
   FileText, Clock, CheckCircle, MagnifyingGlass,
   ArrowRight, CaretDown, X, DownloadSimple,
-  Calendar, MapPin, Hash, Warning, ArrowClockwise
+  Calendar, MapPin, Hash, Warning, ArrowClockwise, FilePlus
 } from '@phosphor-icons/react'
 import { StatusBadge, type StatusKey } from '../components/StatusBadge'
 import { StatusTimeline } from '../components/StatusTimeline'
@@ -357,18 +357,36 @@ export function DashboardPage() {
             <div className={`lg:col-span-2 space-y-3 ${selectedId ? 'hidden lg:block' : ''}`}>
               {filtered.length === 0 ? (
                 <div className="card p-12 text-center">
-                  <FileText size={40} className="mx-auto mb-4 text-text-muted" />
-                  <p className="text-text-secondary mb-4">Aucune demande trouvée.</p>
-                  <button
-                    onClick={() => {
-                      setStatusFilter('all')
-                      setSearchQuery('')
-                    }}
-                    className="btn btn-ghost"
-                  >
-                    <ArrowClockwise size={16} />
-                    Réinitialiser les filtres
-                  </button>
+                  <div className="w-16 h-16 rounded-full bg-accent-subtle flex items-center justify-center mx-auto mb-4">
+                    <FileText size={32} className="text-primary" />
+                  </div>
+                  <h3 className="font-heading font-semibold text-primary mb-2 uppercase tracking-wider">Aucune demande trouvée</h3>
+                  <p className="text-text-secondary mb-6 max-w-sm mx-auto">
+                    {searchQuery || statusFilter !== 'all' 
+                      ? 'Essayez de modifier vos filtres ou votre recherche.'
+                      : 'Vous n\'avez pas encore de demandes. Soumettez votre première demande pour commencer.'}
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                    {(searchQuery || statusFilter !== 'all') && (
+                      <button
+                        onClick={() => {
+                          setStatusFilter('all')
+                          setSearchQuery('')
+                        }}
+                        className="btn btn-ghost"
+                      >
+                        <ArrowClockwise size={16} />
+                        Réinitialiser les filtres
+                      </button>
+                    )}
+                    <button
+                      onClick={() => navigate('/submit')}
+                      className="btn btn-primary"
+                    >
+                      <FilePlus size={16} />
+                      Nouvelle demande
+                    </button>
+                  </div>
                 </div>
               ) : (
                 filtered.map((req) => (

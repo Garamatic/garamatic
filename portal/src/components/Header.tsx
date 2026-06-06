@@ -23,6 +23,7 @@ export function Header() {
   const navigate = useNavigate()
   const email = sessionStorage.getItem('portalEmail')
   const pendingCount = getPendingCount()
+  const isDemoMode = !import.meta.env.VITE_API_BASE || import.meta.env.VITE_API_BASE === ''
 
   const handleLogout = () => {
     sessionStorage.removeItem('portalEmail')
@@ -31,6 +32,11 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 bg-primary border-b border-primary-hover shadow-md">
+      {isDemoMode && (
+        <div className="bg-secondary text-white text-center py-1 text-xs font-medium">
+          🏛️ Mode Démonstration — Les données sont fictives
+        </div>
+      )}
       <div className="container-page">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
