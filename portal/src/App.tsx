@@ -5,6 +5,7 @@ import { LandingPage } from './pages/LandingPage'
 import { SubmitPage } from './pages/SubmitPage'
 import { SuccessPage } from './pages/SuccessPage'
 import { DashboardPage } from './pages/DashboardPage'
+import { LoginPage } from './pages/LoginPage'
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route path="/submit" element={<SubmitPage />} />
           <Route path="/success/:ticketId?" element={<SuccessPage />} />
           <Route path="/requests" element={<DashboardPage />} />
+          <Route path="/login" element={<LoginPage />} />
         </Routes>
       </main>
       <Footer />

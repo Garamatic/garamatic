@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { NavLink } from 'react-router-dom'
-import { House, FilePlus, List, X, List as MenuIcon } from '@phosphor-icons/react'
+import { NavLink, useNavigate } from 'react-router-dom'
+import { House, FilePlus, List, X, List as MenuIcon, SignIn, SignOut, User } from '@phosphor-icons/react'
 
 const navItems = [
   { path: '/', label: 'Accueil', icon: House },
@@ -10,6 +10,13 @@ const navItems = [
 
 export function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const navigate = useNavigate()
+  const email = sessionStorage.getItem('portalEmail')
+
+  const handleLogout = () => {
+    sessionStorage.removeItem('portalEmail')
+    navigate('/')
+  }
 
   return (
     <header className="sticky top-0 z-50 bg-surface/95 backdrop-blur-sm border-b border-border shadow-sm">
@@ -46,6 +53,33 @@ export function Header() {
             ))}
           </nav>
 
+          {/* Auth */}
+          <div className="hidden md:flex items-center gap-2">
+            {email ? (
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-text-secondary flex items-center gap-1">
+                  <User size={14} />
+                  {email}
+                </span>
+                <button
+                  onClick={handleLogout}
+                  className="btn btn-ghost px-3 py-1.5 text-sm"
+                >
+                  <SignOut size={16} />
+                  Déconnexion
+                </button>
+              </div>
+            ) : (
+              <NavLink
+                to="/login"
+                className="btn btn-primary px-3 py-1.5 text-sm"
+              >
+                <SignIn size={16} />
+                Connexion
+              </NavLink>
+            )}
+          </div>
+
           {/* Mobile Menu Button */}
           <button
             className="md:hidden p-2 rounded-md text-text-secondary hover:text-text-primary hover:bg-surface-hover transition-colors"
@@ -79,6 +113,24 @@ export function Header() {
                 {item.label}
               </NavLink>
             ))}
+            {email ? (
+              <button
+                onClick={() => { handleLogout(); setMenuOpen(false) }}
+                className="flex items-center gap-3 px-3 py-3 rounded-md text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface-hover transition-colors"
+              >
+                <SignOut size={20} />
+                Déconnexion ({email})
+              </button>
+            ) : (
+              <NavLink
+                to="/login"
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center gap-3 px-3 py-3 rounded-md text-sm font-medium text-accent hover:bg-accent-subtle transition-colors"
+              >
+                <SignIn size={20} />
+                Connexion
+              </NavLink>
+            )}
           </nav>
         </div>
       )}

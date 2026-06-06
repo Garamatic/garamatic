@@ -150,9 +150,30 @@ export function SubmitPage() {
       const result = await response.json()
 
       if (result.success) {
+        const ticketId = result.ticketId || crypto.randomUUID().slice(0, 8).toUpperCase()
+        const ticketNumber = `TM-${new Date().getFullYear()}-${ticketId}`
+
+        // Store for success page
         sessionStorage.setItem('submissionResult', JSON.stringify(result))
         sessionStorage.setItem('portalEmail', formData.customerEmail)
-        navigate(`/success/${result.ticketId || ''}`)
+
+        // Store in mock DB for dashboard
+        const submitted = JSON.parse(sessionStorage.getItem('submittedTickets') || '[]')
+        submitted.push({
+          id: ticketNumber,
+          type: formData.requestType,
+          quartier: formData.quartier,
+          description: formData.description,
+          status: 'submitted',
+          priority: formData.priority,
+          date: new Date().toISOString().split('T')[0],
+          updatedAt: new Date().toISOString().split('T')[0],
+          hasAttachment: !!formData.attachment,
+          email: formData.customerEmail,
+        })
+        sessionStorage.setItem('submittedTickets', JSON.stringify(submitted))
+
+        navigate(`/success/${ticketId}`)
       } else {
         throw new Error(result.message || 'Submission failed')
       }

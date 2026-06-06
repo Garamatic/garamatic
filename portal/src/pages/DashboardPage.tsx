@@ -1,33 +1,70 @@
-import { useState, useMemo, useEffect, useCallback } from 'react'
+import { useState, useMemo, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   FileText, Clock, CheckCircle, MagnifyingGlass,
   ArrowRight, CaretDown, X, DownloadSimple,
-  Calendar, MapPin, Hash, Warning, ArrowClockwise,
-  EnvelopeSimple
+  Calendar, MapPin, Hash, Warning, ArrowClockwise
 } from '@phosphor-icons/react'
 import { StatusBadge, type StatusKey } from '../components/StatusBadge'
 import { StatusTimeline } from '../components/StatusTimeline'
 
-const API_BASE = import.meta.env.VITE_API_BASE ?? ''
-
-// ── Types ─────────────────────────────────────────────────────────────
-interface ApiTicket {
-  id: string
-  number: string
-  type: string
-  title: string
-  description: string
-  status: string
-  priority: string
-  date: string
-  updatedAt: string
-  tags?: string
-  hasAttachment: boolean
+// ── Mock data per email ─────────────────────────────────────────────
+const MOCK_DB: Record<string, MockTicket[]> = {
+  'jean.dupont@example.be': [
+    {
+      id: 'TM-2025-0042',
+      type: 'NUISANCE',
+      quartier: 'Centre-Ville',
+      description: 'Bruit excessif venant du chantier de construction rue de la Loi, tous les jours de 6h à 22h.',
+      status: 'in_progress',
+      priority: '10',
+      date: '2025-06-04',
+      updatedAt: '2025-06-05',
+      hasAttachment: true,
+      comment: 'Un agent a été dépêché sur place. Le permis de travail est conforme, mais les horaires sont dépassés.',
+    },
+    {
+      id: 'TM-2025-0038',
+      type: 'PERMIS',
+      quartier: 'Faubourg Nord',
+      description: 'Demande de permis pour une extension de terrasse de 15m² sur l\'arrière de la maison.',
+      status: 'received',
+      priority: '5',
+      date: '2025-06-02',
+      updatedAt: '2025-06-03',
+      hasAttachment: true,
+    },
+    {
+      id: 'TM-2025-0029',
+      type: 'DEMANDE',
+      quartier: 'Quartier Est',
+      description: 'Demande de réparation d\'un lampadaire défectueux au coin de la rue des Fleurs.',
+      status: 'resolved',
+      priority: '5',
+      date: '2025-05-28',
+      updatedAt: '2025-06-01',
+      hasAttachment: false,
+      comment: 'Lampadaire remplacé le 1er juin. Merci pour votre signalement.',
+    },
+  ],
+  'marie.curie@example.be': [
+    {
+      id: 'TM-2025-0015',
+      type: 'PLAINTE',
+      quartier: 'Zone Industrielle',
+      description: 'Odeurs nauséabondes provenant de l\'usine de recyclage.',
+      status: 'resolved',
+      priority: '15',
+      date: '2025-05-20',
+      updatedAt: '2025-05-25',
+      hasAttachment: true,
+      comment: 'Inspection réalisée. L\'usine a été mise en demeure.',
+    },
+  ],
 }
 
-interface TicketViewModel {
+interface MockTicket {
   id: string
-  number: string
   type: string
   quartier: string
   description: string
@@ -58,83 +95,36 @@ const priorityColors: Record<string, string> = {
   '15': 'text-red-600',
 }
 
-function mapApiTicket(t: ApiTicket): TicketViewModel {
-  // Extract quartier from tags like "Quartier:Centre-Ville"
-  const quartierMatch = t.tags?.match(/Quartier:([^,]+)/)
-  const quartier = quartierMatch ? quartierMatch[1] : 'Non spécifié'
-
-  // Map backend status to frontend StatusKey
-  const statusMap: Record<string, StatusKey> = {
-    pending: 'pending',
-    assigned: 'assigned',
-    inprogress: 'inprogress',
-    completed: 'completed',
-    rejected: 'rejected',
-    failed: 'rejected',
-    cancelled: 'rejected',
-  }
-
-  return {
-    id: t.number,
-    number: t.number,
-    type: t.type,
-    quartier,
-    description: t.description,
-    status: statusMap[t.status.toLowerCase()] ?? 'pending',
-    priority: t.priority,
-    date: t.date,
-    updatedAt: t.updatedAt,
-    hasAttachment: t.hasAttachment,
-  }
-}
-
 // ── Dashboard ─────────────────────────────────────────────────────────
 export function DashboardPage() {
-  const [email, setEmail] = useState('')
-  const [submittedEmail, setSubmittedEmail] = useState('')
-  const [tickets, setTickets] = useState<TicketViewModel[]>([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const navigate = useNavigate()
+  const email = sessionStorage.getItem('portalEmail')
+
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState<StatusKey | 'all'>('all')
   const [mobileDetailOpen, setMobileDetailOpen] = useState(false)
 
-  // Load email from sessionStorage on mount
+  // Redirect to login if not authenticated
   useEffect(() => {
-    const saved = sessionStorage.getItem('portalEmail')
-    if (saved) {
-      setEmail(saved)
-      setSubmittedEmail(saved)
+    if (!email) {
+      navigate('/login', { state: { from: '/requests' } })
     }
-  }, [])
+  }, [email, navigate])
 
-  const fetchTickets = useCallback(async (lookupEmail: string) => {
-    if (!lookupEmail.trim()) return
-    setLoading(true)
-    setError(null)
-    try {
-      const response = await fetch(`${API_BASE}/api/portal/tickets?email=${encodeURIComponent(lookupEmail)}`)
-      if (!response.ok) {
-        throw new Error(`Erreur ${response.status}`)
-      }
-      const data: ApiTicket[] = await response.json()
-      setTickets(data.map(mapApiTicket))
-      sessionStorage.setItem('portalEmail', lookupEmail)
-    } catch (err) {
-      setError('Impossible de charger les demandes. Vérifiez votre connexion.')
-    } finally {
-      setLoading(false)
-    }
-  }, [])
+  if (!email) return null
 
-  useEffect(() => {
-    if (submittedEmail) {
-      fetchTickets(submittedEmail)
-    }
-  }, [submittedEmail, fetchTickets])
-
-  const selected = tickets.find((r) => r.id === selectedId)
+  // Load tickets: mock + submitted from sessionStorage
+  const tickets = useMemo(() => {
+    const mock = MOCK_DB[email] || []
+    const submitted = JSON.parse(sessionStorage.getItem('submittedTickets') || '[]')
+      .filter((t: MockTicket & { email?: string }) => t.email === email)
+      .map((t: MockTicket & { email?: string }) => {
+        const { email: _, ...rest } = t
+        return rest as MockTicket
+      })
+    return [...mock, ...submitted]
+  }, [email])
 
   const filtered = useMemo(() => {
     let list = [...tickets]
@@ -157,30 +147,32 @@ export function DashboardPage() {
   const stats = useMemo(() => {
     const total = tickets.length
     const pending = tickets.filter(
-      (r) => r.status === 'pending' || r.status === 'assigned' || r.status === 'inprogress'
+      (r) => r.status === 'submitted' || r.status === 'received' || r.status === 'in_progress'
     ).length
-    const resolved = tickets.filter((r) => r.status === 'completed').length
+    const resolved = tickets.filter((r) => r.status === 'resolved').length
     const rejected = tickets.filter((r) => r.status === 'rejected').length
     return { total, pending, resolved, rejected }
   }, [tickets])
+
+  const selected = tickets.find((r) => r.id === selectedId)
 
   const handleSelect = (id: string) => {
     setSelectedId(id)
     setMobileDetailOpen(true)
   }
 
-  const timelineFor = (req: TicketViewModel) => {
-    const steps: { status: StatusKey; label: string; description: string; date?: string; active: boolean; completed: boolean }[] = [
-      { status: 'submitted', label: 'Soumise', description: 'Votre demande a été enregistrée.', date: req.date, active: false, completed: true },
-      { status: 'received', label: 'Reçue', description: 'Le service a pris connaissance de votre demande.', date: req.date, active: false, completed: true },
+  const timelineFor = (req: MockTicket) => {
+    const steps = [
+      { status: 'submitted' as StatusKey, label: 'Soumise', description: 'Votre demande a été enregistrée.', date: req.date, active: false, completed: true },
+      { status: 'received' as StatusKey, label: 'Reçue', description: 'Le service a pris connaissance de votre demande.', date: req.date, active: false, completed: true },
     ]
-    if (req.status === 'assigned' || req.status === 'inprogress') {
-      steps.push({ status: 'in_progress', label: 'En cours', description: 'Votre demande est en cours de traitement.', date: req.updatedAt, active: true, completed: false })
-    } else if (req.status === 'completed') {
-      steps.push({ status: 'in_progress', label: 'En cours', description: 'Votre demande a été traitée.', date: req.updatedAt, active: false, completed: true })
-      steps.push({ status: 'resolved', label: 'Résolue', description: 'Une réponse vous a été transmise.', date: req.updatedAt, active: true, completed: true })
+    if (req.status === 'in_progress') {
+      steps.push({ status: 'in_progress' as StatusKey, label: 'En cours', description: 'Votre demande est en cours de traitement.', date: req.updatedAt, active: true, completed: false })
+    } else if (req.status === 'resolved') {
+      steps.push({ status: 'in_progress' as StatusKey, label: 'En cours', description: 'Votre demande a été traitée.', date: req.updatedAt, active: false, completed: true })
+      steps.push({ status: 'resolved' as StatusKey, label: 'Résolue', description: 'Une réponse vous a été transmise.', date: req.updatedAt, active: true, completed: true })
     } else if (req.status === 'rejected') {
-      steps.push({ status: 'rejected', label: 'Rejetée', description: 'Votre demande a été rejetée. Voir le commentaire.', date: req.updatedAt, active: true, completed: true })
+      steps.push({ status: 'rejected' as StatusKey, label: 'Rejetée', description: 'Votre demande a été rejetée.', date: req.updatedAt, active: true, completed: true })
     }
     return steps
   }
@@ -195,39 +187,6 @@ export function DashboardPage() {
         <p className="text-text-secondary">
           Suivez l'avancement de vos demandes municipales.
         </p>
-      </div>
-
-      {/* Email lookup */}
-      <div className="card p-5 mb-6">
-        <div className="flex flex-col sm:flex-row gap-3">
-          <div className="relative flex-grow max-w-md">
-            <EnvelopeSimple size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
-            <input
-              type="email"
-              placeholder="Votre adresse email..."
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  setSubmittedEmail(email)
-                }
-              }}
-              className="input pl-10"
-            />
-          </div>
-          <button
-            onClick={() => setSubmittedEmail(email)}
-            className="btn btn-primary px-6 py-2.5"
-            disabled={loading}
-          >
-            {loading ? (
-              <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-            ) : (
-              <MagnifyingGlass size={18} />
-            )}
-            Rechercher
-          </button>
-        </div>
       </div>
 
       {/* Stats */}
@@ -267,39 +226,22 @@ export function DashboardPage() {
           >
             <option value="all">Tous les statuts</option>
             <option value="in_progress">En cours</option>
-            <option value="pending">Reçues</option>
-            <option value="completed">Résolues</option>
+            <option value="received">Reçues</option>
+            <option value="resolved">Résolues</option>
             <option value="rejected">Rejetées</option>
           </select>
           <CaretDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none" />
         </div>
       </div>
 
-      {/* Error */}
-      {error && (
-        <div className="p-4 bg-error-bg border border-error rounded-md mb-6">
-          <p className="error-text flex items-center gap-1">
-            <Warning size={14} /> {error}
-          </p>
-        </div>
-      )}
-
       {/* Content */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* List */}
         <div className={`lg:col-span-2 space-y-3 ${selectedId ? 'hidden lg:block' : ''}`}>
-          {!submittedEmail && !loading && (
-            <div className="card p-12 text-center">
-              <EnvelopeSimple size={40} className="mx-auto mb-4 text-text-muted" />
-              <p className="text-text-secondary mb-2">Entrez votre adresse email pour voir vos demandes.</p>
-              <p className="text-sm text-text-muted">Les demandes soumises via le portail seront affichées ici.</p>
-            </div>
-          )}
-
-          {submittedEmail && !loading && filtered.length === 0 && (
+          {filtered.length === 0 ? (
             <div className="card p-12 text-center">
               <FileText size={40} className="mx-auto mb-4 text-text-muted" />
-              <p className="text-text-secondary mb-4">Aucune demande trouvée pour cet email.</p>
+              <p className="text-text-secondary mb-4">Aucune demande trouvée.</p>
               <button
                 onClick={() => {
                   setStatusFilter('all')
@@ -311,58 +253,51 @@ export function DashboardPage() {
                 Réinitialiser les filtres
               </button>
             </div>
-          )}
-
-          {loading && (
-            <div className="card p-12 text-center">
-              <span className="w-8 h-8 border-2 border-accent/30 border-t-accent rounded-full animate-spin mx-auto block mb-4" />
-              <p className="text-text-secondary">Chargement des demandes...</p>
-            </div>
-          )}
-
-          {!loading && filtered.map((req) => (
-            <div
-              key={req.id}
-              onClick={() => handleSelect(req.id)}
-              className={`card p-5 cursor-pointer transition-all hover:shadow-lg ${
-                selectedId === req.id ? 'ring-2 ring-accent ring-offset-2' : ''
-              }`}
-            >
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-grow min-w-0">
-                  <div className="flex items-center gap-2 mb-2 flex-wrap">
-                    <StatusBadge status={req.status} />
-                    <span className={`text-xs font-medium ${priorityColors[req.priority]}`}>
-                      {priorityLabels[req.priority]}
-                    </span>
-                  </div>
-                  <h3 className="font-medium text-text-primary mb-1 truncate">
-                    {typeLabels[req.type] || req.type} — {req.quartier}
-                  </h3>
-                  <p className="text-sm text-text-secondary line-clamp-2">
-                    {req.description}
-                  </p>
-                  <div className="flex items-center gap-4 mt-3 text-xs text-text-muted">
-                    <span className="flex items-center gap-1">
-                      <Hash size={12} />
-                      {req.id}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Calendar size={12} />
-                      {req.date}
-                    </span>
-                    {req.hasAttachment && (
-                      <span className="flex items-center gap-1 text-accent">
-                        <DownloadSimple size={12} />
-                        Pièce jointe
+          ) : (
+            filtered.map((req) => (
+              <div
+                key={req.id}
+                onClick={() => handleSelect(req.id)}
+                className={`card p-5 cursor-pointer transition-all hover:shadow-lg ${
+                  selectedId === req.id ? 'ring-2 ring-primary ring-offset-2' : ''
+                }`}
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-grow min-w-0">
+                    <div className="flex items-center gap-2 mb-2 flex-wrap">
+                      <StatusBadge status={req.status} />
+                      <span className={`text-xs font-medium ${priorityColors[req.priority]}`}>
+                        {priorityLabels[req.priority]}
                       </span>
-                    )}
+                    </div>
+                    <h3 className="font-medium text-text-primary mb-1 truncate">
+                      {typeLabels[req.type] || req.type} — {req.quartier}
+                    </h3>
+                    <p className="text-sm text-text-secondary line-clamp-2">
+                      {req.description}
+                    </p>
+                    <div className="flex items-center gap-4 mt-3 text-xs text-text-muted">
+                      <span className="flex items-center gap-1">
+                        <Hash size={12} />
+                        {req.id}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Calendar size={12} />
+                        {req.date}
+                      </span>
+                      {req.hasAttachment && (
+                        <span className="flex items-center gap-1 text-primary">
+                          <DownloadSimple size={12} />
+                          Pièce jointe
+                        </span>
+                      )}
+                    </div>
                   </div>
+                  <ArrowRight size={20} className="text-text-muted shrink-0 mt-1" />
                 </div>
-                <ArrowRight size={20} className="text-text-muted shrink-0 mt-1" />
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
 
         {/* Detail Panel (Desktop) */}
@@ -418,7 +353,7 @@ function StatCard({ label, value, icon: Icon, color }: { label: string; value: n
   )
 }
 
-function DetailContent({ req, timeline }: { req: TicketViewModel; timeline: Parameters<typeof StatusTimeline>[0]['steps'] }) {
+function DetailContent({ req, timeline }: { req: MockTicket; timeline: Parameters<typeof StatusTimeline>[0]['steps'] }) {
   return (
     <div className="space-y-6">
       <div>
@@ -455,9 +390,9 @@ function DetailContent({ req, timeline }: { req: TicketViewModel; timeline: Para
 
       {req.hasAttachment && (
         <div className="p-3 bg-surface-hover rounded-md border border-border flex items-center gap-3">
-          <DownloadSimple size={20} className="text-accent" />
+          <DownloadSimple size={20} className="text-primary" />
           <span className="text-sm text-text-primary flex-grow">Document justificatif</span>
-          <button className="text-sm text-accent hover:text-accent-hover font-medium">
+          <button className="text-sm text-primary hover:text-primary-hover font-medium">
             Télécharger
           </button>
         </div>
@@ -467,6 +402,15 @@ function DetailContent({ req, timeline }: { req: TicketViewModel; timeline: Para
         <h3 className="text-sm font-semibold text-text-primary mb-4">Historique</h3>
         <StatusTimeline steps={timeline} />
       </div>
+
+      {req.comment && (
+        <div className="border-t border-border pt-6">
+          <h3 className="text-sm font-semibold text-text-primary mb-3">Commentaire du service</h3>
+          <div className="bg-primary/5 rounded-md p-4">
+            <p className="text-sm text-text-secondary leading-relaxed">{req.comment}</p>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
