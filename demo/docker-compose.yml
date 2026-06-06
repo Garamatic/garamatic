@@ -301,6 +301,224 @@ services:
       timeout: 5s
       retries: 5
 
+  # ════════════════════════════════════════════════════════════
+  # TENANT APIs — Separate Ticket Masala instances per tenant
+  # ════════════════════════════════════════════════════════════
+  api-desgoffe:
+    build:
+      context: ../ticket-masala
+      dockerfile: Dockerfile
+    container_name: garamatic_demo_api_desgoffe
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - MASALA_TENANT=desgoffe
+      - ConnectionStrings__DefaultConnection=Data Source=/app/data/masala.db;Cache=Shared;Mode=ReadWriteCreate
+      - MasalaConfig__ConfigPath=/app/config
+      - MasalaConfig__SeedDataPath=/app/config/seed_data.json
+      - TEST_MODE=false
+      - RabbitMQ__HostName=rabbitmq
+      - RabbitMQ__Port=5672
+      - RabbitMQ__Username=guest
+      - RabbitMQ__Password=guest
+      - RabbitMQ__ExchangeName=event_exchange
+      - OPENAI_BASE_URL=${OLLAMA_BASE_URL:-http://ollama:11434/v1}
+      - OPENAI_API_KEY=${OLLAMA_API_KEY:-ollama}
+      - OpenAI__Provider=ollama
+    volumes:
+      - ../ticket-masala/config:/app/config:ro
+      - api_desgoffe_data:/app/data
+    ports:
+      - "5081:8080"
+    networks:
+      - garamatic_demo_net
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "/usr/bin/healthcheck", "http://localhost:8080/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api-whitman:
+    build:
+      context: ../ticket-masala
+      dockerfile: Dockerfile
+    container_name: garamatic_demo_api_whitman
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - MASALA_TENANT=whitman
+      - ConnectionStrings__DefaultConnection=Data Source=/app/data/masala.db;Cache=Shared;Mode=ReadWriteCreate
+      - MasalaConfig__ConfigPath=/app/config
+      - MasalaConfig__SeedDataPath=/app/config/seed_data.json
+      - TEST_MODE=false
+      - RabbitMQ__HostName=rabbitmq
+      - RabbitMQ__Port=5672
+      - RabbitMQ__Username=guest
+      - RabbitMQ__Password=guest
+      - RabbitMQ__ExchangeName=event_exchange
+      - OPENAI_BASE_URL=${OLLAMA_BASE_URL:-http://ollama:11434/v1}
+      - OPENAI_API_KEY=${OLLAMA_API_KEY:-ollama}
+      - OpenAI__Provider=ollama
+    volumes:
+      - ../ticket-masala/config:/app/config:ro
+      - api_whitman_data:/app/data
+    ports:
+      - "5082:8080"
+    networks:
+      - garamatic_demo_net
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "/usr/bin/healthcheck", "http://localhost:8080/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api-liberty:
+    build:
+      context: ../ticket-masala
+      dockerfile: Dockerfile
+    container_name: garamatic_demo_api_liberty
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - MASALA_TENANT=liberty
+      - ConnectionStrings__DefaultConnection=Data Source=/app/data/masala.db;Cache=Shared;Mode=ReadWriteCreate
+      - MasalaConfig__ConfigPath=/app/config
+      - MasalaConfig__SeedDataPath=/app/config/seed_data.json
+      - TEST_MODE=false
+      - RabbitMQ__HostName=rabbitmq
+      - RabbitMQ__Port=5672
+      - RabbitMQ__Username=guest
+      - RabbitMQ__Password=guest
+      - RabbitMQ__ExchangeName=event_exchange
+      - OPENAI_BASE_URL=${OLLAMA_BASE_URL:-http://ollama:11434/v1}
+      - OPENAI_API_KEY=${OLLAMA_API_KEY:-ollama}
+      - OpenAI__Provider=ollama
+    volumes:
+      - ../ticket-masala/config:/app/config:ro
+      - api_liberty_data:/app/data
+    ports:
+      - "5083:8080"
+    networks:
+      - garamatic_demo_net
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "/usr/bin/healthcheck", "http://localhost:8080/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api-hennessey:
+    build:
+      context: ../ticket-masala
+      dockerfile: Dockerfile
+    container_name: garamatic_demo_api_hennessey
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - MASALA_TENANT=hennessey
+      - ConnectionStrings__DefaultConnection=Data Source=/app/data/masala.db;Cache=Shared;Mode=ReadWriteCreate
+      - MasalaConfig__ConfigPath=/app/config
+      - MasalaConfig__SeedDataPath=/app/config/seed_data.json
+      - TEST_MODE=false
+      - RabbitMQ__HostName=rabbitmq
+      - RabbitMQ__Port=5672
+      - RabbitMQ__Username=guest
+      - RabbitMQ__Password=guest
+      - RabbitMQ__ExchangeName=event_exchange
+      - OPENAI_BASE_URL=${OLLAMA_BASE_URL:-http://ollama:11434/v1}
+      - OPENAI_API_KEY=${OLLAMA_API_KEY:-ollama}
+      - OpenAI__Provider=ollama
+    volumes:
+      - ../ticket-masala/config:/app/config:ro
+      - api_hennessey_data:/app/data
+    ports:
+      - "5084:8080"
+    networks:
+      - garamatic_demo_net
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "/usr/bin/healthcheck", "http://localhost:8080/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # ════════════════════════════════════════════════════════════
+  # TENANT PORTALS — Branded portal frontends
+  # ════════════════════════════════════════════════════════════
+  portal-desgoffe:
+    image: ghcr.io/garamatic/ticket-masala-portal:latest
+    container_name: garamatic_demo_portal_desgoffe
+    environment:
+      - MASALA_TENANT_ID=desgoffe
+    ports:
+      - "8081:8080"
+    networks:
+      - garamatic_demo_net
+    depends_on:
+      - api-desgoffe
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  portal-whitman:
+    image: ghcr.io/garamatic/ticket-masala-portal:latest
+    container_name: garamatic_demo_portal_whitman
+    environment:
+      - MASALA_TENANT_ID=whitman
+    ports:
+      - "8082:8080"
+    networks:
+      - garamatic_demo_net
+    depends_on:
+      - api-whitman
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  portal-liberty:
+    image: ghcr.io/garamatic/ticket-masala-portal:latest
+    container_name: garamatic_demo_portal_liberty
+    environment:
+      - MASALA_TENANT_ID=liberty
+    ports:
+      - "8083:8080"
+    networks:
+      - garamatic_demo_net
+    depends_on:
+      - api-liberty
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  portal-hennessey:
+    image: ghcr.io/garamatic/ticket-masala-portal:latest
+    container_name: garamatic_demo_portal_hennessey
+    environment:
+      - MASALA_TENANT_ID=hennessey
+    ports:
+      - "8084:8080"
+    networks:
+      - garamatic_demo_net
+    depends_on:
+      - api-hennessey
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   seeder:
     build:
       context: ./seeding
@@ -352,3 +570,7 @@ volumes:
   odoo_demo_app_data:
   odoo_demo_db_data:
   ollama_demo_data:
+  api_desgoffe_data:
+  api_whitman_data:
+  api_liberty_data:
+  api_hennessey_data:

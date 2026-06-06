@@ -81,6 +81,14 @@ demo/
 | Odoo Bridge | http://localhost:8089 | LiteDB state seeded |
 | Mailhog | http://localhost:8025 | Captures all emails |
 | RabbitMQ | http://localhost:15672 | guest/guest |
+| API Desgoffe | http://localhost:5081 | Tenant-specific API |
+| API Whitman | http://localhost:5082 | Tenant-specific API |
+| API Liberty | http://localhost:5083 | Tenant-specific API |
+| API Hennessey | http://localhost:5084 | Tenant-specific API |
+| Portal Desgoffe | http://localhost:8081 | Branded portal frontend |
+| Portal Whitman | http://localhost:8082 | Branded portal frontend |
+| Portal Liberty | http://localhost:8083 | Branded portal frontend |
+| Portal Hennessey | http://localhost:8084 | Branded portal frontend |
 
 ## Data Flow
 
