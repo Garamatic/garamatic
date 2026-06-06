@@ -237,6 +237,28 @@ services:
       - garamatic_demo_net
 
   # ════════════════════════════════════════════════════════════
+  # DESGOFFE PORTAL - Citizen Portal (React + Vite)
+  # ════════════════════════════════════════════════════════════
+  portal:
+    build:
+      context: ./showcase/tenants/desgoffe/portal
+      dockerfile: Dockerfile
+    container_name: garamatic_demo_portal
+    ports:
+      - "8093:80"
+    networks:
+      - garamatic_demo_net
+    depends_on:
+      gatekeeper-api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:80/"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  # ════════════════════════════════════════════════════════════
   # ODOO ERP - Invoice & CRM backend
   # Heavy service — may take 60-90s to become ready on first boot
   # ════════════════════════════════════════════════════════════

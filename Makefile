@@ -37,6 +37,7 @@ up:
 	@echo "   • Garamatic Web  → http://localhost:8090"
 	@echo "   • Masala Web     → http://localhost:8091"
 	@echo "   • Odoo          → http://localhost:8092"
+	@echo "   • Portal (Desgoffe) → http://localhost:8093"
 	@echo "   • Odoo Bridge   → http://localhost:8089/health"
 	@echo "   • Agentic API    → http://localhost:3001/docs"
 	@echo "   • Ollama LLM     → http://localhost:11434"

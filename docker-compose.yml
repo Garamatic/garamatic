@@ -179,6 +179,28 @@ services:
     restart: unless-stopped
 
   # ════════════════════════════════════════════════════════════
+  # DESGOFFE PORTAL - Citizen Portal Showcase (React + Vite)
+  # ════════════════════════════════════════════════════════════
+  portal:
+    build:
+      context: ./demo/showcase/tenants/desgoffe/portal
+      dockerfile: Dockerfile
+    container_name: garamatic_portal
+    ports:
+      - "8093:80"
+    networks:
+      - garamatic-network
+    depends_on:
+      gatekeeper-api:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:80/"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  # ════════════════════════════════════════════════════════════
   # GARAMATIC WEB - Main Frontend
   # ════════════════════════════════════════════════════════════
   garamatic-web:
