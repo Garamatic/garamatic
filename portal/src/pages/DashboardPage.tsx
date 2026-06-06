@@ -8,11 +8,43 @@ import {
 import { StatusBadge, type StatusKey } from '../components/StatusBadge'
 import { StatusTimeline } from '../components/StatusTimeline'
 
-// ── Mock data per email ─────────────────────────────────────────────
-const MOCK_DB: Record<string, MockTicket[]> = {
+const API_BASE = import.meta.env.VITE_API_BASE ?? ''
+
+// ── Types ───────────────────────────────────────────────────────────
+interface ApiTicket {
+  id: string
+  number: string
+  type: string
+  title: string
+  description: string
+  status: string
+  priority: string
+  date: string
+  updatedAt: string
+  tags?: string
+  hasAttachment: boolean
+}
+
+interface TicketViewModel {
+  id: string
+  number: string
+  type: string
+  quartier: string
+  description: string
+  status: StatusKey
+  priority: string
+  date: string
+  updatedAt: string
+  hasAttachment: boolean
+  comment?: string
+}
+
+// ── Mock fallback data ─────────────────────────────────────────────
+const MOCK_DB: Record<string, TicketViewModel[]> = {
   'jean.dupont@example.be': [
     {
       id: 'TM-2025-0042',
+      number: 'TM-2025-0042',
       type: 'NUISANCE',
       quartier: 'Centre-Ville',
       description: 'Bruit excessif venant du chantier de construction rue de la Loi, tous les jours de 6h à 22h.',
@@ -25,6 +57,7 @@ const MOCK_DB: Record<string, MockTicket[]> = {
     },
     {
       id: 'TM-2025-0038',
+      number: 'TM-2025-0038',
       type: 'PERMIS',
       quartier: 'Faubourg Nord',
       description: 'Demande de permis pour une extension de terrasse de 15m² sur l\'arrière de la maison.',
@@ -36,6 +69,7 @@ const MOCK_DB: Record<string, MockTicket[]> = {
     },
     {
       id: 'TM-2025-0029',
+      number: 'TM-2025-0029',
       type: 'DEMANDE',
       quartier: 'Quartier Est',
       description: 'Demande de réparation d\'un lampadaire défectueux au coin de la rue des Fleurs.',
@@ -50,6 +84,7 @@ const MOCK_DB: Record<string, MockTicket[]> = {
   'marie.curie@example.be': [
     {
       id: 'TM-2025-0015',
+      number: 'TM-2025-0015',
       type: 'PLAINTE',
       quartier: 'Zone Industrielle',
       description: 'Odeurs nauséabondes provenant de l\'usine de recyclage.',
@@ -63,17 +98,32 @@ const MOCK_DB: Record<string, MockTicket[]> = {
   ],
 }
 
-interface MockTicket {
-  id: string
-  type: string
-  quartier: string
-  description: string
-  status: StatusKey
-  priority: string
-  date: string
-  updatedAt: string
-  hasAttachment: boolean
-  comment?: string
+function mapApiTicket(t: ApiTicket): TicketViewModel {
+  const quartierMatch = t.tags?.match(/Quartier:([^,]+)/)
+  const quartier = quartierMatch ? quartierMatch[1] : 'Non spécifié'
+
+  const statusMap: Record<string, StatusKey> = {
+    pending: 'pending',
+    assigned: 'assigned',
+    inprogress: 'inprogress',
+    completed: 'resolved',
+    rejected: 'rejected',
+    failed: 'rejected',
+    cancelled: 'rejected',
+  }
+
+  return {
+    id: t.number,
+    number: t.number,
+    type: t.type,
+    quartier,
+    description: t.description,
+    status: statusMap[t.status.toLowerCase()] ?? 'pending',
+    priority: t.priority,
+    date: t.date,
+    updatedAt: t.updatedAt,
+    hasAttachment: t.hasAttachment,
+  }
 }
 
 const typeLabels: Record<string, string> = {
@@ -100,6 +150,9 @@ export function DashboardPage() {
   const navigate = useNavigate()
   const email = sessionStorage.getItem('portalEmail')
 
+  const [tickets, setTickets] = useState<TicketViewModel[]>([])
+  const [loading, setLoading] = useState(true)
+  const [apiError, setApiError] = useState<string | null>(null)
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState<StatusKey | 'all'>('all')
@@ -112,18 +165,41 @@ export function DashboardPage() {
     }
   }, [email, navigate])
 
-  if (!email) return null
+  // Fetch tickets from API on mount
+  useEffect(() => {
+    if (!email) return
 
-  // Load tickets: mock + submitted from sessionStorage
-  const tickets = useMemo(() => {
-    const mock = MOCK_DB[email] || []
-    const submitted = JSON.parse(sessionStorage.getItem('submittedTickets') || '[]')
-      .filter((t: MockTicket & { email?: string }) => t.email === email)
-      .map((t: MockTicket & { email?: string }) => {
-        const { email: _, ...rest } = t
-        return rest as MockTicket
-      })
-    return [...mock, ...submitted]
+    const fetchTickets = async () => {
+      setLoading(true)
+      setApiError(null)
+      try {
+        const response = await fetch(
+          `${API_BASE}/api/portal/tickets?email=${encodeURIComponent(email)}`
+        )
+        if (!response.ok) {
+          throw new Error(`Erreur ${response.status}`)
+        }
+        const data: ApiTicket[] = await response.json()
+        const mapped = data.map(mapApiTicket)
+        setTickets(mapped)
+      } catch (err) {
+        console.error('Failed to fetch tickets:', err)
+        setApiError('Impossible de charger les demandes depuis le serveur. Mode hors-ligne activé.')
+        // Fallback to mock data
+        const mock = MOCK_DB[email] || []
+        const submitted = JSON.parse(sessionStorage.getItem('submittedTickets') || '[]')
+          .filter((t: TicketViewModel & { email?: string }) => t.email === email)
+          .map((t: TicketViewModel & { email?: string }) => {
+            const { email: _, ...rest } = t
+            return rest as TicketViewModel
+          })
+        setTickets([...mock, ...submitted])
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchTickets()
   }, [email])
 
   const filtered = useMemo(() => {
@@ -161,7 +237,7 @@ export function DashboardPage() {
     setMobileDetailOpen(true)
   }
 
-  const timelineFor = (req: MockTicket) => {
+  const timelineFor = (req: TicketViewModel) => {
     const steps = [
       { status: 'submitted' as StatusKey, label: 'Soumise', description: 'Votre demande a été enregistrée.', date: req.date, active: false, completed: true },
       { status: 'received' as StatusKey, label: 'Reçue', description: 'Le service a pris connaissance de votre demande.', date: req.date, active: false, completed: true },
@@ -189,151 +265,169 @@ export function DashboardPage() {
         </p>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <StatCard label="Total" value={stats.total} icon={FileText} color="text-text-primary" />
-        <StatCard label="En cours" value={stats.pending} icon={Clock} color="text-amber-600" />
-        <StatCard label="Résolues" value={stats.resolved} icon={CheckCircle} color="text-success" />
-        <StatCard label="Rejetées" value={stats.rejected} icon={Warning} color="text-error" />
-      </div>
-
-      {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-3 mb-6">
-        <div className="relative flex-grow max-w-md">
-          <MagnifyingGlass size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
-          <input
-            type="text"
-            placeholder="Rechercher une demande..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="input pl-10"
-          />
-          {searchQuery && (
-            <button
-              onClick={() => setSearchQuery('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary"
-            >
-              <X size={16} />
-            </button>
-          )}
+      {/* API Error Banner */}
+      {apiError && (
+        <div className="mb-6 p-4 bg-warning/10 border border-warning/20 rounded-md flex items-start gap-3">
+          <Warning size={18} className="text-warning shrink-0 mt-0.5" />
+          <p className="text-sm text-text-secondary">{apiError}</p>
         </div>
+      )}
 
-        <div className="relative">
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value as StatusKey | 'all')}
-            className="input pr-10 appearance-none cursor-pointer"
-          >
-            <option value="all">Tous les statuts</option>
-            <option value="in_progress">En cours</option>
-            <option value="received">Reçues</option>
-            <option value="resolved">Résolues</option>
-            <option value="rejected">Rejetées</option>
-          </select>
-          <CaretDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none" />
+      {/* Loading */}
+      {loading ? (
+        <div className="card p-12 text-center">
+          <div className="w-10 h-10 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-text-secondary">Chargement de vos demandes...</p>
         </div>
-      </div>
+      ) : (
+        <>
+          {/* Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <StatCard label="Total" value={stats.total} icon={FileText} color="text-text-primary" />
+            <StatCard label="En cours" value={stats.pending} icon={Clock} color="text-amber-600" />
+            <StatCard label="Résolues" value={stats.resolved} icon={CheckCircle} color="text-success" />
+            <StatCard label="Rejetées" value={stats.rejected} icon={Warning} color="text-error" />
+          </div>
 
-      {/* Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* List */}
-        <div className={`lg:col-span-2 space-y-3 ${selectedId ? 'hidden lg:block' : ''}`}>
-          {filtered.length === 0 ? (
-            <div className="card p-12 text-center">
-              <FileText size={40} className="mx-auto mb-4 text-text-muted" />
-              <p className="text-text-secondary mb-4">Aucune demande trouvée.</p>
-              <button
-                onClick={() => {
-                  setStatusFilter('all')
-                  setSearchQuery('')
-                }}
-                className="btn btn-ghost"
+          {/* Filters */}
+          <div className="flex flex-col sm:flex-row gap-3 mb-6">
+            <div className="relative flex-grow max-w-md">
+              <MagnifyingGlass size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
+              <input
+                type="text"
+                placeholder="Rechercher une demande..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="input pl-10"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary"
+                >
+                  <X size={16} />
+                </button>
+              )}
+            </div>
+
+            <div className="relative">
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value as StatusKey | 'all')}
+                className="input pr-10 appearance-none cursor-pointer"
               >
-                <ArrowClockwise size={16} />
-                Réinitialiser les filtres
-              </button>
-            </div>
-          ) : (
-            filtered.map((req) => (
-              <div
-                key={req.id}
-                onClick={() => handleSelect(req.id)}
-                className={`card p-5 cursor-pointer transition-all hover:shadow-lg ${
-                  selectedId === req.id ? 'ring-2 ring-primary ring-offset-2' : ''
-                }`}
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-grow min-w-0">
-                    <div className="flex items-center gap-2 mb-2 flex-wrap">
-                      <StatusBadge status={req.status} />
-                      <span className={`text-xs font-medium ${priorityColors[req.priority]}`}>
-                        {priorityLabels[req.priority]}
-                      </span>
-                    </div>
-                    <h3 className="font-medium text-text-primary mb-1 truncate">
-                      {typeLabels[req.type] || req.type} — {req.quartier}
-                    </h3>
-                    <p className="text-sm text-text-secondary line-clamp-2">
-                      {req.description}
-                    </p>
-                    <div className="flex items-center gap-4 mt-3 text-xs text-text-muted">
-                      <span className="flex items-center gap-1">
-                        <Hash size={12} />
-                        {req.id}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Calendar size={12} />
-                        {req.date}
-                      </span>
-                      {req.hasAttachment && (
-                        <span className="flex items-center gap-1 text-primary">
-                          <DownloadSimple size={12} />
-                          Pièce jointe
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <ArrowRight size={20} className="text-text-muted shrink-0 mt-1" />
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-
-        {/* Detail Panel (Desktop) */}
-        <div className="hidden lg:block">
-          {selected ? (
-            <div className="card p-6 sticky top-24">
-              <DetailContent req={selected} timeline={timelineFor(selected)} />
-            </div>
-          ) : (
-            <div className="card p-8 text-center text-text-muted">
-              <FileText size={40} className="mx-auto mb-4" />
-              <p className="text-sm">Sélectionnez une demande pour voir les détails.</p>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Mobile Detail Modal */}
-      {mobileDetailOpen && selected && (
-        <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="absolute inset-0 bg-black/40" onClick={() => setMobileDetailOpen(false)} />
-          <div className="absolute bottom-0 left-0 right-0 bg-surface rounded-t-2xl max-h-[85vh] overflow-y-auto">
-            <div className="p-4 border-b border-border flex items-center justify-between">
-              <h2 className="font-semibold text-text-primary">Détails</h2>
-              <button
-                onClick={() => setMobileDetailOpen(false)}
-                className="p-2 rounded-md hover:bg-surface-hover"
-              >
-                <X size={20} />
-              </button>
-            </div>
-            <div className="p-6">
-              <DetailContent req={selected} timeline={timelineFor(selected)} />
+                <option value="all">Tous les statuts</option>
+                <option value="in_progress">En cours</option>
+                <option value="received">Reçues</option>
+                <option value="resolved">Résolues</option>
+                <option value="rejected">Rejetées</option>
+              </select>
+              <CaretDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none" />
             </div>
           </div>
-        </div>
+
+          {/* Content */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* List */}
+            <div className={`lg:col-span-2 space-y-3 ${selectedId ? 'hidden lg:block' : ''}`}>
+              {filtered.length === 0 ? (
+                <div className="card p-12 text-center">
+                  <FileText size={40} className="mx-auto mb-4 text-text-muted" />
+                  <p className="text-text-secondary mb-4">Aucune demande trouvée.</p>
+                  <button
+                    onClick={() => {
+                      setStatusFilter('all')
+                      setSearchQuery('')
+                    }}
+                    className="btn btn-ghost"
+                  >
+                    <ArrowClockwise size={16} />
+                    Réinitialiser les filtres
+                  </button>
+                </div>
+              ) : (
+                filtered.map((req) => (
+                  <div
+                    key={req.id}
+                    onClick={() => handleSelect(req.id)}
+                    className={`card p-5 cursor-pointer transition-all hover:shadow-lg ${
+                      selectedId === req.id ? 'ring-2 ring-primary ring-offset-2' : ''
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-grow min-w-0">
+                        <div className="flex items-center gap-2 mb-2 flex-wrap">
+                          <StatusBadge status={req.status} />
+                          <span className={`text-xs font-medium ${priorityColors[req.priority]}`}>
+                            {priorityLabels[req.priority]}
+                          </span>
+                        </div>
+                        <h3 className="font-medium text-text-primary mb-1 truncate">
+                          {typeLabels[req.type] || req.type} — {req.quartier}
+                        </h3>
+                        <p className="text-sm text-text-secondary line-clamp-2">
+                          {req.description}
+                        </p>
+                        <div className="flex items-center gap-4 mt-3 text-xs text-text-muted">
+                          <span className="flex items-center gap-1">
+                            <Hash size={12} />
+                            {req.id}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Calendar size={12} />
+                            {req.date}
+                          </span>
+                          {req.hasAttachment && (
+                            <span className="flex items-center gap-1 text-primary">
+                              <DownloadSimple size={12} />
+                              Pièce jointe
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <ArrowRight size={20} className="text-text-muted shrink-0 mt-1" />
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* Detail Panel (Desktop) */}
+            <div className="hidden lg:block">
+              {selected ? (
+                <div className="card p-6 sticky top-24">
+                  <DetailContent req={selected} timeline={timelineFor(selected)} />
+                </div>
+              ) : (
+                <div className="card p-8 text-center text-text-muted">
+                  <FileText size={40} className="mx-auto mb-4" />
+                  <p className="text-sm">Sélectionnez une demande pour voir les détails.</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Mobile Detail Modal */}
+          {mobileDetailOpen && selected && (
+            <div className="fixed inset-0 z-50 lg:hidden">
+              <div className="absolute inset-0 bg-black/40" onClick={() => setMobileDetailOpen(false)} />
+              <div className="absolute bottom-0 left-0 right-0 bg-surface rounded-t-2xl max-h-[85vh] overflow-y-auto">
+                <div className="p-4 border-b border-border flex items-center justify-between">
+                  <h2 className="font-semibold text-text-primary">Détails</h2>
+                  <button
+                    onClick={() => setMobileDetailOpen(false)}
+                    className="p-2 rounded-md hover:bg-surface-hover"
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+                <div className="p-6">
+                  <DetailContent req={selected} timeline={timelineFor(selected)} />
+                </div>
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   )
@@ -353,7 +447,7 @@ function StatCard({ label, value, icon: Icon, color }: { label: string; value: n
   )
 }
 
-function DetailContent({ req, timeline }: { req: MockTicket; timeline: Parameters<typeof StatusTimeline>[0]['steps'] }) {
+function DetailContent({ req, timeline }: { req: TicketViewModel; timeline: Parameters<typeof StatusTimeline>[0]['steps'] }) {
   return (
     <div className="space-y-6">
       <div>
