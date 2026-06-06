@@ -1,0 +1,72 @@
+[
+  {
+    "email": "gustave@desgoffe.gov",
+    "name": "Gustave Desgoffe",
+    "phone": "+32 2 555 01 01",
+    "quartier": "Centre-Ville",
+    "role": "Bourgmestre"
+  },
+  {
+    "email": "jean.dupont@citoyen.be",
+    "name": "Jean Dupont",
+    "phone": "+32 471 23 45 67",
+    "quartier": "Centre-Ville",
+    "role": "Citoyen"
+  },
+  {
+    "email": "marie.curie@science.be",
+    "name": "Marie Curie",
+    "phone": "+32 472 34 56 78",
+    "quartier": "Faubourg Nord",
+    "role": "Citoyenne"
+  },
+  {
+    "email": "pierre.martin@entreprise.be",
+    "name": "Pierre Martin",
+    "phone": "+32 473 45 67 89",
+    "quartier": "Quartier Est",
+    "role": "Chef d'entreprise"
+  },
+  {
+    "email": "sophie.bernard@ecole.be",
+    "name": "Sophie Bernard",
+    "phone": "+32 474 56 78 90",
+    "quartier": "Zone Industrielle",
+    "role": "Directrice d'école"
+  },
+  {
+    "email": "lucas.garcia@artisan.be",
+    "name": "Lucas Garcia",
+    "phone": "+32 475 67 89 01",
+    "quartier": "Centre-Ville",
+    "role": "Artisan"
+  },
+  {
+    "email": "emma.roux@ associations.be",
+    "name": "Emma Roux",
+    "phone": "+32 476 78 90 12",
+    "quartier": "Faubourg Nord",
+    "role": "Présidente d'association"
+  },
+  {
+    "email": "antoine.moreau@retraite.be",
+    "name": "Antoine Moreau",
+    "phone": "+32 477 89 01 23",
+    "quartier": "Quartier Est",
+    "role": "Retraité"
+  },
+  {
+    "email": "camille.dubois@medecin.be",
+    "name": "Camille Dubois",
+    "phone": "+32 478 90 12 34",
+    "quartier": "Centre-Ville",
+    "role": "Médecin"
+  },
+  {
+    "email": "thomas.leroy@avocat.be",
+    "name": "Thomas Leroy",
+    "phone": "+32 479 01 23 45",
+    "quartier": "Zone Industrielle",
+    "role": "Avocat"
+  }
+]

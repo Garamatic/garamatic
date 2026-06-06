@@ -10,6 +10,8 @@ const { execSync } = require('child_process');
 const { existsSync } = require('fs');
 const path = require('path');
 
+const TENANT = process.env.TENANT || 'default';
+
 const SERVICES = {
   ticketMasala: { url: process.env.TICKET_MASALA_URL || 'http://ticket-masala:8080', path: '/health' },
   gatekeeper: { url: process.env.GATEKEEPER_URL || 'http://gatekeeper-api:8080', path: '/health' },
@@ -96,6 +98,7 @@ async function runShellScript(name, scriptPath) {
 async function main() {
   console.log(`${COLORS.cyan}═══════════════════════════════════════════════════════════════${COLORS.reset}`);
   console.log(`${COLORS.cyan}  Garamatic Demo Seeder${COLORS.reset}`);
+  console.log(`${COLORS.cyan}  Tenant: ${TENANT}${COLORS.reset}`);
   console.log(`${COLORS.cyan}═══════════════════════════════════════════════════════════════${COLORS.reset}\n`);
 
   // Phase 1: Wait for all services
@@ -119,8 +122,9 @@ async function main() {
 
   const results = [];
 
-  // 2.1: Seed Ticket Masala (tickets, customers, projects)
+  // 2.1: Seed Ticket Masala (tickets via Gatekeeper)
   results.push(await runSeedingScript('ticket-masala', './scripts/seed-ticket-masala.js'));
+  // Note: seed-ticket-masala.js uses GATEKEEPER_URL and TENANT env vars
 
   // 2.2: Seed Gatekeeper (events)
   results.push(await runSeedingScript('gatekeeper', './scripts/seed-gatekeeper.js'));

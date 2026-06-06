@@ -26,10 +26,12 @@ setup:
 
 # ─── Docker Compose (Demo Environment) ─────────────────────────────────────
 COMPOSE_FILE := demo/docker-compose.yml
+TENANT ?= desgoffe
+TENANT_CONFIG = demo/config
 
 up:
-	@echo "🚀 Starting Garamatic demo stack..."
-	docker compose -f $(COMPOSE_FILE) up --build -d
+	@echo "🚀 Starting Garamatic demo stack (tenant: $(TENANT))..."
+	TENANT=$(TENANT) TENANT_CONFIG=$(TENANT_CONFIG) docker compose -f $(COMPOSE_FILE) up --build -d
 	@echo ""
 	@echo "   Services:"
 	@echo "   • Showcase        → http://localhost:8092"
@@ -38,6 +40,8 @@ up:
 	@echo "   • Mailing Service → http://localhost:8087"
 	@echo "   • Agentic API     → http://localhost:3001/sse"
 	@echo "   • Odoo Bridge     → http://localhost:8089/health"
+	@echo "   • Garamatic Web   → http://localhost:8090"
+	@echo "   • Masala Web      → http://localhost:8091"
 	@echo "   • Portal (Desgoffe) → http://localhost:8093"
 	@echo "   • Odoo ERP        → http://localhost:8069  (admin/admin)"
 	@echo "   • Ollama LLM      → http://localhost:11434"
@@ -56,8 +60,8 @@ pull-model:
 	@echo "✅ Local LLM ready. Agentic chat uses http://ollama:11434"
 
 dev:
-	@echo "🚀 Starting Garamatic demo stack (attached)..."
-	docker compose -f $(COMPOSE_FILE) up --build
+	@echo "🚀 Starting Garamatic demo stack (attached, tenant: $(TENANT))..."
+	TENANT=$(TENANT) TENANT_CONFIG=$(TENANT_CONFIG) docker compose -f $(COMPOSE_FILE) up --build
 
 logs:
 	docker compose -f $(COMPOSE_FILE) logs -f
@@ -126,6 +130,48 @@ monitor-down:
 monitor-logs:
 	docker compose -f docker-compose.monitoring.yml logs -f
 
+# ─── Cloudflare Tunnel ───────────────────────────────────────────────────
+# Exposes the demo stack via Cloudflare Tunnel for remote access.
+# Requires: cloudflared installed and authenticated on the VM.
+#
+# First time setup:
+#   1. Install cloudflared: https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/
+#   2. Authenticate: cloudflared tunnel login
+#   3. Create tunnel: cloudflared tunnel create garamatic
+#   4. Copy tunnel ID to .env: echo 'CLOUDFLARE_TUNNEL_ID=<id>' >> .env
+#   5. Run: make tunnel-up
+
+tunnel-up:
+	@echo "🌐 Starting Cloudflare Tunnel..."
+	@if [ -z "$(CLOUDFLARE_TUNNEL_ID)" ]; then \
+		echo "❌ CLOUDFLARE_TUNNEL_ID not set. Run: echo 'CLOUDFLARE_TUNNEL_ID=<id>' >> .env"; \
+		exit 1; \
+	fi
+	@echo "   Tunnel ID: $(CLOUDFLARE_TUNNEL_ID)"
+	@echo "   Exposing:"
+	@echo "   • Portal        → https://portal.$(CLOUDFLARE_DOMAIN)"
+	@echo "   • Showcase      → https://showcase.$(CLOUDFLARE_DOMAIN)"
+	@echo "   • Ticket Masala → https://api.$(CLOUDFLARE_DOMAIN)"
+	@echo "   • Mailhog       → https://mailhog.$(CLOUDFLARE_DOMAIN)"
+	@echo "   • RabbitMQ      → https://rabbitmq.$(CLOUDFLARE_DOMAIN)"
+	@echo ""
+	cloudflared tunnel --url http://localhost:8093 --no-autoupdate 2>&1 | tee /tmp/cloudflared.log &
+	@echo "   💡 Tunnel started in background. Check /tmp/cloudflared.log for URL."
+	@echo "   💡 Or configure DNS: cloudflared tunnel route dns $(CLOUDFLARE_TUNNEL_ID) portal.$(CLOUDFLARE_DOMAIN)"
+
+tunnel-down:
+	@echo "🛑 Stopping Cloudflare Tunnel..."
+	@pkill -f "cloudflared tunnel" 2>/dev/null || echo "   No tunnel process found"
+
+tunnel-status:
+	@echo "📊 Cloudflare Tunnel status:"
+	@pgrep -f "cloudflared tunnel" > /dev/null && echo "   ✅ Tunnel is running" || echo "   ⏹️  Tunnel is not running"
+	@if [ -f /tmp/cloudflared.log ]; then \
+		echo ""; \
+		echo "   Recent logs:"; \
+		tail -5 /tmp/cloudflared.log; \
+	fi
+
 # ─── Full Stack (App + Monitoring) ─────────────────────────────────────────
 stack-up:
 	@echo "🚀 Starting full stack (services + monitoring)..."
@@ -155,6 +201,7 @@ help:
 	@echo ""
 	@echo "  make setup        Initialize submodules and env"
 	@echo "  make up           Start the demo stack (detached)"
+	@echo "  make up TENANT=default   Start with generic config"
 	@echo "  make dev          Start the demo stack (attached)"
 	@echo "  make pull-model   Download the local LLM (qwen3.5:2b) for Ollama"
 	@echo "  make down         Stop and remove the demo stack"
@@ -164,6 +211,9 @@ help:
 	@echo "  make monitor-up   Start monitoring stack (Grafana + health dashboard)"
 	@echo "  make monitor-down Stop monitoring stack"
 	@echo "  make monitor-logs Tail monitoring logs"
+	@echo "  make tunnel-up    Start Cloudflare Tunnel for remote access"
+	@echo "  make tunnel-down  Stop Cloudflare Tunnel"
+	@echo "  make tunnel-status Check tunnel status"
 	@echo "  make stack-up     Start full stack (services + monitoring)"
 	@echo "  make stack-down   Stop full stack"
 	@echo "  make backup       Create backup of all volumes and databases"

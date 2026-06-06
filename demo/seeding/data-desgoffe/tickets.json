@@ -1,0 +1,122 @@
+[
+  {
+    "title": "Nuisance sonore — Chantier rue de la Loi",
+    "description": "Bruit excessif venant du chantier de construction rue de la Loi, tous les jours de 6h à 22h. Les Riverains ne peuvent plus dormir. Le permis de travaux n'autorise que les heures entre 8h et 18h.",
+    "work_item_type": "NUISANCE",
+    "quartier": "Centre-Ville",
+    "priority": "10",
+    "status": "resolved",
+    "customer_email": "jean.dupont@citoyen.be",
+    "customer_name": "Jean Dupont",
+    "resolution_notes": "Un agent a été dépêché sur place. Le permis de travail est conforme, mais les horaires sont dépassés. Mise en demeure envoyée à l'entreprise de construction.",
+    "billable_amount": null
+  },
+  {
+    "title": "Demande de permis — Extension terrasse",
+    "description": "Demande de permis pour une extension de terrasse de 15m² sur l'arrière de la maison. Les plans sont joints en pièce jointe. Conformité au plan d'urbanisme vérifiée.",
+    "work_item_type": "PERMIS",
+    "quartier": "Faubourg Nord",
+    "priority": "5",
+    "status": "in_progress",
+    "customer_email": "marie.curie@science.be",
+    "customer_name": "Marie Curie",
+    "resolution_notes": "",
+    "billable_amount": null
+  },
+  {
+    "title": "Plainte — Odeurs nauséabondes usine recyclage",
+    "description": "Odeurs nauséabondes provenant de l'usine de recyclage de la Zone Industrielle. Les habitants du quartier Est se plaignent de nausee depuis plusieurs semaines. Inspection urgente requise.",
+    "work_item_type": "PLAINTE",
+    "quartier": "Zone Industrielle",
+    "priority": "15",
+    "status": "resolved",
+    "customer_email": "sophie.bernard@ecole.be",
+    "customer_name": "Sophie Bernard",
+    "resolution_notes": "Inspection réalisée le 25 mai. L'usine a été mise en demeure de mettre en place des filtres à charbon actif dans les 30 jours.",
+    "billable_amount": null
+  },
+  {
+    "title": "Demande générale — Réparation lampadaire",
+    "description": "Lampadaire défectueux au coin de la rue des Fleurs et de la rue de la Paix. Le feu clignote depuis une semaine et éclaire par intermittence.",
+    "work_item_type": "DEMANDE",
+    "quartier": "Quartier Est",
+    "priority": "5",
+    "status": "resolved",
+    "customer_email": "pierre.martin@entreprise.be",
+    "customer_name": "Pierre Martin",
+    "resolution_notes": "Lampadaire remplacé le 1er juin. Merci pour votre signalement.",
+    "billable_amount": null
+  },
+  {
+    "title": "Nuisance sonore — Fête de quartier excessive",
+    "description": "La fête de quartier du Faubourg Nord continue jusqu'à 4h du matin avec une musique assourdissante. Troisième complainte ce mois-ci pour le même organisateur.",
+    "work_item_type": "NUISANCE",
+    "quartier": "Faubourg Nord",
+    "priority": "10",
+    "status": "in_progress",
+    "customer_email": "antoine.moreau@retraite.be",
+    "customer_name": "Antoine Moreau",
+    "resolution_notes": "",
+    "billable_amount": null
+  },
+  {
+    "title": "Demande de permis — Installation panneaux solaires",
+    "description": "Installation de 12 panneaux solaires sur le toit de la Maison des Associations. Certificat de conformité électrique fourni. Visibilité du Boulevard impactée ?",
+    "work_item_type": "PERMIS",
+    "quartier": "Centre-Ville",
+    "priority": "5",
+    "status": "received",
+    "customer_email": "emma.roux@ associations.be",
+    "customer_name": "Emma Roux",
+    "resolution_notes": "",
+    "billable_amount": null
+  },
+  {
+    "title": "Plainte — Parking illégal devant la pharmacie",
+    "description": "Des véhicules se garent illégalement devant la pharmacie du Centre-Ville, gênant l'accès aux personnes à mobilité réduite. Cela dure depuis des mois.",
+    "work_item_type": "PLAINTE",
+    "quartier": "Centre-Ville",
+    "priority": "10",
+    "status": "received",
+    "customer_email": "camille.dubois@medecin.be",
+    "customer_name": "Camille Dubois",
+    "resolution_notes": "",
+    "billable_amount": null
+  },
+  {
+    "title": "Nuisance sonore — Chien aboie toute la nuit",
+    "description": "Le chien du voisin du 42 rue des Acacias aboie chaque nuit depuis 3 semaines. Les propriétaires semblent absents le week-end.",
+    "work_item_type": "NUISANCE",
+    "quartier": "Quartier Est",
+    "priority": "5",
+    "status": "pending",
+    "customer_email": "lucas.garcia@artisan.be",
+    "customer_name": "Lucas Garcia",
+    "resolution_notes": "",
+    "billable_amount": null
+  },
+  {
+    "title": "Demande générale — Inscription crèche municipale",
+    "description": "Demande d'inscription pour ma fille de 2 ans à la crèche 'Les Petits Explorateurs' pour la rentrée de septembre. Documents fournis : certificat de résidence, carnet de vaccination.",
+    "work_item_type": "DEMANDE",
+    "quartier": "Faubourg Nord",
+    "priority": "5",
+    "status": "resolved",
+    "customer_email": "thomas.leroy@avocat.be",
+    "customer_name": "Thomas Leroy",
+    "resolution_notes": "Inscription confirmée. Place attribuée pour le 1er septembre. Un email de confirmation a été envoyé.",
+    "billable_amount": null
+  },
+  {
+    "title": "Plainte — Travaux non déclarés immeuble voisin",
+    "description": "Des travaux de rénovation importants sont réalisés dans l'immeuble voisin sans permis. Poussière et bruit depuis 2 semaines. Voisinage très affecté.",
+    "work_item_type": "PLAINTE",
+    "quartier": "Centre-Ville",
+    "priority": "15",
+    "status": "in_progress",
+    "customer_email": "emma.roux@ associations.be",
+    "customer_name": "Emma Roux",
+    "resolution_notes": "Enquête en cours. L'archiviste municipal recherche les permis de la parcelle.",
+    "billable_amount": null
+  }
+]
