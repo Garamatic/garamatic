@@ -41,6 +41,17 @@ jobs:
           submodules: recursive
           token: ${{ secrets.PAT_WITH_REPO_ACCESS }}
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Cache Docker layers
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
       - name: Set up environment
         run: |
           cp .env.example .env
@@ -76,20 +87,37 @@ jobs:
           submodules: recursive
           token: ${{ secrets.PAT_WITH_REPO_ACCESS }}
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Cache Docker layers
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
       - name: Set up environment
         run: |
           cp .env.example .env
           echo "SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY || 'SG.test-key' }}" >> .env
 
       - name: Start services
-        run: |
-          docker compose up --build -d
-          sleep 30
+        run: docker compose up --build -d
 
-      - name: Health check all services
+      - name: Wait for services to be healthy
         run: |
-          chmod +x scripts/health-check.sh
-          ./scripts/health-check.sh
+          for i in $(seq 1 30); do
+            if ./scripts/health-check.sh 2>/dev/null; then
+              echo "✅ All services healthy"
+              exit 0
+            fi
+            echo "⏳ Waiting for services... ($i/30)"
+            sleep 10
+          done
+          echo "❌ Services failed to become healthy"
+          exit 1
 
       - name: Tear down
         if: always()
@@ -105,15 +133,37 @@ jobs:
           submodules: recursive
           token: ${{ secrets.PAT_WITH_REPO_ACCESS }}
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Cache Docker layers
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
       - name: Set up environment
         run: |
           cp .env.example .env
           echo "SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY || 'SG.test-key' }}" >> .env
 
       - name: Start services
+        run: docker compose up --build -d
+
+      - name: Wait for services to be healthy
         run: |
-          docker compose up --build -d
-          sleep 30
+          for i in $(seq 1 30); do
+            if ./scripts/health-check.sh 2>/dev/null; then
+              echo "✅ All services healthy"
+              exit 0
+            fi
+            echo "⏳ Waiting for services... ($i/30)"
+            sleep 10
+          done
+          echo "❌ Services failed to become healthy"
+          exit 1
 
       - name: Run contract compliance tests
         run: |

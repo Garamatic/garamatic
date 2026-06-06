@@ -7,6 +7,9 @@
 .env.local
 .env.override
 
+# ─── Backups ─────────────────────────────────────────────────────────────
+backups/
+
 # ─── AI Agent Artifacts (Pi, Ralph, etc.) ────────────────────────────────
 .pi/
 .ralph/
@@ -16,8 +19,9 @@
 # ─── AI-Generated Design Documents ───────────────────────────────────────
 dev-docs/
 
-# ─── Docker ──────────────────────────────────────────────────────────────
-.env.override
+# ─── Database Files ─────────────────────────────────────────────────────
+*.sqlite
+*.db
 
 # ─── IDE ─────────────────────────────────────────────────────────────────
 .idea/
@@ -38,6 +42,8 @@ node_modules/
 # ─── Temporary Files ─────────────────────────────────────────────────────
 *.tmp
 *.temp
+*.pyc
+__pycache__/
 .pytest_cache/
 .ruff_cache/
 .mypy_cache/

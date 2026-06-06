@@ -7,6 +7,9 @@ import {
 } from '@phosphor-icons/react'
 import { StatusBadge, type StatusKey } from '../components/StatusBadge'
 import { StatusTimeline } from '../components/StatusTimeline'
+import { TicketCardSkeleton, StatCardSkeleton, DetailSkeleton } from '../components/Skeleton'
+import { SLACountdown } from '../components/SLACountdown'
+import { useToast } from '../components/Toast'
 
 const API_BASE = import.meta.env.VITE_API_BASE ?? ''
 const PORTAL_SECRET = import.meta.env.VITE_PORTAL_SECRET ?? ''
@@ -158,6 +161,7 @@ export function DashboardPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState<StatusKey | 'all'>('all')
   const [mobileDetailOpen, setMobileDetailOpen] = useState(false)
+  const { addToast } = useToast()
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -188,6 +192,7 @@ export function DashboardPage() {
         setTickets(mapped)
       } catch (err) {
         console.error('Failed to fetch tickets:', err)
+        addToast('Impossible de charger les demandes depuis le serveur. Mode hors-ligne activé.', 'info')
         setApiError('Impossible de charger les demandes depuis le serveur. Mode hors-ligne activé.')
         // Fallback to mock data
         const mock = MOCK_DB[email] || []
@@ -271,18 +276,34 @@ export function DashboardPage() {
 
       {/* API Error Banner */}
       {apiError && (
-        <div className="mb-6 p-4 bg-warning/10 border border-warning/20 rounded-md flex items-start gap-3">
-          <Warning size={18} className="text-warning shrink-0 mt-0.5" />
-          <p className="text-sm text-text-secondary">{apiError}</p>
+        <div className="mb-6 p-3 bg-warning-bg border border-warning rounded-md flex items-start gap-2">
+          <Warning size={16} className="text-warning shrink-0 mt-0.5" weight="fill" />
+          <p className="text-xs text-text-secondary">{apiError}</p>
         </div>
       )}
 
       {/* Loading */}
       {loading ? (
-        <div className="card p-12 text-center">
-          <div className="w-10 h-10 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-text-secondary">Chargement de vos demandes...</p>
-        </div>
+        <>
+          {/* Stats Skeleton */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <StatCardSkeleton key={i} />
+            ))}
+          </div>
+
+          {/* List Skeleton */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 space-y-3">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <TicketCardSkeleton key={i} />
+              ))}
+            </div>
+            <div className="hidden lg:block">
+              <DetailSkeleton />
+            </div>
+          </div>
+        </>
       ) : (
         <>
           {/* Stats */}
@@ -354,7 +375,7 @@ export function DashboardPage() {
                   <div
                     key={req.id}
                     onClick={() => handleSelect(req.id)}
-                    className={`card p-5 cursor-pointer transition-all hover:shadow-lg ${
+                    className={`card p-5 cursor-pointer card-lift ${
                       selectedId === req.id ? 'ring-2 ring-primary ring-offset-2' : ''
                     }`}
                   >
@@ -485,6 +506,8 @@ function DetailContent({ req, timeline }: { req: TicketViewModel; timeline: Para
           <span>Màj {req.updatedAt}</span>
         </div>
       </div>
+
+      <SLACountdown createdAt={req.date} status={req.status} />
 
       {req.hasAttachment && (
         <div className="p-3 bg-surface-hover rounded-md border border-border flex items-center gap-3">

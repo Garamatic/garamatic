@@ -8,10 +8,21 @@ const navItems = [
   { path: '/requests', label: 'Mes Demandes', icon: List },
 ]
 
+function getPendingCount() {
+  const tickets = JSON.parse(sessionStorage.getItem('submittedTickets') || '[]')
+  const email = sessionStorage.getItem('portalEmail')
+  if (!email) return 0
+  return tickets.filter((t: any) => 
+    t.email === email && 
+    ['submitted', 'received', 'in_progress'].includes(t.status)
+  ).length
+}
+
 export function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
   const navigate = useNavigate()
   const email = sessionStorage.getItem('portalEmail')
+  const pendingCount = getPendingCount()
 
   const handleLogout = () => {
     sessionStorage.removeItem('portalEmail')
@@ -53,6 +64,11 @@ export function Header() {
               >
                 <item.icon size={18} weight="regular" />
                 {item.label}
+                {item.path === '/requests' && pendingCount > 0 && (
+                  <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 text-xs font-bold text-white bg-secondary rounded-full">
+                    {pendingCount}
+                  </span>
+                )}
               </NavLink>
             ))}
           </nav>
@@ -115,6 +131,11 @@ export function Header() {
               >
                 <item.icon size={20} weight="regular" />
                 {item.label}
+                {item.path === '/requests' && pendingCount > 0 && (
+                  <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 text-xs font-bold text-white bg-secondary rounded-full">
+                    {pendingCount}
+                  </span>
+                )}
               </NavLink>
             ))}
             {email ? (

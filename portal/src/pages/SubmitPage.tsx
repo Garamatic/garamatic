@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { PaperPlaneRight, FilePdf, X, Warning, User, FileText, Stamp } from '@phosphor-icons/react'
+import { useToast } from '../components/Toast'
 
 interface FormData {
   customerName: string
@@ -51,6 +52,7 @@ function sanitize(input: string): string {
 
 export function SubmitPage() {
   const navigate = useNavigate()
+  const { addToast } = useToast()
   const [formData, setFormData] = useState<FormData>({
     customerName: '',
     customerEmail: '',
@@ -173,12 +175,14 @@ export function SubmitPage() {
         })
         sessionStorage.setItem('submittedTickets', JSON.stringify(submitted))
 
+        addToast('Votre demande a été enregistrée avec succès.', 'success')
         navigate(`/success/${ticketId}`)
       } else {
         throw new Error(result.message || 'Submission failed')
       }
     } catch (err) {
       console.error('Submission error:', err)
+      addToast('Une erreur est survenue lors de la soumission. Veuillez réessayer.', 'error')
       setErrors({ submit: 'Une erreur est survenue lors de la soumission. Veuillez réessayer.' })
     } finally {
       setSubmitting(false)
@@ -446,14 +450,6 @@ export function SubmitPage() {
               <p className="error-text flex items-center gap-1">
                 <Warning size={14} /> {errors.declaration}
               </p>
-            )}
-
-            {errors.submit && (
-              <div className="p-4 bg-error-bg border border-error rounded-md">
-                <p className="error-text flex items-center gap-1">
-                  <Warning size={14} /> {errors.submit}
-                </p>
-              </div>
             )}
 
             <div className="flex flex-col sm:flex-row gap-3 justify-end pt-4">

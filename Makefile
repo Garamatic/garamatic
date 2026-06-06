@@ -5,8 +5,8 @@
 #
 # Usage:
 #   make setup     # Initialize submodules and env
-#   make up        # Start the full stack
-#   make down      # Stop the full stack
+#   make up        # Start the demo stack
+#   make down      # Stop the demo stack
 #   make test      # Run integration tests
 #   make update    # Pull latest from all submodules
 #   make pull      # Pull root repo and submodules
@@ -24,43 +24,43 @@ setup:
 	cp -n .env.example .env 2>/dev/null || echo "   .env already exists"
 	@echo "✅ Setup complete. Run 'make up' to start the stack."
 
-# ─── Docker Compose ────────────────────────────────────────────────────────
+# ─── Docker Compose (Demo Environment) ─────────────────────────────────────
+COMPOSE_FILE := demo/docker-compose.yml
+
 up:
-	@echo "🚀 Starting Garamatic stack..."
-	docker compose up --build -d
+	@echo "🚀 Starting Garamatic demo stack..."
+	docker compose -f $(COMPOSE_FILE) up --build -d
 	@echo ""
 	@echo "   Services:"
-	@echo "   • Ticket Masala  → http://localhost:8085"
-	@echo "   • Gatekeeper     → http://localhost:8086"
-	@echo "   • Mailing        → http://localhost:8087"
-	@echo "   • Event Planner  → http://localhost:8088"
-	@echo "   • Garamatic Web  → http://localhost:8090"
-	@echo "   • Masala Web     → http://localhost:8091"
-	@echo "   • Odoo          → http://localhost:8092"
+	@echo "   • Showcase        → http://localhost:8092"
+	@echo "   • Ticket Masala   → http://localhost:8085"
+	@echo "   • Gatekeeper      → http://localhost:8086"
+	@echo "   • Mailing Service → http://localhost:8087"
+	@echo "   • Agentic API     → http://localhost:3001/sse"
+	@echo "   • Odoo Bridge     → http://localhost:8089/health"
 	@echo "   • Portal (Desgoffe) → http://localhost:8093"
-	@echo "   • Odoo Bridge   → http://localhost:8089/health"
-	@echo "   • Agentic API    → http://localhost:3001/docs"
-	@echo "   • Ollama LLM     → http://localhost:11434"
-	@echo "   • RabbitMQ Mgmt  → http://localhost:15672  (guest/guest)"
-	@echo "   • Mailhog UI     → http://localhost:8025"
+	@echo "   • Odoo ERP        → http://localhost:8069  (admin/admin)"
+	@echo "   • Ollama LLM      → http://localhost:11434"
+	@echo "   • RabbitMQ Mgmt   → http://localhost:15672  (guest/guest)"
+	@echo "   • Mailhog UI      → http://localhost:8025"
 	@echo ""
 	@echo "   💡 Run 'make pull-model' to download the local LLM"
 
 down:
-	@echo "🛑 Stopping Garamatic stack..."
-	docker compose down -v
+	@echo "🛑 Stopping Garamatic demo stack..."
+	docker compose -f $(COMPOSE_FILE) down -v
 
 pull-model:
 	@echo "📥 Pulling Ollama model (qwen3.5:2b) — first download may take a while..."
-	@docker compose exec ollama ollama pull qwen3.5:2b
+	@docker compose -f $(COMPOSE_FILE) exec ollama ollama pull qwen3.5:2b
 	@echo "✅ Local LLM ready. Agentic chat uses http://ollama:11434"
 
 dev:
-	@echo "🚀 Starting Garamatic stack (attached)..."
-	docker compose up --build
+	@echo "🚀 Starting Garamatic demo stack (attached)..."
+	docker compose -f $(COMPOSE_FILE) up --build
 
 logs:
-	docker compose logs -f
+	docker compose -f $(COMPOSE_FILE) logs -f
 
 # ─── Testing ───────────────────────────────────────────────────────────────
 test:
@@ -154,10 +154,10 @@ help:
 	@echo "Garamatic Meta-Repo Commands"
 	@echo ""
 	@echo "  make setup        Initialize submodules and env"
-	@echo "  make up           Start the full Docker stack (detached)"
-	@echo "  make dev          Start the full Docker stack (attached)"
-	@echo "  make pull-model   Download the local LLM (llama3.2) for Ollama"
-	@echo "  make down         Stop and remove the stack"
+	@echo "  make up           Start the demo stack (detached)"
+	@echo "  make dev          Start the demo stack (attached)"
+	@echo "  make pull-model   Download the local LLM (qwen3.5:2b) for Ollama"
+	@echo "  make down         Stop and remove the demo stack"
 	@echo "  make logs         Tail Docker logs"
 	@echo "  make test         Run integration tests in Docker"
 	@echo "  make test-local   Run integration tests against local services"
