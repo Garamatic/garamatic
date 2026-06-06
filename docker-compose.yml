@@ -21,7 +21,7 @@
 #   - Mailhog       : Test email capture               (ports 1025, 8025)
 # ═══════════════════════════════════════════════════════════════════════════
 
-version: '3.8'
+# NOTE: 'version' attribute is obsolete in modern Docker Compose; omitted.
 
 services:
   # ════════════════════════════════════════════════════════════
@@ -53,6 +53,10 @@ services:
       context: ./ticket-masala
       dockerfile: Dockerfile
     container_name: garamatic_ticket_masala
+    # DEV WORKAROUND: chiseled image runs as UID 1654 but Docker named volumes are
+    # root-owned. Running as root for local dev avoids SQLite "unable to open database".
+    # Production: use an init container or chmod the volume properly.
+    user: "0"
     ports:
       - "8085:8080"
     environment:
