@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { PaperPlaneRight, FilePdf, X, Warning } from '@phosphor-icons/react'
+import { PaperPlaneRight, FilePdf, X, Warning, User, FileText, Stamp } from '@phosphor-icons/react'
 
 interface FormData {
   customerName: string
@@ -209,7 +209,7 @@ export function SubmitPage() {
         {/* Citizen Info */}
         <div className="form-section">
           <h2 className="section-title">
-            <span className="text-muted">&#128100;</span> Informations du Citoyen
+            <User size={20} className="text-muted" weight="regular" /> Informations du Citoyen
           </h2>
 
           <div className="space-y-5">
@@ -275,7 +275,7 @@ export function SubmitPage() {
         {/* Request Details */}
         <div className="form-section">
           <h2 className="section-title">
-            <span className="text-muted">&#128203;</span> Détails de la Demande
+            <FileText size={20} className="text-muted" weight="regular" /> Détails de la Demande
           </h2>
 
           <div className="space-y-5">
@@ -423,7 +423,7 @@ export function SubmitPage() {
         {/* Declaration & Submit */}
         <div className="form-section">
           <h2 className="section-title">
-            <span className="text-muted">&#128204;</span> Soumission
+            <Stamp size={20} className="text-muted" weight="regular" /> Soumission
           </h2>
 
           <div className="space-y-6">
