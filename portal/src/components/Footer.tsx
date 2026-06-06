@@ -8,8 +8,12 @@ export function Footer() {
           {/* Brand */}
           <div>
             <div className="flex items-center gap-3 mb-3">
-              <div className="w-8 h-8 rounded-md bg-white flex items-center justify-center text-primary font-bold text-sm font-heading">
-                D
+              <div className="h-8 w-8 rounded-md bg-surface flex items-center justify-center border border-white/30 overflow-hidden">
+                <img
+                  src="/desgoffe.png"
+                  alt="Ville de Desgoffe"
+                  className="h-6 w-auto"
+                />
               </div>
               <span className="font-semibold text-white font-heading">Ville de Desgoffe</span>
             </div>

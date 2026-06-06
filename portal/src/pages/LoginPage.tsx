@@ -34,8 +34,12 @@ export function LoginPage() {
     <div className="container-narrow py-16 md:py-24">
       <div className="bg-surface border-2 border-border p-8 md:p-12 shadow-md">
         <div className="text-center mb-8">
-          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mx-auto mb-4">
-            <SignIn size={24} />
+          <div className="w-14 h-14 rounded-full bg-surface flex items-center justify-center mx-auto mb-4 border border-border shadow-sm">
+            <img
+              src="/desgoffe.png"
+              alt="Ville de Desgoffe"
+              className="h-10 w-auto rounded-full"
+            />
           </div>
           <h1 className="text-2xl md:text-3xl font-heading font-bold text-primary mb-2 uppercase tracking-wider">
             Connexion

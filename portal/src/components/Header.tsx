@@ -24,8 +24,12 @@ export function Header() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <NavLink to="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-md bg-white flex items-center justify-center text-primary font-bold text-lg shrink-0 font-heading">
-              D
+            <div className="h-10 w-10 rounded-md bg-surface flex items-center justify-center border border-white/30 overflow-hidden">
+              <img
+                src="/desgoffe.png"
+                alt="Ville de Desgoffe"
+                className="h-8 w-auto"
+              />
             </div>
             <div className="hidden sm:block">
               <span className="font-semibold text-white leading-tight block font-heading">Guichet Citoyen</span>

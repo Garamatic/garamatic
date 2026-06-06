@@ -48,8 +48,12 @@ export function LandingPage() {
           <div className="max-w-2xl mx-auto text-center">
             {/* City Logo */}
             <div className="inline-block p-4 rounded-full bg-white/10 mb-6 border-2 border-white/30">
-              <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center text-primary font-bold text-3xl font-heading">
-                D
+              <div className="w-20 h-20 rounded-full bg-surface flex items-center justify-center overflow-hidden">
+                <img
+                  src="/desgoffe.png"
+                  alt="Ville de Desgoffe"
+                  className="h-16 w-auto"
+                />
               </div>
             </div>
 
