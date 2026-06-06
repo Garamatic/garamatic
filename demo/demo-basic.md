@@ -3,12 +3,12 @@
 > **Entry point:** `http://localhost:8092` — the **Architecture Dashboard** shows the full topology, live health, and guides you through this flow interactively.
 
 ## Scenario
-A customer creates a support ticket through a tenant portal. The system processes the ticket through multiple independent microservices using RabbitMQ events.
+A citizen creates a support ticket through the Desgoffe citizen portal. The system processes the ticket through multiple independent microservices using RabbitMQ events.
 
 ---
 
 ## 1. Customer Creates Ticket
-**Demo:** Open a tenant portal form (e.g., Desgoffe) → fill in data → submit ticket.
+**Demo:** Open the citizen portal at `http://localhost:8093` → fill in data → submit ticket.
 **What happens:** Frontend calls Ticket Masala → Ticket Masala publishes `ticket.created` via the outbox pattern.
 
 ## 2. RabbitMQ Processes Event

@@ -89,10 +89,6 @@ function createAgenticClient(baseUrl) {
   return new ApiClient(baseUrl);
 }
 
-function createEventPlannerClient(baseUrl) {
-  return new ApiClient(baseUrl);
-}
-
 function createOdooClient(baseUrl) {
   return new ApiClient(baseUrl);
 }
@@ -106,7 +102,6 @@ module.exports = {
   createTicketMasalaClient,
   createGatekeeperClient,
   createAgenticClient,
-  createEventPlannerClient,
   createOdooClient,
   createMailhogClient
 };
