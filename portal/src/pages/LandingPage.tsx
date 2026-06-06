@@ -21,17 +21,17 @@ const services = [
 
 const steps = [
   {
-    number: '01',
+    number: '1',
     title: 'Remplissez le formulaire',
     description: 'Décrivez votre demande et fournissez vos coordonnées en quelques minutes.',
   },
   {
-    number: '02',
+    number: '2',
     title: 'Suivez le traitement',
     description: 'Recevez un numéro de ticket et suivez l\'avancement de votre dossier.',
   },
   {
-    number: '03',
+    number: '3',
     title: 'Obtenez une réponse',
     description: 'Le service compétent vous contactera avec une réponse officielle.',
   },
@@ -42,12 +42,12 @@ export function LandingPage() {
 
   return (
     <div>
-      {/* Hero — Desgoffe municipal character */}
+      {/* Hero */}
       <section className="bg-primary text-white">
-        <div className="container-page py-12 md:py-20">
-          <div className="max-w-2xl mx-auto text-center">
+        <div className="container-page py-16 md:py-24">
+          <div className="max-w-2xl mx-auto text-center animate-fade-in">
             {/* City Logo */}
-            <div className="inline-block p-4 rounded-full bg-white/10 mb-6 border-2 border-white/30">
+            <div className="inline-block p-3 rounded-full bg-white/10 mb-8 border border-white/20">
               <div className="w-20 h-20 rounded-full bg-surface flex items-center justify-center overflow-hidden">
                 <img
                   src="/desgoffe.png"
@@ -57,17 +57,17 @@ export function LandingPage() {
               </div>
             </div>
 
-            {/* Title — municipal uppercase style */}
-            <h1 className="text-4xl md:text-5xl font-heading font-bold mb-3 uppercase tracking-widest">
+            {/* Title */}
+            <h1 className="text-4xl md:text-5xl font-heading font-bold mb-4 uppercase tracking-[0.05em] text-balance">
               Guichet Citoyen
             </h1>
 
-            {/* Subtitle — serif italic with border */}
-            <p className="text-lg text-white/90 font-serif italic border-t border-b border-white/30 inline-block py-2 px-8 mb-8">
+            {/* Subtitle */}
+            <p className="text-lg text-white/90 font-serif italic mb-8">
               Ville de Desgoffe — Services Municipaux
             </p>
 
-            <p className="text-white/80 leading-relaxed mb-8 max-w-lg mx-auto">
+            <p className="text-white/80 leading-relaxed mb-10 max-w-lg mx-auto text-pretty">
               Soumettez vos demandes municipales en ligne. Un service rapide, transparent et accessible à tous les citoyens.
             </p>
 
@@ -94,22 +94,26 @@ export function LandingPage() {
 
       {/* Services */}
       <section className="container-page py-12 md:py-16">
-        <h2 className="text-xl font-heading font-semibold text-primary mb-6 text-center uppercase tracking-wider">
+        <h2 className="text-xl font-heading font-semibold text-primary mb-8 text-center uppercase tracking-[0.05em] text-balance">
           Types de demandes
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {services.map((service) => (
-            <div
+            <button
               key={service.title}
-              className="card p-6 hover:shadow-lg transition-shadow cursor-pointer group border-l-4 border-l-primary"
+              className="card card-lift p-6 text-left group"
               onClick={() => navigate('/submit')}
             >
-              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-4 group-hover:bg-primary group-hover:text-white transition-colors">
+              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-4 group-hover:bg-primary group-hover:text-white transition-colors duration-150">
                 <service.icon size={20} weight="bold" />
               </div>
-              <h3 className="font-heading font-semibold text-text-primary mb-2">{service.title}</h3>
-              <p className="text-sm text-text-secondary leading-relaxed">{service.description}</p>
-            </div>
+              <h3 className="font-heading font-semibold text-text-primary mb-2 text-balance">
+                {service.title}
+              </h3>
+              <p className="text-sm text-text-secondary leading-relaxed text-pretty">
+                {service.description}
+              </p>
+            </button>
           ))}
         </div>
       </section>
@@ -117,18 +121,27 @@ export function LandingPage() {
       {/* How it works */}
       <section className="bg-surface border-y border-border">
         <div className="container-page py-12 md:py-16">
-          <h2 className="text-xl font-heading font-semibold text-primary mb-8 text-center uppercase tracking-wider">
+          <h2 className="text-xl font-heading font-semibold text-primary mb-10 text-center uppercase tracking-[0.05em] text-balance">
             Comment ça marche
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {steps.map((step) => (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+            {steps.map((step, index) => (
               <div key={step.number} className="flex gap-4">
-                <span className="text-2xl font-heading font-bold text-primary shrink-0 leading-none">
-                  {step.number}
-                </span>
-                <div>
-                  <h3 className="font-heading font-semibold text-text-primary mb-1">{step.title}</h3>
-                  <p className="text-sm text-text-secondary leading-relaxed">{step.description}</p>
+                <div className="flex flex-col items-center gap-2">
+                  <span className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-heading font-bold text-sm shrink-0">
+                    {step.number}
+                  </span>
+                  {index < steps.length - 1 && (
+                    <div className="hidden md:block w-px h-full bg-border -mt-1" aria-hidden="true" />
+                  )}
+                </div>
+                <div className="pb-2">
+                  <h3 className="font-heading font-semibold text-text-primary mb-1 text-balance">
+                    {step.title}
+                  </h3>
+                  <p className="text-sm text-text-secondary leading-relaxed text-pretty">
+                    {step.description}
+                  </p>
                 </div>
               </div>
             ))}
