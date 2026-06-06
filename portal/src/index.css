@@ -1,42 +1,46 @@
 @import "tailwindcss";
 
 @theme {
-  /* Desgoffe Municipal Theme — warm, trustworthy, modern Belgian public sector */
-  --color-canvas: #F8FAFC;
-  --color-surface: #FFFFFF;
-  --color-surface-hover: #F1F5F9;
-  --color-surface-elevated: #F8FAFC;
-  --color-border: #E2E8F0;
-  --color-border-focus: #6366F1;
-  --color-text-primary: #0F172A;
-  --color-text-secondary: #475569;
-  --color-text-muted: #94A3B8;
-  --color-primary: #6366F1;
-  --color-primary-hover: #4F46E5;
-  --color-secondary: #64748B;
-  --color-accent: #F97316;
-  --color-accent-hover: #EA580C;
-  --color-accent-subtle: #FEF3C7;
-  --color-error: #EF4444;
-  --color-error-bg: #FEF2F2;
-  --color-success: #22C55E;
-  --color-success-bg: #F0FDF4;
-  --color-warning: #F59E0B;
-  --color-warning-bg: #FFFBEB;
+  /* ═══════════════════════════════════════════════════════════════
+     Ville de Desgoffe — Guichet Citoyen
+     Confectionery Bureaucracy Theme
+     Palette: Cream (#FDF5E6), Faded Purple (#5D3A5D), Stamp Red (#9A2A2A)
+     ══════════════════════════════════════════════════════════════ */
+  --color-canvas: #FDF5E6;
+  --color-surface: #FFFAF0;
+  --color-surface-hover: #FFF8E7;
+  --color-surface-elevated: #FFFAF0;
+  --color-border: #D4C4A8;
+  --color-border-focus: #5D3A5D;
+  --color-text-primary: #3d3d3d;
+  --color-text-secondary: #5a5a5a;
+  --color-text-muted: #8a8a8a;
+  --color-primary: #5D3A5D;
+  --color-primary-hover: #4a2e4a;
+  --color-secondary: #9A2A2A;
+  --color-accent: #D4A574;
+  --color-accent-hover: #C49360;
+  --color-accent-subtle: #F5E6D3;
+  --color-error: #9A2A2A;
+  --color-error-bg: #FDF0F0;
+  --color-success: #2D5A3D;
+  --color-success-bg: #F0F5F0;
+  --color-warning: #B8860B;
+  --color-warning-bg: #FFFAEB;
 
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-heading: 'Rajdhani', system-ui, sans-serif;
+  --font-sans: Georgia, 'Times New Roman', serif;
+  --font-heading: 'Roboto Slab', Georgia, serif;
   --font-serif: Georgia, 'Times New Roman', serif;
-  --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
+  --font-mono: 'Courier Prime', 'Courier New', monospace;
 
-  --radius-sm: 6px;
+  --radius-sm: 4px;
   --radius-md: 8px;
-  --radius-lg: 12px;
+  --radius-lg: 8px;
   --radius-full: 9999px;
 
-  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.08), 0 2px 4px -2px rgba(15, 23, 42, 0.04);
-  --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.04);
+  --shadow-sm: 0 1px 2px rgba(93, 58, 93, 0.05);
+  --shadow-md: 0 4px 12px rgba(93, 58, 93, 0.1);
+  --shadow-lg: 0 10px 20px rgba(93, 58, 93, 0.12);
 }
 
 @layer base {
@@ -54,7 +58,7 @@
   }
 
   input, textarea, select {
-    font-family: inherit;
+    font-family: var(--font-sans);
   }
 
   ::placeholder {
@@ -64,7 +68,7 @@
   /* Focus rings */
   :focus-visible {
     outline: none;
-    box-shadow: 0 0 0 3px var(--color-accent-subtle);
+    box-shadow: 0 0 0 3px rgba(93, 58, 93, 0.1);
   }
 
   /* Reduced motion */
@@ -79,18 +83,19 @@
 
 @layer components {
   .btn {
-    @apply inline-flex items-center justify-center gap-2 font-medium transition-all duration-150 cursor-pointer;
+    @apply inline-flex items-center justify-center gap-2 font-semibold transition-all duration-150 cursor-pointer;
     border-radius: var(--radius-sm);
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
 
   .btn-primary {
-    @apply bg-accent text-white hover:bg-accent-hover;
-  }
-  .btn-primary:active {
-    @apply translate-y-0 shadow-sm;
+    @apply bg-primary text-white hover:bg-primary-hover;
   }
   .btn-primary:hover {
     @apply -translate-y-[1px] shadow-md;
+    box-shadow: 0 4px 12px rgba(93, 58, 93, 0.3);
   }
 
   .btn-secondary {
@@ -98,7 +103,7 @@
   }
 
   .btn-ghost {
-    @apply bg-transparent text-accent hover:bg-accent-subtle;
+    @apply bg-transparent text-primary hover:bg-accent-subtle;
   }
 
   .card {
@@ -114,7 +119,7 @@
   }
   .input:focus {
     @apply border-border-focus;
-    box-shadow: 0 0 0 3px var(--color-accent-subtle);
+    box-shadow: 0 0 0 3px rgba(93, 58, 93, 0.1);
   }
   .input-error {
     @apply border-error;
@@ -122,15 +127,31 @@
   }
 
   .label {
-    @apply block text-sm font-medium text-text-primary mb-2;
+    @apply block text-sm font-semibold text-text-primary mb-2;
+    font-family: var(--font-heading);
   }
 
   .helper-text {
-    @apply text-sm text-text-secondary mt-1;
+    @apply text-sm text-text-secondary mt-1 italic;
   }
 
   .error-text {
     @apply text-sm text-error mt-1;
+  }
+
+  .form-section {
+    @apply mb-8 pb-6 border-b border-border;
+  }
+  .form-section:last-child {
+    @apply border-b-0 mb-0;
+  }
+
+  .section-title {
+    @apply text-xl font-semibold text-primary mb-4 flex items-center gap-3;
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 1.2rem;
   }
 }
 

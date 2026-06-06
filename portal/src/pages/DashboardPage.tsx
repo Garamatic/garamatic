@@ -260,11 +260,11 @@ export function DashboardPage() {
   return (
     <div className="container-page py-8">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-text-primary mb-2">
+      <div className="mb-8 pb-4 border-b border-border">
+        <h1 className="text-2xl md:text-3xl font-bold text-primary mb-2 font-heading uppercase tracking-wider">
           Mes Demandes
         </h1>
-        <p className="text-text-secondary">
+        <p className="text-text-secondary italic">
           Suivez l'avancement de vos demandes municipales.
         </p>
       </div>

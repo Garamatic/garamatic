@@ -63,26 +63,26 @@ export function SuccessPage() {
 
   return (
     <div className="container-narrow py-12 md:py-20">
-      <div className="card p-8 md:p-12 text-center">
-        <div className="w-16 h-16 rounded-full bg-success-bg flex items-center justify-center mx-auto mb-6">
+      <div className="bg-surface border-2 border-border p-8 md:p-12 text-center shadow-md">
+        <div className="w-16 h-16 rounded-full bg-success-bg flex items-center justify-center mx-auto mb-6 border-2 border-success">
           <CheckCircle size={32} className="text-success" weight="fill" />
         </div>
 
-        <h1 className="text-2xl md:text-3xl font-bold text-text-primary mb-3">
+        <h1 className="text-2xl md:text-3xl font-bold text-primary mb-3 font-heading uppercase tracking-wider">
           Demande enregistrée
         </h1>
-        <p className="text-text-secondary mb-8 max-w-md mx-auto">
+        <p className="text-text-secondary mb-8 max-w-md mx-auto italic">
           Votre dossier a été transmis aux services municipaux. Vous recevrez une confirmation par email.
         </p>
 
         {/* Ticket ID */}
-        <div className="bg-surface-hover border border-border rounded-md p-4 mb-6 max-w-sm mx-auto">
-          <p className="text-xs text-text-muted uppercase tracking-wider mb-2">Numéro de ticket</p>
+        <div className="bg-canvas border-2 border-border p-4 mb-6 max-w-sm mx-auto">
+          <p className="text-xs text-text-muted uppercase tracking-wider mb-2 font-heading">Numéro de ticket</p>
           <div className="flex items-center justify-center gap-3">
-            <code className="text-xl font-mono font-bold text-text-primary">{displayTicketId}</code>
+            <code className="text-xl font-mono font-bold text-primary">{displayTicketId}</code>
             <button
               onClick={copyToClipboard}
-              className="p-2 rounded-md hover:bg-surface border border-border hover:border-accent text-text-muted hover:text-accent transition-colors"
+              className="p-2 rounded-md hover:bg-surface border border-border hover:border-primary text-text-muted hover:text-primary transition-colors"
               aria-label="Copier le numéro de ticket"
             >
               {copied ? <CheckCircle size={18} className="text-success" /> : <Copy size={18} />}
@@ -95,8 +95,8 @@ export function SuccessPage() {
 
         {/* Queue info */}
         <div className="text-sm text-text-secondary mb-8">
-          <p>File d'attente : <span className="font-medium text-text-primary">{displayQueue}</span></p>
-          <p className="mt-1">Délai de traitement estimé : <span className="font-medium text-text-primary">5 jours ouvrables</span></p>
+          <p>File d'attente : <span className="font-medium text-primary">{displayQueue}</span></p>
+          <p className="mt-1">Délai de traitement estimé : <span className="font-medium text-primary">5 jours ouvrables</span></p>
         </div>
 
         {/* Actions */}

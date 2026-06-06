@@ -42,35 +42,35 @@ export function LandingPage() {
 
   return (
     <div>
-      {/* Hero — municipal character restored */}
-      <section className="bg-surface border-b border-border">
+      {/* Hero — Desgoffe municipal character */}
+      <section className="bg-primary text-white">
         <div className="container-page py-12 md:py-20">
           <div className="max-w-2xl mx-auto text-center">
             {/* City Logo */}
-            <div className="inline-block p-4 rounded-full bg-surface-elevated shadow-md mb-6 border border-border">
-              <div className="w-20 h-20 rounded-full bg-primary flex items-center justify-center text-white font-bold text-3xl">
+            <div className="inline-block p-4 rounded-full bg-white/10 mb-6 border-2 border-white/30">
+              <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center text-primary font-bold text-3xl font-heading">
                 D
               </div>
             </div>
 
             {/* Title — municipal uppercase style */}
-            <h1 className="text-4xl md:text-5xl font-heading font-bold text-secondary mb-3 uppercase tracking-widest">
+            <h1 className="text-4xl md:text-5xl font-heading font-bold mb-3 uppercase tracking-widest">
               Guichet Citoyen
             </h1>
 
             {/* Subtitle — serif italic with border */}
-            <p className="text-lg text-text-muted font-serif italic border-t border-b border-border inline-block py-2 px-8 mb-8">
+            <p className="text-lg text-white/90 font-serif italic border-t border-b border-white/30 inline-block py-2 px-8 mb-8">
               Ville de Desgoffe — Services Municipaux
             </p>
 
-            <p className="text-text-secondary leading-relaxed mb-8 max-w-lg mx-auto">
+            <p className="text-white/80 leading-relaxed mb-8 max-w-lg mx-auto">
               Soumettez vos demandes municipales en ligne. Un service rapide, transparent et accessible à tous les citoyens.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <button
                 onClick={() => navigate('/submit')}
-                className="btn btn-primary px-6 py-3 text-base"
+                className="btn bg-white text-primary hover:bg-white/90 px-6 py-3 text-base"
               >
                 <FilePlus size={20} weight="bold" />
                 Faire une demande
@@ -78,7 +78,7 @@ export function LandingPage() {
               </button>
               <button
                 onClick={() => navigate('/requests')}
-                className="btn btn-secondary px-6 py-3 text-base"
+                className="btn bg-white/10 text-white border border-white/30 hover:bg-white/20 px-6 py-3 text-base"
               >
                 <List size={20} />
                 Suivre mes demandes
@@ -90,7 +90,7 @@ export function LandingPage() {
 
       {/* Services */}
       <section className="container-page py-12 md:py-16">
-        <h2 className="text-xl font-heading font-semibold text-text-primary mb-6 text-center uppercase tracking-wider">
+        <h2 className="text-xl font-heading font-semibold text-primary mb-6 text-center uppercase tracking-wider">
           Types de demandes
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -113,7 +113,7 @@ export function LandingPage() {
       {/* How it works */}
       <section className="bg-surface border-y border-border">
         <div className="container-page py-12 md:py-16">
-          <h2 className="text-xl font-heading font-semibold text-text-primary mb-8 text-center uppercase tracking-wider">
+          <h2 className="text-xl font-heading font-semibold text-primary mb-8 text-center uppercase tracking-wider">
             Comment ça marche
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

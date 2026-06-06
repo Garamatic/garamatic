@@ -19,17 +19,17 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 bg-surface/95 backdrop-blur-sm border-b border-border shadow-sm">
+    <header className="sticky top-0 z-50 bg-primary border-b border-primary-hover shadow-md">
       <div className="container-page">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <NavLink to="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-md bg-accent flex items-center justify-center text-white font-bold text-lg shrink-0">
+            <div className="w-10 h-10 rounded-md bg-white flex items-center justify-center text-primary font-bold text-lg shrink-0 font-heading">
               D
             </div>
             <div className="hidden sm:block">
-              <span className="font-semibold text-text-primary leading-tight block">Guichet Citoyen</span>
-              <span className="text-xs text-text-muted leading-tight block">Ville de Desgoffe</span>
+              <span className="font-semibold text-white leading-tight block font-heading">Guichet Citoyen</span>
+              <span className="text-xs text-white/70 leading-tight block">Ville de Desgoffe</span>
             </div>
           </NavLink>
 
@@ -42,8 +42,8 @@ export function Header() {
                 className={({ isActive }) =>
                   `flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                     isActive
-                      ? 'text-accent bg-accent-subtle'
-                      : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover'
+                      ? 'text-primary bg-white/90'
+                      : 'text-white/80 hover:text-white hover:bg-white/10'
                   }`
                 }
               >
@@ -57,13 +57,13 @@ export function Header() {
           <div className="hidden md:flex items-center gap-2">
             {email ? (
               <div className="flex items-center gap-2">
-                <span className="text-sm text-text-secondary flex items-center gap-1">
+                <span className="text-sm text-white/80 flex items-center gap-1">
                   <User size={14} />
                   {email}
                 </span>
                 <button
                   onClick={handleLogout}
-                  className="btn btn-ghost px-3 py-1.5 text-sm"
+                  className="btn bg-white/10 text-white hover:bg-white/20 px-3 py-1.5 text-sm"
                 >
                   <SignOut size={16} />
                   Déconnexion
@@ -72,7 +72,7 @@ export function Header() {
             ) : (
               <NavLink
                 to="/login"
-                className="btn btn-primary px-3 py-1.5 text-sm"
+                className="btn bg-white text-primary hover:bg-white/90 px-3 py-1.5 text-sm"
               >
                 <SignIn size={16} />
                 Connexion
@@ -82,7 +82,7 @@ export function Header() {
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden p-2 rounded-md text-text-secondary hover:text-text-primary hover:bg-surface-hover transition-colors"
+            className="md:hidden p-2 rounded-md text-white/80 hover:text-white hover:bg-white/10 transition-colors"
             onClick={() => setMenuOpen(!menuOpen)}
             aria-label={menuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
             aria-expanded={menuOpen}
@@ -94,7 +94,7 @@ export function Header() {
 
       {/* Mobile Nav Overlay */}
       {menuOpen && (
-        <div className="md:hidden border-t border-border bg-surface">
+        <div className="md:hidden border-t border-primary-hover bg-primary">
           <nav className="container-page py-2 flex flex-col gap-1">
             {navItems.map((item) => (
               <NavLink
@@ -104,8 +104,8 @@ export function Header() {
                 className={({ isActive }) =>
                   `flex items-center gap-3 px-3 py-3 rounded-md text-sm font-medium transition-colors ${
                     isActive
-                      ? 'text-accent bg-accent-subtle'
-                      : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover'
+                      ? 'text-primary bg-white/90'
+                      : 'text-white/80 hover:text-white hover:bg-white/10'
                   }`
                 }
               >
@@ -116,7 +116,7 @@ export function Header() {
             {email ? (
               <button
                 onClick={() => { handleLogout(); setMenuOpen(false) }}
-                className="flex items-center gap-3 px-3 py-3 rounded-md text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface-hover transition-colors"
+                className="flex items-center gap-3 px-3 py-3 rounded-md text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors"
               >
                 <SignOut size={20} />
                 Déconnexion ({email})
@@ -125,7 +125,7 @@ export function Header() {
               <NavLink
                 to="/login"
                 onClick={() => setMenuOpen(false)}
-                className="flex items-center gap-3 px-3 py-3 rounded-md text-sm font-medium text-accent hover:bg-accent-subtle transition-colors"
+                className="flex items-center gap-3 px-3 py-3 rounded-md text-sm font-medium text-white hover:bg-white/20 transition-colors"
               >
                 <SignIn size={20} />
                 Connexion

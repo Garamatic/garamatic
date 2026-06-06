@@ -32,15 +32,15 @@ export function LoginPage() {
 
   return (
     <div className="container-narrow py-16 md:py-24">
-      <div className="card p-8 md:p-12">
+      <div className="bg-surface border-2 border-border p-8 md:p-12 shadow-md">
         <div className="text-center mb-8">
           <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mx-auto mb-4">
             <SignIn size={24} />
           </div>
-          <h1 className="text-2xl md:text-3xl font-heading font-bold text-text-primary mb-2">
+          <h1 className="text-2xl md:text-3xl font-heading font-bold text-primary mb-2 uppercase tracking-wider">
             Connexion
           </h1>
-          <p className="text-text-secondary">
+          <p className="text-text-secondary italic">
             Entrez votre email pour consulter vos demandes.
           </p>
         </div>
@@ -75,8 +75,8 @@ export function LoginPage() {
           </button>
         </form>
 
-        <div className="mt-6 p-4 bg-surface-elevated rounded-md border border-border">
-          <p className="text-xs text-text-muted text-center">
+        <div className="mt-6 p-4 bg-accent-subtle rounded-md border border-border">
+          <p className="text-xs text-text-secondary text-center">
             <strong>Mode démonstration</strong> — Aucun mot de passe requis.
             <br />
             Saisissez simplement l'email utilisé lors de votre demande.

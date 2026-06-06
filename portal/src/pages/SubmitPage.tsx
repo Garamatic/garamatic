@@ -207,15 +207,15 @@ export function SubmitPage() {
 
       <form onSubmit={handleSubmit} className="space-y-8" noValidate>
         {/* Citizen Info */}
-        <div className="card p-6 md:p-8">
-          <h2 className="text-lg font-semibold text-text-primary mb-6 pb-3 border-b border-border">
-            Informations du Citoyen
+        <div className="form-section">
+          <h2 className="section-title">
+            <span className="text-muted">&#128100;</span> Informations du Citoyen
           </h2>
 
           <div className="space-y-5">
             <div>
               <label className="label" htmlFor="customerName">
-                Nom complet <span className="text-error">*</span>
+                Nom complet <span className="text-secondary">*</span>
               </label>
               <input
                 id="customerName"
@@ -236,7 +236,7 @@ export function SubmitPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div>
                 <label className="label" htmlFor="customerEmail">
-                  Adresse email <span className="text-error">*</span>
+                  Adresse email <span className="text-secondary">*</span>
                 </label>
                 <input
                   id="customerEmail"
@@ -273,16 +273,16 @@ export function SubmitPage() {
         </div>
 
         {/* Request Details */}
-        <div className="card p-6 md:p-8">
-          <h2 className="text-lg font-semibold text-text-primary mb-6 pb-3 border-b border-border">
-            Détails de la Demande
+        <div className="form-section">
+          <h2 className="section-title">
+            <span className="text-muted">&#128203;</span> Détails de la Demande
           </h2>
 
           <div className="space-y-5">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div>
                 <label className="label" htmlFor="requestType">
-                  Type de demande <span className="text-error">*</span>
+                  Type de demande <span className="text-secondary">*</span>
                 </label>
                 <select
                   id="requestType"
@@ -303,7 +303,7 @@ export function SubmitPage() {
 
               <div>
                 <label className="label" htmlFor="quartier">
-                  Quartier <span className="text-error">*</span>
+                  Quartier <span className="text-secondary">*</span>
                 </label>
                 <select
                   id="quartier"
@@ -341,7 +341,7 @@ export function SubmitPage() {
 
             <div>
               <label className="label" htmlFor="description">
-                Description <span className="text-error">*</span>
+                Description <span className="text-secondary">*</span>
               </label>
               <textarea
                 id="description"
@@ -375,14 +375,14 @@ export function SubmitPage() {
                 onDragLeave={() => setDragOver(false)}
                 onDrop={handleFileDrop}
                 className={`border-2 border-dashed rounded-md p-6 text-center transition-colors ${
-                  dragOver ? 'border-accent bg-accent-subtle' : 'border-border hover:border-accent hover:bg-surface-hover'
+                  dragOver ? 'border-primary bg-accent-subtle' : 'border-border hover:border-primary hover:bg-surface-hover'
                 }`}
               >
                 <FilePdf size={32} className="mx-auto mb-2 text-text-muted" />
                 <p className="text-sm text-text-secondary mb-1">
                   Glissez-déposez un fichier PDF, ou
                 </p>
-                <label className="text-accent font-medium cursor-pointer hover:text-accent-hover transition-colors">
+                <label className="text-primary font-medium cursor-pointer hover:text-primary-hover transition-colors">
                   parcourez vos fichiers
                   <input
                     type="file"
@@ -401,7 +401,7 @@ export function SubmitPage() {
 
               {formData.attachment && (
                 <div className="flex items-center gap-3 mt-3 p-3 bg-surface-hover rounded-md border border-border">
-                  <FilePdf size={20} className="text-accent" />
+                  <FilePdf size={20} className="text-primary" />
                   <span className="text-sm text-text-primary flex-grow truncate">{formData.attachment.name}</span>
                   <span className="text-xs text-text-muted">
                     {(formData.attachment.size / 1024 / 1024).toFixed(1)} Mo
@@ -421,15 +421,19 @@ export function SubmitPage() {
         </div>
 
         {/* Declaration & Submit */}
-        <div className="card p-6 md:p-8">
+        <div className="form-section">
+          <h2 className="section-title">
+            <span className="text-muted">&#128204;</span> Soumission
+          </h2>
+
           <div className="space-y-6">
-            <div className="flex items-start gap-3">
+            <div className="flex items-start gap-3 p-4 bg-accent-subtle rounded-md border border-border">
               <input
                 id="declaration"
                 type="checkbox"
                 checked={formData.declaration}
                 onChange={(e) => updateField('declaration', e.target.checked)}
-                className={`mt-1 w-5 h-5 rounded border-2 cursor-pointer accent-accent ${
+                className={`mt-1 w-5 h-5 rounded border-2 cursor-pointer accent-primary ${
                   errors.declaration ? 'border-error' : 'border-border'
                 }`}
               />
@@ -452,7 +456,7 @@ export function SubmitPage() {
               </div>
             )}
 
-            <div className="flex flex-col sm:flex-row gap-3 justify-end pt-4 border-t border-border">
+            <div className="flex flex-col sm:flex-row gap-3 justify-end pt-4">
               <button
                 type="button"
                 onClick={() => {
