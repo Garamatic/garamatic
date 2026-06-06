@@ -310,6 +310,8 @@ services:
       context: ./odoo-integration
       dockerfile: Dockerfile
     container_name: garamatic_odoo_bridge
+    # DEV WORKAROUND: run as root so named volume is writable (LiteDB state.db)
+    user: "0"
     ports:
       - "8089:8080"
     environment:
