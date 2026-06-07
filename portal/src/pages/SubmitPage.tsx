@@ -253,7 +253,7 @@ export function SubmitPage() {
         )}
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-8" noValidate>
+      <form onSubmit={handleSubmit} className="space-y-8">
         {/* Citizen Info */}
         <div className="form-section">
           <h2 className="section-title">
@@ -273,9 +273,11 @@ export function SubmitPage() {
                 className={`input ${errors.customerName ? 'input-error' : ''}`}
                 placeholder="Prénom Nom"
                 autoComplete="name"
+                aria-invalid={!!errors.customerName}
+                aria-describedby={errors.customerName ? 'customerName-error' : undefined}
               />
               {errors.customerName && (
-                <p className="error-text flex items-center gap-1">
+                <p id="customerName-error" className="error-text flex items-center gap-1" aria-live="polite">
                   <Warning size={14} /> {errors.customerName}
                 </p>
               )}
@@ -294,9 +296,11 @@ export function SubmitPage() {
                   className={`input ${errors.customerEmail ? 'input-error' : ''}`}
                   placeholder="citoyen@desgoffe.be"
                   autoComplete="email"
+                  aria-invalid={!!errors.customerEmail}
+                  aria-describedby={errors.customerEmail ? 'customerEmail-error' : undefined}
                 />
                 {errors.customerEmail && (
-                  <p className="error-text flex items-center gap-1">
+                  <p id="customerEmail-error" className="error-text flex items-center gap-1" aria-live="polite">
                     <Warning size={14} /> {errors.customerEmail}
                   </p>
                 )}
@@ -314,6 +318,7 @@ export function SubmitPage() {
                   className="input"
                   placeholder="+32 61 46 52 00"
                   autoComplete="tel"
+                  aria-describedby="customerPhone-hint"
                 />
               </div>
             </div>
@@ -337,6 +342,8 @@ export function SubmitPage() {
                   value={formData.requestType}
                   onChange={(e) => updateField('requestType', e.target.value)}
                   className={`input ${errors.requestType ? 'input-error' : ''}`}
+                  aria-invalid={!!errors.requestType}
+                  aria-describedby={errors.requestType ? 'requestType-error' : undefined}
                 >
                   <option value="">-- Sélectionnez un type --</option>
                   {SERVICE_TYPES.map((s) => (
@@ -344,7 +351,7 @@ export function SubmitPage() {
                   ))}
                 </select>
                 {errors.requestType && (
-                  <p className="error-text flex items-center gap-1">
+                  <p id="requestType-error" className="error-text flex items-center gap-1" aria-live="polite">
                     <Warning size={14} /> {errors.requestType}
                   </p>
                 )}
@@ -359,13 +366,15 @@ export function SubmitPage() {
                   value={formData.quartier}
                   onChange={(e) => updateField('quartier', e.target.value)}
                   className={`input ${errors.quartier ? 'input-error' : ''}`}
+                  aria-invalid={!!errors.quartier}
+                  aria-describedby={errors.quartier ? 'quartier-error' : undefined}
                 >
                   {QUARTIERS.map((q) => (
                     <option key={q.value} value={q.value}>{q.label}</option>
                   ))}
                 </select>
                 {errors.quartier && (
-                  <p className="error-text flex items-center gap-1">
+                  <p id="quartier-error" className="error-text flex items-center gap-1" aria-live="polite">
                     <Warning size={14} /> {errors.quartier}
                   </p>
                 )}
@@ -385,8 +394,9 @@ export function SubmitPage() {
                 className="input"
                 placeholder="Rue des Fleurs 15, 6830 Desgoffe"
                 autoComplete="street-address"
+                aria-describedby="localisation-hint"
               />
-              <p className="helper-text">
+              <p id="localisation-hint" className="helper-text">
                 Précisez l'adresse exacte concernée par la demande.
               </p>
             </div>
@@ -402,13 +412,15 @@ export function SubmitPage() {
                   value={formData.typeProbleme}
                   onChange={(e) => updateField('typeProbleme', e.target.value)}
                   className={`input ${errors.typeProbleme ? 'input-error' : ''}`}
+                  aria-invalid={!!errors.typeProbleme}
+                  aria-describedby={errors.typeProbleme ? 'typeProbleme-error' : undefined}
                 >
                   {problemTypes.map((t) => (
                     <option key={t.value} value={t.value}>{t.label}</option>
                   ))}
                 </select>
                 {errors.typeProbleme && (
-                  <p className="error-text flex items-center gap-1">
+                  <p id="typeProbleme-error" className="error-text flex items-center gap-1" aria-live="polite">
                     <Warning size={14} /> {errors.typeProbleme}
                   </p>
                 )}
@@ -426,13 +438,15 @@ export function SubmitPage() {
                     value={formData.typeTravaux}
                     onChange={(e) => updateField('typeTravaux', e.target.value)}
                     className={`input ${errors.typeTravaux ? 'input-error' : ''}`}
+                    aria-invalid={!!errors.typeTravaux}
+                    aria-describedby={errors.typeTravaux ? 'typeTravaux-error' : undefined}
                   >
                     {travauxTypes.map((t) => (
                       <option key={t.value} value={t.value}>{t.label}</option>
                     ))}
                   </select>
                   {errors.typeTravaux && (
-                    <p className="error-text flex items-center gap-1">
+                    <p id="typeTravaux-error" className="error-text flex items-center gap-1" aria-live="polite">
                       <Warning size={14} /> {errors.typeTravaux}
                     </p>
                   )}
@@ -448,9 +462,11 @@ export function SubmitPage() {
                     onChange={(e) => updateField('surface', e.target.value)}
                     className={`input ${errors.surface ? 'input-error' : ''}`}
                     placeholder="Ex: 25"
+                    aria-invalid={!!errors.surface}
+                    aria-describedby={errors.surface ? 'surface-error' : undefined}
                   />
                   {errors.surface && (
-                    <p className="error-text flex items-center gap-1">
+                    <p id="surface-error" className="error-text flex items-center gap-1" aria-live="polite">
                       <Warning size={14} /> {errors.surface}
                     </p>
                   )}
@@ -469,6 +485,8 @@ export function SubmitPage() {
                 onChange={(e) => updateField('description', e.target.value)}
                 className={`input resize-y ${errors.description ? 'input-error' : ''}`}
                 placeholder="Veuillez décrire votre demande en détail. Soyez aussi précis que possible."
+                aria-invalid={!!errors.description}
+                aria-describedby={errors.description ? 'description-error' : undefined}
               />
               <div className="flex justify-between items-center mt-1">
                 <p className="helper-text">
@@ -477,7 +495,7 @@ export function SubmitPage() {
                     : `Minimum 10 caractères (${formData.description.length} / 10)`}
                 </p>
                 {errors.description && (
-                  <p className="error-text flex items-center gap-1">
+                  <p id="description-error" className="error-text flex items-center gap-1" aria-live="polite">
                     <Warning size={14} /> {errors.description}
                   </p>
                 )}
@@ -528,7 +546,7 @@ export function SubmitPage() {
               </div>
 
               {errors.attachment && (
-                <p className="error-text flex items-center gap-1 mt-2">
+                <p id="attachment-error" className="error-text flex items-center gap-1 mt-2" aria-live="polite">
                   <Warning size={14} /> {errors.attachment}
                 </p>
               )}
@@ -570,6 +588,8 @@ export function SubmitPage() {
                 className={`mt-1 w-5 h-5 rounded border-2 cursor-pointer accent-primary ${
                   errors.declaration ? 'border-error' : 'border-border'
                 }`}
+                aria-invalid={!!errors.declaration}
+                aria-describedby={errors.declaration ? 'declaration-error' : undefined}
               />
               <label htmlFor="declaration" className="text-sm text-text-secondary leading-relaxed cursor-pointer">
                 Je certifie que les informations fournies sont exactes et conformes à la réalité.
@@ -581,7 +601,7 @@ export function SubmitPage() {
               </label>
             </div>
             {errors.declaration && (
-              <p className="error-text flex items-center gap-1">
+              <p id="declaration-error" className="error-text flex items-center gap-1" aria-live="polite">
                 <Warning size={14} /> {errors.declaration}
               </p>
             )}

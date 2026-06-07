@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { House, FilePlus, List, X, List as MenuIcon, SignIn, SignOut, User, FileText } from '@phosphor-icons/react'
 
@@ -13,11 +13,52 @@ export function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
   const navigate = useNavigate()
   const email = sessionStorage.getItem('portalEmail')
+  const mobileMenuRef = useRef<HTMLDivElement>(null)
+  const menuButtonRef = useRef<HTMLButtonElement>(null)
 
   const handleLogout = () => {
     sessionStorage.removeItem('portalEmail')
     navigate('/')
   }
+
+  // Focus trap for mobile menu
+  useEffect(() => {
+    if (!menuOpen) return
+
+    const menu = mobileMenuRef.current
+    if (!menu) return
+
+    const focusable = menu.querySelectorAll<HTMLElement>(
+      'a[href], button, input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    )
+    const first = focusable[0]
+    const last = focusable[focusable.length - 1]
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setMenuOpen(false)
+        menuButtonRef.current?.focus()
+        return
+      }
+      if (e.key !== 'Tab') return
+
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault()
+        last?.focus()
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault()
+        first?.focus()
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    // Focus first item when menu opens
+    first?.focus()
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [menuOpen])
 
   return (
     <header className="sticky top-0 z-50 bg-primary border-b border-primary-hover shadow-md">
@@ -87,7 +128,8 @@ export function Header() {
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden p-2 rounded-md text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+            ref={menuButtonRef}
+            className="md:hidden p-2.5 rounded-md text-white/80 hover:text-white hover:bg-white/10 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
             onClick={() => setMenuOpen(!menuOpen)}
             aria-label={menuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
             aria-expanded={menuOpen}
@@ -99,7 +141,7 @@ export function Header() {
 
       {/* Mobile Nav Overlay */}
       {menuOpen && (
-        <div className="md:hidden border-t border-primary-hover bg-primary">
+        <div ref={mobileMenuRef} className="md:hidden border-t border-primary-hover bg-primary">
           <nav className="container-page py-2 flex flex-col gap-1">
             {navItems.map((item) => (
               <NavLink

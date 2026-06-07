@@ -156,9 +156,9 @@ const priorityLabels: Record<string, string> = {
 }
 
 const priorityColors: Record<string, string> = {
-  '5': 'text-gray-600',
-  '10': 'text-amber-600',
-  '15': 'text-red-600',
+  '5': 'text-muted',
+  '10': 'text-warning',
+  '15': 'text-error',
 }
 
 // ── Dashboard ─────────────────────────────────────────────────────────
@@ -313,7 +313,7 @@ export function DashboardPage() {
           {/* Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <StatCard label="Total" value={stats.total} icon={FileText} color="text-text-primary" />
-            <StatCard label="En cours" value={stats.pending} icon={Clock} color="text-amber-600" />
+            <StatCard label="En cours" value={stats.pending} icon={Clock} color="text-warning" />
             <StatCard label="Résolues" value={stats.resolved} icon={CheckCircle} color="text-success" />
             <StatCard label="Rejetées" value={stats.rejected} icon={Warning} color="text-error" />
           </div>

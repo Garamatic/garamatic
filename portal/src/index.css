@@ -14,7 +14,7 @@
   --color-border-focus: #5D3A5D;
   --color-text-primary: #3d3d3d;
   --color-text-secondary: #5a5a5a;
-  --color-text-muted: #8a8a8a;
+  --color-text-muted: #686868;
   --color-primary: #5D3A5D;
   --color-primary-hover: #4a2e4a;
   --color-secondary: #9A2A2A;
@@ -25,7 +25,7 @@
   --color-error-bg: #FDF0F0;
   --color-success: #2D5A3D;
   --color-success-bg: #F0F5F0;
-  --color-warning: #B8860B;
+  --color-warning: #8B6508;
   --color-warning-bg: #FFFAEB;
 
   --font-sans: Georgia, 'Times New Roman', serif;
@@ -40,7 +40,6 @@
 
   --shadow-sm: 0 1px 2px rgba(93, 58, 93, 0.05);
   --shadow-md: 0 4px 12px rgba(93, 58, 93, 0.1);
-  --shadow-lg: 0 10px 20px rgba(93, 58, 93, 0.12);
 }
 
 @layer base {
@@ -65,10 +64,18 @@
     color: var(--color-text-muted);
   }
 
+  h1, h2, h3 {
+    text-wrap: balance;
+  }
+
+  p, label {
+    text-wrap: pretty;
+  }
+
   /* Focus rings */
   :focus-visible {
     outline: none;
-    box-shadow: 0 0 0 3px rgba(93, 58, 93, 0.1);
+    box-shadow: 0 0 0 3px rgba(93, 58, 93, 0.6);
   }
 
   /* Reduced motion */
@@ -109,7 +116,6 @@
   .card {
     @apply bg-surface border border-border;
     border-radius: var(--radius-md);
-    box-shadow: var(--shadow-md);
   }
 
   .input {
@@ -123,7 +129,7 @@
   }
   .input-error {
     @apply border-error;
-    box-shadow: 0 0 0 3px var(--color-error-bg);
+    box-shadow: 0 0 0 3px rgba(154, 42, 42, 0.6);
   }
 
   .label {
@@ -206,11 +212,12 @@
 /* Card hover lift */
 .card-lift {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  will-change: transform;
 }
 
 .card-lift:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(93, 58, 93, 0.15);
+  box-shadow: 0 4px 12px rgba(93, 58, 93, 0.2);
 }
 
 /* Fade-in entrance */

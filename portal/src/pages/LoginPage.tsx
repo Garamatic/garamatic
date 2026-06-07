@@ -38,6 +38,7 @@ export function LoginPage() {
               src="/desgoffe.png"
               alt="Commune de Desgoffe"
               className="h-10 w-auto rounded-full"
+              loading="lazy"
             />
           </div>
           <h1 className="text-2xl md:text-3xl font-heading font-bold text-primary mb-2 uppercase tracking-wider">
@@ -62,9 +63,11 @@ export function LoginPage() {
               placeholder="citoyen@desgoffe.be"
               autoComplete="email"
               autoFocus
+              aria-invalid={!!error}
+              aria-describedby={error ? 'email-error' : undefined}
             />
             {error && (
-              <p className="error-text mt-2">{error}</p>
+              <p id="email-error" className="error-text mt-2" aria-live="polite">{error}</p>
             )}
           </div>
 

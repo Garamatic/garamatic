@@ -98,7 +98,7 @@ function ToastItem({
 
   return (
     <div
-      className={`flex items-start gap-3 p-4 rounded-lg border shadow-lg toast-enter ${bgColors[toast.type]}`}
+      className={`flex items-start gap-3 p-4 rounded-lg border shadow-md toast-enter ${bgColors[toast.type]}`}
       role="alert"
     >
       <span className="shrink-0 mt-0.5">{icons[toast.type]}</span>

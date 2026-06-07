@@ -102,13 +102,13 @@ export function LandingPage() {
                 </h3>
                 <form onSubmit={handleTrack} className="flex gap-2">
                   <div className="relative flex-grow">
-                    <MagnifyingGlass size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/50" />
+                    <MagnifyingGlass size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/70" />
                     <input
                       type="text"
                       value={trackQuery}
                       onChange={(e) => setTrackQuery(e.target.value)}
                       placeholder="Numéro de ticket ou email"
-                      className="w-full bg-white/10 border border-white/20 rounded-md pl-10 pr-3 py-2.5 text-sm text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-white/20"
+                      className="w-full bg-white/10 border border-white/20 rounded-md pl-10 pr-3 py-2.5 text-sm text-white placeholder:text-white/70 focus:outline-none focus:ring-2 focus:ring-white/20"
                     />
                   </div>
                   <button
@@ -119,7 +119,7 @@ export function LandingPage() {
                     <span className="sr-only">Rechercher</span>
                   </button>
                 </form>
-                <p className="text-xs text-white/50 mt-2">
+                <p className="text-xs text-white/70 mt-2">
                   Connectez-vous pour consulter l'historique de vos demandes.
                 </p>
               </div>
@@ -151,7 +151,7 @@ export function LandingPage() {
                     <span>Vendredi</span>
                     <span>{MUNICIPALITY.hours.friday}</span>
                   </div>
-                  <div className="flex justify-between text-white/50">
+                  <div className="flex justify-between text-white/70">
                     <span>Samedi – Dimanche</span>
                     <span>Fermé</span>
                   </div>

@@ -28,7 +28,7 @@ export function StatusTimeline({ steps }: StatusTimelineProps) {
                   ? 'bg-success text-white'
                   : step.active
                   ? 'bg-accent text-white'
-                  : 'bg-gray-100 text-gray-400'
+                  : 'bg-surface-hover text-muted'
               }`}>
                 {step.completed ? (
                   <CheckCircle size={16} weight="fill" />
@@ -40,7 +40,7 @@ export function StatusTimeline({ steps }: StatusTimelineProps) {
               </div>
               {!isLast && (
                 <div className={`w-0.5 flex-grow min-h-[2rem] ${
-                  step.completed ? 'bg-success' : 'bg-gray-200'
+                  step.completed ? 'bg-success' : 'bg-border'
                 }`} />
               )}
             </div>

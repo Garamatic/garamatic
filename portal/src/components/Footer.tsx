@@ -15,6 +15,7 @@ export function Footer() {
                   src="/desgoffe.png"
                   alt={MUNICIPALITY.name}
                   className="h-6 w-auto"
+                  loading="lazy"
                 />
               </div>
               <span className="font-semibold text-white font-heading">{MUNICIPALITY.name}</span>

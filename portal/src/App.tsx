@@ -20,10 +20,16 @@ import { EmergencyBanner } from './components/EmergencyBanner'
 function App() {
   return (
     <div className="min-h-dvh flex flex-col bg-canvas text-text-primary font-sans">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[60] focus:px-4 focus:py-2 focus:bg-primary focus:text-white focus:rounded-md focus:font-heading focus:uppercase focus:tracking-wider focus:text-sm"
+      >
+        Aller au contenu
+      </a>
       <Header />
       <EmergencyBanner />
       <Breadcrumb />
-      <main className="flex-grow">
+      <main id="main-content" className="flex-grow">
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/submit" element={<SubmitPage />} />

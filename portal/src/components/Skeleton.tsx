@@ -21,7 +21,7 @@ export function Skeleton({ className = '', count = 1 }: SkeletonProps) {
 
 export function TicketCardSkeleton() {
   return (
-    <div className="card p-5 animate-pulse">
+    <div className="card p-5">
       <div className="flex items-start justify-between gap-4">
         <div className="flex-grow min-w-0">
           <div className="flex items-center gap-2 mb-2">
@@ -44,7 +44,7 @@ export function TicketCardSkeleton() {
 
 export function StatCardSkeleton() {
   return (
-    <div className="card p-5 animate-pulse">
+    <div className="card p-5">
       <div className="flex items-center justify-between mb-3">
         <div className="h-4 w-16 rounded bg-border" />
         <div className="h-5 w-5 rounded bg-border" />
@@ -56,7 +56,7 @@ export function StatCardSkeleton() {
 
 export function DetailSkeleton() {
   return (
-    <div className="space-y-6 animate-pulse">
+    <div className="space-y-6">
       <div>
         <div className="flex items-center gap-2 mb-3">
           <div className="h-6 w-24 rounded-full bg-border" />

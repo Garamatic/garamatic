@@ -44,7 +44,7 @@ export function SLACountdown({ createdAt, slaDays = 7, status }: SLACountdownPro
     icon = <Warning size={16} weight="fill" />
     label = `En retard (${Math.abs(businessDaysRemaining)}j)`
   } else if (businessDaysRemaining <= 2) {
-    color = 'text-amber-600'
+    color = 'text-warning'
     bgColor = 'bg-warning-bg'
     icon = <Clock size={16} />
     label = `${businessDaysRemaining}j ouvrable${businessDaysRemaining > 1 ? 's' : ''} restant${businessDaysRemaining > 1 ? 's' : ''}`
