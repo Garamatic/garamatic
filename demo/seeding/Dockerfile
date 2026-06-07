@@ -14,6 +14,7 @@ WORKDIR /seeder
 
 # Copy seeding data and scripts
 COPY data/ ./data/
+COPY data-desgoffe/ ./data-desgoffe/
 COPY lib/ ./lib/
 COPY scripts/ ./scripts/
 COPY seed.js ./

@@ -49,6 +49,10 @@ __pycache__/
 .mypy_cache/
 
 
+# ─── Cloudflare Tunnel ─────────────────────────────────────────────────────
+cloudflared/credentials.json
+cloudflared/config.yml
+
 # ─── Integration Test Artifacts ──────────────────────────────────────
 integration-tests/test-reports/
 integration-tests/test-results/

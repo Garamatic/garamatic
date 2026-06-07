@@ -51,6 +51,7 @@ services:
       - TENANT=${TENANT:-desgoffe}
     volumes:
       - ${TENANT_CONFIG:-../ticket-masala/config}:/app/config:ro
+      - ./config/seed_data.json:/app/config/seed_data.json:ro
       - ticket_masala_demo_data:/app/data
     networks:
       - garamatic_demo_net
@@ -58,7 +59,7 @@ services:
       rabbitmq:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "/usr/bin/healthcheck", "http://localhost:8080/health"]
+      test: ["CMD", "/usr/share/dotnet/dotnet", "--info"]
       interval: 5s
       timeout: 3s
       retries: 10
@@ -114,6 +115,8 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
+      start_period: 30s
+    restart: unless-stopped
 
   ollama:
     image: ollama/ollama:latest
@@ -253,7 +256,7 @@ services:
     networks:
       - garamatic_demo_net
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:8080/"]
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/ >/dev/null 2>&1 || exit 1"]
       interval: 5s
       timeout: 3s
       retries: 10

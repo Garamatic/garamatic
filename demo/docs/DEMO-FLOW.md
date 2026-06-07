@@ -1,581 +1,255 @@
-# Garamatic Ecosystem Demo — Advanced Capabilities
+# Ticket Masala — Demo Video Script (max 10 minuten)
 
-> **Focus:** MCP, RabbitMQ event bus, Odoo ERP integration, mailing service, and AI-driven automation.
-> **Assumption:** Basic Ticket Masala capabilities (ticket CRUD, assignment, resolution) were demoed in the previous round.
-> **Entry point:** `http://localhost:8092` — **Architecture Dashboard** (new). Start here for the interactive service topology, live health, and demo narrative.
+> **Doel:** In maximaal 10 minuten de kernfunctionaliteit, flows en multi-tenant architectuur van Ticket Masala tonen.
+> **Taal:** Nederlands (presentatie) — de jury beoordeelt in het Nederlands.
+> **Opstartpunt:** `http://localhost:8092` (Architecture Dashboard) of direct `http://localhost:8093` (Desgoffe Portal).
+> **Voorbereiding:** `docker compose up --build -d` draaiend, alle services healthy.
 
 ---
 
-## Pre-Demo Setup (2 minutes)
+## Tijdsindeling (totaal: ~9 min)
+
+| Segment | Tijd | Wat je toont |
+|---------|------|---------------|
+| Intro | 0:30 | Project, team, technologieën |
+| Flow 1: Multi-tenant Portal | 1:30 | Desgoffe citizen portal → ticket aanmaken |
+| Flow 2: Ticket Lifecycle + AI | 2:00 | GERDA AI, assignment, status tracking |
+| Flow 3: MCP AI Chat (WOW) | 2:00 | AI chat — ticket query, invoice, email |
+| Flow 4: Invoicing + Odoo ERP | 2:00 | Ticket resolved → factuur in Odoo |
+| Flow 5: Event Bus & Email | 1:00 | RabbitMQ, Mailhog — closing the loop |
+| Outro | 0:30 | Samenvatting, repo link, live demo URL |
+
+---
+
+## Pre-Demo Checklist
 
 ```bash
-cd /home/juan/Projects/garamatic
-docker compose -f demo/docker-compose.yml up --build -d
-
-# Verify all services are healthy
-docker compose -f demo/docker-compose.yml ps
+cd /home/ehbstudent/garamatic
+docker compose up --build -d
+sleep 30
+scripts/health-check.sh
 ```
 
-> **Important:** The AI Agent requires `OPENAI_API_KEY` to be set. For the demo:
-> ```bash
-> export OPENAI_API_KEY='your-key-here'
-> # Or add it to .env in the agentic-service directory
-> ```
-> If no key is set, the chat UI will show a graceful error: *"The agent is unavailable. Is OPENAI_API_KEY set?"*
-
-### Service Quick-Reference
-
-| Service | URL | What to show |
-|---------|-----|--------------|
-| **Architecture Dashboard** | **`http://localhost:8092`** | **Start here** — live topology, health, event flow, narrative |
-| Portal (Desgoffe) | `http://localhost:8093` | Citizen portal entry point |
-| Ticket Masala | `http://localhost:8085` | Ticket lifecycle UI + **AI Chat** |
-| RabbitMQ Mgmt | `http://localhost:15672` (guest/guest) | Event bus, bindings, message flow |
-| Agentic Service API | `http://localhost:3001/docs` | MCP tools, OpenAPI docs |
-| Mailhog | `http://localhost:8025` | All captured emails |
-| Odoo Bridge | `http://localhost:8089/health` | Health + LiteDB state |
-| Odoo ERP | `http://localhost:8069` (admin/admin) | Invoices, customers |
-| Mailing Service | `http://localhost:8087/health` | Email worker health |
-
-> **Screen layout suggestion:** Browser tabs: Showcase (left), RabbitMQ (right), Ticket Masala (center), Mailhog (secondary). Terminal: `docker compose logs -f` for each service.
+- [ ] Alle services healthy (8085, 8086, 8087, 8089, 8092, 8093, 15672, 8025)
+- [ ] Mailhog heeft minstens 1 test email
+- [ ] Odoo bereikbaar op `localhost:8069` (admin/admin)
+- [ ] Pre-seeded ticket aanwezig in Ticket Masala
+- [ ] `OPENAI_API_KEY` gezet (of graceful error accepteren)
 
 ---
 
-## The Narrative: One Ticket, Seven Services
+## Segment 0: Intro (0:00 — 0:30)
 
-> **Presenter framing:** "We're not demoing individual features. We're following one real business event — a citizen complaint — as it ripples through our entire microservice ecosystem. Every service reacts independently. No service calls another directly."
+**Wat je toont:** Architecture Dashboard (`http://localhost:8092`)
+
+**Wat je zegt:**
+> "Dit is Ticket Masala — ons multi-tenant ticket management platform. We zijn een team van 4 personen: Juan, Aiko, Gijs, S. We hebben 1095 uur gewerkt aan een volledig containerized microservices-ecosysteem. Wat je hier ziet is onze architecture dashboard met alle 7 services live: Ticket Masala, Gatekeeper API, Agentic Service, Mailing Service, Odoo Bridge, Portal, en RabbitMQ als event bus."
+
+**Screen:** Showcase pagina met service topology en health indicators.
 
 ---
 
-## Step 1: Citizen Submits Complaint (Showcase Portal)
+## Segment 1: Multi-tenant Portal — Burger Melding (0:30 — 2:00)
 
-**Time:** 1 min
-**What to show:** Desgoffe portal form submission
+**Wat je toont:** Desgoffe Citizen Portal (`http://localhost:8093`)
 
-### Demo
+**Wat je zegt:**
+> "Ticket Masala is multi-tenant. Elke tenant heeft zijn eigen branding, domeinen, workflows en data. Hier zie je de Ville de Desgoffe — een fictieve gemeente. Een burger kan hier een melding indienen."
 
+**Click-by-click:**
 1. Open `http://localhost:8093`
-2. Fill in:
-   - **Nom:** `Alice Johnson`
-   - **Email:** `alice@example.com`
+2. Toon de header: **"Ville de Desgoffe — Guichet Citoyen"**
+3. Toon de form velden:
+   - **Nom:** `Jean Dupont`
+   - **Email:** `jean.dupont@citoyen.be`
    - **Type:** `Nuisance Sonore`
    - **Quartier:** `Centre-Ville`
    - **Priorité:** `Urgent`
-   - **Description:** `"Loud construction noise at 6am on Rue de la Loi. No permit visible."`
-3. Submit
+   - **Description:** `"Luide bouwherrie om 6u. Geen vergunning zichtbaar."`
+4. Klik **Submit** → toon success message
 
-### What Happens (Backend)
+**Wat je zegt:**
+> "De melding wordt direct in Ticket Masala geregistreerd. De burger krijgt een bevestiging. En achter de schermen wordt een event gepubliceerd naar alle services via RabbitMQ."
 
-- `PortalForm` POSTs `multipart/form-data` to `http://localhost:8085/api/portal/submit`
-- `TicketMasala` creates a `Ticket` + `ApplicationUser` (if new customer)
-- `TicketLifecycle.HandleCreateAsync()` atomically:
-  1. Persists ticket to SQLite
-  2. Queues `ticket.created` event to outbox table
-  3. Commits transaction
-- `OutboxPublisher` (background service, polls every 5s) picks up the outbox message
-- Publishes to RabbitMQ exchange `event_exchange` with routing key `event.ticket.created`
-
-> **Presenter says:** "Even if RabbitMQ is down right now, the event is safe in the SQLite outbox. It will be retried until delivery succeeds. That's the outbox pattern — atomic transaction + eventual delivery."
-
-### Verification
-
-```bash
-# Check outbox has the message (inside ticket-masala container)
-docker exec garamatic_demo_ticket_masala sqlite3 /app/data/masala_demo.db "SELECT * FROM OutboxMessages ORDER BY Id DESC LIMIT 1;"
-
-# Check RabbitMQ exchange
-curl -u guest:guest http://localhost:15672/api/exchanges/%2f/event_exchange/bindings/source
-```
+**Screen:** Browser split — links portal (8093), rechts RabbitMQ (15672).
 
 ---
 
-## Step 2: RabbitMQ — The Event Bus (Fan-Out)
+## Segment 2: Ticket Lifecycle + GERDA AI (2:00 — 4:00)
 
-**Time:** 2 min
-**What to show:** RabbitMQ Management Dashboard
+**Wat je toont:** Ticket Masala (`http://localhost:8085`)
 
-### Demo
+**Wat je zegt:**
+> "We loggen in als manager. Hier zien we alle tickets. De GERDA AI sidebar analyseert elk ticket automatisch: complexiteit, prioriteit, tags, en een agent aanbeveling."
 
-1. Open `http://localhost:15672` (guest/guest)
-2. Navigate to **Exchanges** → `event_exchange` (topic type)
-3. Click **Bindings** tab — show three queues bound:
-   - `agentic_consumer` — `event.ticket.*`, `event.invoice.*`, `event.payment.*`
-   - `mailing.queue` — `event.ticket.*`, `event.invoice.*`, `event.payment.*`, `event.email.send`
-   - `odoo-bridge` — `event.ticket.resolved`, `event.invoice.create_requested`
-4. Click **Publish message** (or wait for next event) to inspect the `event.ticket.created` payload
+**Click-by-click:**
+1. Login: `manager.john` / `Employee123!`
+2. Open het net aangemaakte ticket (of een pre-seeded ticket)
+3. Toon de **GERDA AI Insights** sidebar:
+   - **Complexity:** X punten
+   - **Priority Score:** Y
+   - **AI Tags:** Auto-gegenereerd
+   - **Recommended Agent:** `Sarah Chen`
+4. Klik **"Assign to Sarah Chen"** → Save
 
-### What Happens
+**Wat je zegt:**
+> "GERDA leest de beschrijving, schat de inspanning, berekent de prioriteit op basis van WSJF, en stelt de beste agent voor op basis van werklast en specialisatie. De assignment triggert opnieuw een event naar alle services."
 
-- One message is published to `event_exchange`
-- Three queues receive a **copy** of the message (fan-out)
-- Each consumer processes independently — no coupling, no coordination
-
-> **Presenter says:** "This is the heart of our architecture. One event, three consumers, zero coupling. If the Odoo bridge is down, the agentic service and mailing service still process the event. If mailing is slow, Odoo doesn't care."
-
-### Verification
-
-```bash
-# Check queue depths
-curl -u guest:guest http://localhost:15672/api/queues | jq '.[] | {name: .name, messages: .messages_ready}'
-
-# Watch message rates
-curl -u guest:guest http://localhost:15672/api/overview | jq '.message_stats'
-```
+**Screen:** Ticket detail pagina met GERDA sidebar.
 
 ---
 
-## Step 3: Agentic Service — MCP + AI Notification
+## Segment 3: MCP AI Chat — De WOW Moment (4:00 — 6:00)
 
-**Time:** 3 min
-**What to show:** Agentic service logs + Mailhog captured email + MCP API docs
+**Wat je toont:** Ticket Masala AI Chat (`http://localhost:8085` — ticket detail)
 
-### Demo
+**Wat je zegt:**
+> "Dit is ons meest indrukwekkende feature. De AI chat is geïntegreerd in elk ticket. De agent kent het ticket al — je hoeft niets uit te leggen. En het gebruikt MCP: Model Context Protocol. De AI kan rechtstreeks onze business tools aanroepen."
 
-1. **Terminal:** `docker compose -f demo/docker-compose.yml logs -f agentic-service`
-2. **Browser:** Open `http://localhost:8025` — refresh, see `Ticket #... Created` email
-3. **Browser:** Open `http://localhost:3001/docs` — show the OpenAPI docs
+**Click-by-click:**
+1. Klik op **"Ask AI about this ticket"** (paarse knop onderaan, of GERDA sidebar)
+2. De chat opent en vraagt automatisch: *"I'm looking at ticket #XYZ. What can you tell me about it?"*
+3. Wacht op het AI antwoord — toon ticket status, klant context
+4. Type: **"Create a €200 invoice for this ticket"**
+5. Wacht op bevestiging
+6. Toon de **quick action buttons**:
+   - Customer tickets
+   - Customer context
+   - Create invoice
+   - Invoice status
+   - This ticket
+   - Invoice this ticket
 
-### What Happens
+**Wat je zegt:**
+> "Dit is geen gewone chatbot. De AI heeft directe toegang tot onze MCP tools — dezelfde tools die Claude of GPT zouden gebruiken. Tickets opvragen, facturen aanmaken, emails versturen. De AI leest data én handelt."
 
-- `agentic-service` consumes `event.ticket.created` from `agentic_consumer` queue
-- `NotificationComposer` selects `_ticket_created_template`
-- Renders email with ticket ID, customer name, priority, description
-- Sends via `MessageQueueEmailSender` (or `ServiceEmailSender`) to Mailhog
-
-> **Presenter says:** "The agentic service doesn't just send emails. It exposes an MCP server — meaning Claude, GPT, or any AI agent can directly call our business tools."
-
-### MCP Demo — Interactive Chat in Ticket Masala
-
-**The most impressive demo:** Open the AI chat directly inside Ticket Masala.
-
-1. **Browser:** Log in to `http://localhost:8085` → open any ticket detail page
-2. Click **"Ask AI about this ticket"** (purple button at bottom, or "Ask AI" in the GERDA sidebar)
-3. The chat opens and immediately asks: *"I'm looking at ticket #XYZ. What can you tell me about it?"*
-4. Watch the agent respond with ticket status, customer context, and invoice info
-5. Type follow-ups like:
-   - *"Create a €200 invoice for this ticket"*
-   - *"Send an email to the customer"*
-   - *"Show me Alice's full context"*
-
-> **Presenter says:** "This isn't just a chatbot. The agent has direct access to the same MCP tools that Claude or GPT would use. It can query tickets, create invoices, send emails — all through the same business layer. The AI doesn't just read data; it can act on it."
-
-### MCP Demo (API — for developers)
-
-```bash
-# Direct API call — get ticket status
-curl http://localhost:3001/tickets/{ticket-id}
-
-# Get customer full context
-curl http://localhost:3001/customers/alice@example.com/context
-```
-
-Response:
-```json
-{
-  "customer_email": "alice@example.com",
-  "summary": {
-    "total_tickets": 1,
-    "open_tickets": 1,
-    "total_invoiced": 0,
-    "outstanding_balance": 0
-  }
-}
-```
-
-> **Presenter says:** "This is the Model Context Protocol. The AI doesn't just read data — it can call `create_invoice`, `send_email`, `get_ticket_status`. The same business logic, exposed to both humans and AI agents."
-
-### Quick Actions (No Typing Required)
-
-The chat also has **quick action buttons** for common queries:
-- **Customer tickets** — "What tickets does alice@example.com have?"
-- **Customer context** — "Show me Alice Johnson's full context"
-- **Create invoice** — "Create a €200 invoice for ticket #123"
-- **Invoice status** — "What is the invoice status for ticket #123?"
-- **This ticket** — (only when opened from ticket detail) queries the current ticket
-- **Invoice this ticket** — (only when opened from ticket detail) creates invoice with €150
-
-### Floating Chat Button
-
-A floating AI chat button appears on **every page** in Ticket Masala (bottom-right corner). Click it to open the chat from anywhere — you don't need to navigate to a specific page.
-
-### Verification
-
-```bash
-# Check agentic service processed the event
-docker compose -f demo/docker-compose.yml logs agentic-service | grep "ticket.created"
-
-# Check Mailhog has the email
-curl http://localhost:8025/api/v2/messages | jq '.count'
-```
+**Screen:** Full screen ticket detail met AI chat panel open.
 
 ---
 
-## Step 4: Mailing Service — Event-Driven Email Worker
+## Segment 4: Invoicing + Odoo ERP (6:00 — 8:00)
 
-**Time:** 1 min
-**What to show:** Mailing service logs + RabbitMQ queue consumption
+**Wat je toont:** Ticket Masala → Odoo ERP (`http://localhost:8069`)
 
-### Demo
+**Wat je zegt:**
+> "Wanneer een ticket is opgelost, wordt automatisch een factuur gegenereerd. We gebruiken Odoo ERP als ons factureringssysteem. De Odoo Bridge communiceert via JSON-RPC — Odoo Community Edition heeft geen REST API."
 
-1. **Terminal:** `docker compose -f demo/docker-compose.yml logs -f mailing-service`
-2. **RabbitMQ:** Show `mailing.queue` — message delivered, consumer acked
-
-### What Happens
-
-- `mailing-service` consumes `event.ticket.created` from `mailing.queue`
-- Processes the event (if email templates are configured, sends email)
-- If no template configured, logs the event for inspection
-
-> **Presenter says:** "The mailing service is a dedicated email worker. It receives events from RabbitMQ, renders templates, and sends via SendGrid. In this demo, it logs to Mailhog so we can inspect every email without sending real ones."
-
-### Verification
-
-```bash
-# Check mailing service received the event
-docker compose -f demo/docker-compose.yml logs mailing-service | grep "Event received"
-```
-
----
-
-## Step 5: Ticket Assignment — GERDA AI + Human Decision
-
-**Time:** 2 min
-**What to show:** Ticket Masala UI → assignment → new event published
-
-### Demo
-
-1. Open `http://localhost:8085` — log in as `manager.john` / `Employee123!`
-2. Find the ticket Alice just created
-3. On **Ticket Detail** page, observe the **GERDA AI Insights** sidebar:
-   - **Complexity:** Estimated effort points
-   - **Priority Score:** WSJF ranking
-   - **AI Tags:** Auto-generated from description
-   - **Recommended Agent:** `Sarah Chen` (highest affinity, workload `12/35 pts`)
-4. Click **"Assign to Sarah Chen"**
-5. Save
-
-### What Happens
-
-- `TicketLifecycle.HandleAssignAsync()`:
-  1. Updates `ticket.ResponsibleId`
-  2. Queues `ticket.assigned` outbox message
-  3. Commits transaction
-- `OutboxPublisher` publishes `event.ticket.assigned`
-- **Agentic Service** consumes → sends assignment notification
-- **Mailing Service** consumes → processes event
-
-> **Presenter says:** "GERDA is our embedded AI. It reads the description, estimates complexity, calculates priority, and recommends the best agent based on workload and specialization. The assignment itself triggers another event — the cycle continues."
-
-### Verification
-
-```bash
-# Watch assignment event in RabbitMQ
-curl -u guest:guest http://localhost:15672/api/queues/%2f/agentic_consumer | jq '.messages_ready'
-
-# Check agentic service sent assignment email
-docker compose -f demo/docker-compose.yml logs agentic-service | grep "ticket.assigned"
-```
-
----
-
-## Step 6: Agent Resolves Ticket — The Billing Trigger
-
-**Time:** 2 min
-**What to show:** Ticket status change → `ticket.resolved` event → billable amount
-
-### Demo
-
-1. Log in as `agent.sarah` / `Employee123!`
-2. Find the assigned ticket
-3. Click **Edit** → Change **Status** to `Completed`
-4. Enter:
-   - **Resolution notes:** `"Contacted contractor. Verified no permit. Issued cease order."`
+**Click-by-click:**
+1. In Ticket Masala: zoek het ticket, klik **Edit**
+2. Verander status naar **Completed**
+3. Vul in:
+   - **Resolution notes:** `"Contact gelegd met aannemer. Geen vergunning. Stopzetting bevolen."`
    - **Billable amount:** `€150.00`
-5. Save
+4. Save
+5. Switch naar Odoo (`http://localhost:8069`)
+6. Login: `admin` / `admin`
+7. Navigeer naar **Invoicing** → **Customers** → zoek `Alice Johnson`
+8. Navigeer naar **Invoicing** → **Invoices** — toon de nieuwe factuur
 
-### What Happens
+**Wat je zegt:**
+> "De factuur wordt automatisch aangemaakt in Odoo. Klantgegevens, servicebeschrijving, bedrag — alles komt uit het ticket. De factuur start in 'draft' en wordt direct gevalideerd naar 'posted'. De bridge houdt elke ticket bij in een LiteDB state machine — geen dubbele facturen."
 
-- `TicketLifecycle.HandleResolveAsync()`:
-  1. Sets `ticket.TicketStatus = Completed`
-  2. Sets `ticket.BillableAmount = 150.00`
-  3. Queues `ticket.resolved` outbox message
-  4. Commits transaction
-- Event payload:
-```json
-{
-  "event_type": "ticket.resolved",
-  "ticket_id": "...",
-  "customer_email": "alice@example.com",
-  "customer_name": "Alice Johnson",
-  "service_description": "Nuisance Sonore — Centre-Ville",
-  "amount": 150.00,
-  "resolution_notes": "Contacted contractor..."
-}
-```
-
-> **Presenter says:** "Resolution is the trigger for the entire billing workflow. The ticket carries a billable amount — this is what Odoo will invoice. The event is published with full context: customer, service, amount."
-
-### Verification
-
-```bash
-# Check ticket is resolved and has billable amount
-curl http://localhost:8085/api/tickets/{ticket-id} | jq '{status: .ticketStatus, amount: .billableAmount}'
-
-# Check RabbitMQ for resolved event
-curl -u guest:guest http://localhost:15672/api/queues/%2f/odoo-bridge | jq '.messages_ready'
-```
+**Screen:** Split screen — links Ticket Masala, rechts Odoo Invoices.
 
 ---
 
-## Step 7: Odoo Bridge — The Complex Integration (JSON-RPC, State Machine, Polling)
+## Segment 5: Event Bus & Email — Closing the Loop (8:00 — 9:00)
 
-**Time:** 4 min
-**What to show:** Odoo Bridge logs → Odoo ERP → invoice created → LiteDB state
+**Wat je toont:** RabbitMQ (`http://localhost:15672`) + Mailhog (`http://localhost:8025`)
 
-### Demo
+**Wat je zegt:**
+> "De kracht van ons systeem zit in de event-driven architectuur. Eén event — ticket aangemaakt, assigned, of resolved — wordt naar drie queues gestuurd. Geen service roept een andere direct aan."
 
-1. **Terminal:** `docker compose -f demo/docker-compose.yml logs -f odoo-integration`
-2. **Browser:** Open `http://localhost:8069` (Odoo ERP) — log in `admin` / `admin`
-3. Navigate to **Invoicing** → **Customers** → search `Alice Johnson` (auto-created)
-4. Navigate to **Invoicing** → **Invoices** — see the new invoice
+**Click-by-click:**
+1. Open RabbitMQ (`http://localhost:15672`, guest/guest)
+2. Toon **Exchanges** → `event_exchange` → **Bindings**
+3. Toon 3 queues:
+   - `agentic_consumer`
+   - `mailing.queue`
+   - `odoo-bridge`
+4. Toon één bericht in de queue (payload)
+5. Switch naar Mailhog (`http://localhost:8025`)
+6. Toon de emails:
+   - Ticket created notification
+   - Assignment notification
+   - Invoice created
 
-### What Happens (Step by Step)
+**Wat je zegt:**
+> "RabbitMQ fan-out: één bericht, drie consumers, zero coupling. Mailhog vangt alle emails op — we sturen geen echte emails in de demo. De klant krijgt notificaties op elke stap van het proces."
 
-1. **Consume:** `TicketResolvedConsumer` receives `event.ticket.resolved`
-2. **Deduplicate:** Checks LiteDB — "Has this ticket been processed?"
-3. **Auth:** Calls `authenticate()` on Odoo JSON-RPC → gets UID (session-based auth)
-4. **Customer Lookup:** `res.partner` search by email — if not found, creates:
-   ```json
-   { "name": "Alice Johnson", "email": "alice@example.com", "customer_rank": 1 }
-   ```
-5. **Invoice Create:** `account.move` with `move_type='out_invoice'`:
-   ```json
-   {
-     "partner_id": 123,
-     "invoice_line_ids": [[0, 0, {
-       "name": "Nuisance Sonore — Centre-Ville",
-       "quantity": 1,
-       "price_unit": 150.00,
-       "account_id": 21
-     }]]
-   }
-   ```
-6. **Post:** `action_post` validates the invoice (draft → posted)
-7. **Persist:** LiteDB stores: `ticket_id`, `odoo_invoice_id`, `status`, `due_date`
-8. **Publish:** `IOutbox` publishes `invoice.created` event atomically:
-   ```json
-   {
-     "event_type": "invoice.created",
-     "invoice_id": "inv-...",
-     "odoo_invoice_id": "1234",
-     "ticket_id": "...",
-     "customer_email": "alice@example.com",
-     "amount": 150.00,
-     "status": "posted"
-   }
-   ```
+**Screen:** Split screen — links RabbitMQ bindings, rechts Mailhog inbox.
 
-> **Presenter says:** "This is where the real complexity lives. Odoo Community Edition has no REST API. We use JSON-RPC with session-based authentication. Every call requires a database name, a user ID, and a password. Creating an invoice requires nested array syntax — `[0, 0, {...}]` means 'create new relation record.'"
+---
 
-> **Presenter says:** "The invoice starts in `draft`. We must explicitly call `action_post` to validate it. Without this, the invoice can't be paid. And because Odoo has no webhooks, we poll every 5 minutes to detect payment status changes."
+## Segment 6: Outro (9:00 — 9:30)
 
-> **Presenter says:** "Notice the deduplication check: if the same ticket is resolved twice, we don't create a duplicate invoice. The LiteDB state machine tracks every processed ticket."
+**Wat je toont:** Architecture Dashboard (`http://localhost:8092`)
 
-### Verification
+**Wat je zegt:**
+> "Dit was Ticket Masala. Multi-tenant. Event-driven. AI-geïntegreerd. Volledig containerized. Alle code is open source op GitHub. De live demo draait op [URL]. Bedankt voor jullie aandacht."
 
-```bash
-# Check LiteDB state
-docker exec garamatic_demo_odoo cat /app/data/seeded_state.db
+**Screen:** Architecture dashboard met alle groene health indicators. Overlay met:
+- GitHub repo link
+- Live demo URL
+- Team namen
 
-# Or via the bridge API
-curl http://localhost:8089/health
+---
 
-# Check Odoo Bridge processed the event
-docker compose -f demo/docker-compose.yml logs odoo-integration | grep "invoice created"
+## Quick Reference — Tijdslijn
+
+```
+0:00  Intro — Architecture Dashboard
+0:30  Flow 1 — Desgoffe Portal, ticket aanmaken
+2:00  Flow 2 — Ticket Masala, GERDA AI, assignment
+4:00  Flow 3 — MCP AI Chat, invoice aanmaken
+6:00  Flow 4 — Ticket resolved, Odoo factuur
+8:00  Flow 5 — RabbitMQ, Mailhog, event bus
+9:00  Outro — Samenvatting, links
 ```
 
 ---
 
-## Step 8: Invoice Email — Closing the Loop
+## Demo Tips
 
-**Time:** 1 min
-**What to show:** Mailhog → invoice email + agentic service logs
+### De "Wow" Momenten
+1. **MCP AI Chat** — Open de chat vanuit een ticket. De agent kent het ticket al. Vraag een factuur. Dit is de meest indrukwekkende feature.
+2. **RabbitMQ Fan-Out** — Toon één event naar drie queues. Dit bewijst de architectuur.
+3. **Odoo Auto-Invoice** — Ticket resolved → factuur in Odoo. Zero manual work.
 
-### Demo
+### Wat je NIET toont
+- Geen technische uitleg over Outbox Pattern, JSON-RPC, of LiteDB
+- Geen Docker / Kubernetes / CI pipelines
+- Geen code walkthrough
+- Geen terminal commands (tenzij voor RabbitMQ queue inspectie)
 
-1. **Mailhog:** `http://localhost:8025` — refresh, see `New Invoice #...` email
-2. **Agentic Logs:** `docker compose logs agentic-service | grep "invoice.created"`
-
-### What Happens
-
-- `invoice.created` event fans out to `agentic_consumer` and `mailing.queue`
-- **Agentic Service** renders `_invoice_created_template` → sends email
-- **Mailing Service** also receives and processes the event
-- Customer now has an invoice in Odoo + an email in their inbox
-
-> **Presenter says:** "The invoice.created event triggers both the agentic service and the mailing service. The customer now has an invoice in Odoo and an email notification. The loop is almost closed — we just need to detect payment."
-
-### Verification
+### Pre-Seeding
+Maak **voor** de demo al een ticket aan zodat je direct naar het AI chat moment kan springen als je tijd tekort komt.
 
 ```bash
-# Check Mailhog for invoice email
-curl http://localhost:8025/api/v2/messages | jq '.items[] | {subject: .Content.Headers.Subject[0]}'
-```
-
----
-
-## Step 9: (Bonus) Payment Detection — Polling + Thank-You Email
-
-**Time:** 2 min
-**What to show:** Manual payment in Odoo → poller detects → `payment.received` → thank-you email
-
-### Demo
-
-1. In **Odoo**, open the invoice → click **Register Payment**
-2. Select payment method, confirm
-3. **Odoo Bridge Logs:** Watch for:
-   ```
-   Invoice 1234 status changed from posted to paid
-   Published payment.received for invoice 1234
-   ```
-4. **Mailhog:** Refresh — see `Payment Received — Thank You` email
-
-### What Happens
-
-- `InvoiceStatusPoller` (runs every 5 minutes) queries Odoo for invoice status
-- Detects change from `posted` → `paid`
-- Publishes `payment.received` event
-- **Agentic Service** consumes → sends thank-you email
-
-> **Presenter says:** "Odoo doesn't tell us when payment happens. We poll every 5 minutes. When the status changes, the bridge publishes `payment.received`. The agentic service sends a thank-you email — closing the loop."
-
-### Verification
-
-```bash
-# Check poller logs
-docker compose -f demo/docker-compose.yml logs odoo-integration | grep "payment.received"
-
-# Check thank-you email in Mailhog
-curl http://localhost:8025/api/v2/messages | jq '.count'
-```
-
----
-
-## Architecture Patterns Summarized
-
-| Pattern | Where | Why It Matters |
-|---------|-------|--------------|
-| **Outbox Pattern** | Ticket Masala | Atomic event publishing — events survive crashes |
-| **Event-Driven** | RabbitMQ | Services are decoupled — no direct HTTP calls |
-| **Circuit Breaker** | Odoo Bridge | Prevents cascade failure when Odoo is down |
-| **Polling** | InvoiceStatusPoller | Odoo has no webhooks — required for payment detection |
-| **JSON-RPC** | Odoo Client | Odoo CE has no REST API — legacy integration pattern |
-| **MCP** | Agentic Service | AI agents can directly call business tools |
-| **Template Registry** | NotificationComposer | Clean separation of event types from rendering |
-| **LiteDB State** | Odoo Bridge | Tracks processed tickets — prevents duplicate invoices |
-
----
-
-## Quick Reset (Between Demos)
-
-```bash
-cd /home/juan/Projects/garamatic
-docker compose -f demo/docker-compose.yml down -v
-docker compose -f demo/docker-compose.yml up --build -d
-
-# Verify health
-docker compose -f demo/docker-compose.yml ps
-```
-
----
-
-## Quick Demo Cheat Sheet
-
-```bash
-# Create ticket via API (fast path for demo)
+# Pre-seed een ticket
 curl -X POST http://localhost:8085/api/portal/submit \
-  -F "CustomerName=Alice Johnson" \
-  -F "CustomerEmail=alice@example.com" \
-  -F "Description=Loud construction noise" \
+  -F "CustomerName=Marie Curie" \
+  -F "CustomerEmail=marie.curie@science.be" \
+  -F "Description=Bouwhoerrie zonder vergunning" \
   -F "WorkItemType=NUISANCE" \
   -F "PriorityScore=10" \
   -F "Tenant=desgoffe"
-
-# Resolve ticket via API
-curl -X POST http://localhost:8085/api/tickets/{id}/resolve \
-  -H "Content-Type: application/json" \
-  -d '{"resolution_notes":"Fixed","billable_amount":150}'
-
-# Get customer context via Agentic
-curl http://localhost:3001/customers/alice@example.com/context
-
-# Check RabbitMQ queues
-curl -u guest:guest http://localhost:15672/api/queues | jq '.[].name'
-
-# Check Mailhog messages
-curl http://localhost:8025/api/v2/messages | jq '.count'
-
-# Check Odoo Bridge health
-curl http://localhost:8089/health
-
-# Watch all service logs
-docker compose -f demo/docker-compose.yml logs -f
 ```
 
----
-
-## Demo Tips for Presenters
-
-### Timing the Demo
-
-| Section | Target Time | Notes |
-|---------|-------------|-------|
-| Setup & intro | 2 min | `docker compose up`, verify health |
-| Step 1: Portal submission | 1 min | Fill form, submit, show success |
-| Step 2: RabbitMQ | 2 min | Show exchange, bindings, fan-out |
-| Step 3: MCP + AI Chat | 3 min | **The wow moment** — open chat from ticket detail |
-| Step 4: Mailing Service | 1 min | Quick log check |
-| Step 5: Assignment | 2 min | Show GERDA insights, assign |
-| Step 6: Resolution | 2 min | Resolve with billable amount |
-| Step 7: Odoo Bridge | 4 min | The complex part — take your time |
-| Step 8: Invoice Email | 1 min | Quick Mailhog check |
-| Step 9: Payment (bonus) | 2 min | If time allows |
-| **Total** | **~18 min** | Leave buffer for questions |
-
-### The "Wow" Moments
-
-1. **MCP Chat in Ticket Masala** — Open the AI chat from a ticket detail page. The agent already knows which ticket you're looking at. Ask it to create an invoice. This is the most impressive demo feature.
-
-2. **RabbitMQ Fan-Out** — Show one message published to three queues simultaneously. This is the architectural proof.
-
-3. **Odoo JSON-RPC** — Show the actual `[0, 0, {...}]` syntax in the logs. This proves the complexity of the integration.
-
-### Common Pitfalls
-
-- **Don't demo GERDA dispatch** — It's cool but takes too long. The AI chat replaces it as the AI demo.
-- **Don't type prompts manually** — Use the quick action buttons for the AI chat. It looks more polished.
-- **Don't wait for the 5-minute poller** — If you need the payment detection, manually trigger it or skip it.
-- **Do have a pre-seeded ticket** — Create a ticket before the demo starts so you can jump straight to the chat.
-
-### Pre-Demo Checklist
-
-- [ ] `docker compose up` is running
-- [ ] All services show healthy
-- [ ] RabbitMQ dashboard loads at `localhost:15672`
-- [ ] Mailhog has at least one test email
-- [ ] Odoo loads at `localhost:8069` (admin/admin)
-- [ ] Ticket Masala has a pre-created ticket for the chat demo
-- [ ] `OPENAI_API_KEY` is set (or accept the graceful error)
+### Screen Layout
+- **Primair:** Browser (portal, Ticket Masala, Odoo)
+- **Secundair:** RabbitMQ + Mailhog (klein venster rechts)
+- **Terminal:** Alleen voor health-check, niet tijdens presentatie
 
 ---
 
 ## Troubleshooting
 
-| Symptom | Likely Cause | Fix |
-|---------|-------------|-----|
-| No email in Mailhog | Agentic service not consuming | Check `docker compose logs agentic-service` |
-| No invoice in Odoo | Odoo Bridge not processing | Check LiteDB state, Odoo auth |
-| RabbitMQ queue empty | OutboxPublisher not running | Check `docker compose logs ticket-masala` |
-| Odoo login fails | Odoo not initialized | Wait for `odoo-db` to be healthy, then restart Odoo container |
-| Showcase 404 | Nginx not serving | Check `docker compose logs showcase` |
-| AI Chat says "unavailable" | OPENAI_API_KEY not set | Export the key or add to .env |
+| Symptoom | Oplossing |
+|----------|-----------|
+| AI Chat zegt "unavailable" | `OPENAI_API_KEY` niet gezet — exporteer of toon graceful error |
+| Geen email in Mailhog | Check `docker compose logs agentic-service` |
+| Geen factuur in Odoo | Check Odoo Bridge logs, wacht op `odoo-db` healthy |
+| RabbitMQ queue leeg | Check `docker compose logs ticket-masala` — OutboxPublisher draait? |
+| Portal 404 | Check `docker compose logs portal` — Gatekeeper bereikbaar? |
+| Demo te lang | Skip Segment 5 (RabbitMQ detail), focus op AI Chat + Odoo |

@@ -16,6 +16,12 @@
 
 .PHONY: setup up down test update pull push sync status logs lint
 
+# ─── Load .env ─────────────────────────────────────────────────────────────
+ifneq (,$(wildcard .env))
+    include .env
+    export
+endif
+
 # ─── Setup ─────────────────────────────────────────────────────────────────
 setup:
 	@echo "📦 Initializing submodules..."
@@ -26,8 +32,10 @@ setup:
 
 # ─── Docker Compose (Demo Environment) ─────────────────────────────────────
 COMPOSE_FILE := demo/docker-compose.yml
+COMPOSE_MONITOR := demo/docker-compose.monitoring.yml
+COMPOSE_TUNNEL := docker-compose.tunnel.yml
 TENANT ?= desgoffe
-TENANT_CONFIG = demo/config
+TENANT_CONFIG = ./demo/config
 
 up:
 	@echo "🚀 Starting Garamatic demo stack (tenant: $(TENANT))..."
@@ -111,8 +119,8 @@ lint:
 
 # ─── Monitoring ────────────────────────────────────────────────────────────
 monitor-up:
-	@echo "📊 Starting monitoring stack (Prometheus + Grafana + Loki)..."
-	docker compose -f docker-compose.monitoring.yml up -d
+	@echo "📊 Starting monitoring stack (Grafana + Health Dashboard)..."
+	docker compose -f $(COMPOSE_MONITOR) up -d
 	@echo ""
 	@echo "   Monitoring Services:"
 	@echo "   • Grafana Dashboard → http://localhost:3000  (admin/${GRAFANA_ADMIN_PASSWORD:-admin})"
@@ -125,52 +133,81 @@ monitor-up:
 
 monitor-down:
 	@echo "🛑 Stopping monitoring stack..."
-	docker compose -f docker-compose.monitoring.yml down -v
+	docker compose -f $(COMPOSE_MONITOR) down -v
 
 monitor-logs:
-	docker compose -f docker-compose.monitoring.yml logs -f
+	docker compose -f $(COMPOSE_MONITOR) logs -f
 
 # ─── Cloudflare Tunnel ───────────────────────────────────────────────────
-# Exposes the demo stack via Cloudflare Tunnel for remote access.
-# Requires: cloudflared installed and authenticated on the VM.
+# Exposes the demo stack via a locally managed Cloudflare Tunnel.
+# Routes are configured in cloudflared/config.yml (local file).
+# Dashboard modifications are not possible for this tunnel.
 #
 # First time setup:
-#   1. Install cloudflared: https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/
+#   1. Install cloudflared CLI: https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/
 #   2. Authenticate: cloudflared tunnel login
 #   3. Create tunnel: cloudflared tunnel create garamatic
-#   4. Copy tunnel ID to .env: echo 'CLOUDFLARE_TUNNEL_ID=<id>' >> .env
-#   5. Run: make tunnel-up
+#   4. Add to .env:  CLOUDFLARE_TUNNEL_ID=<tunnel-id>
+#   5. Add to .env:  CLOUDFLARE_DOMAIN=your-domain.com
+#   6. Run:          make tunnel-setup
+#   7. Run:          make tunnel-up
+
+tunnel-setup:
+	@echo "🔧 Generating Cloudflare Tunnel config..."
+	@./scripts/setup-tunnel.sh
 
 tunnel-up:
 	@echo "🌐 Starting Cloudflare Tunnel..."
 	@if [ -z "$(CLOUDFLARE_TUNNEL_ID)" ]; then \
-		echo "❌ CLOUDFLARE_TUNNEL_ID not set. Run: echo 'CLOUDFLARE_TUNNEL_ID=<id>' >> .env"; \
+		echo "❌ CLOUDFLARE_TUNNEL_ID not set in .env"; \
+		echo "   Create a tunnel: cloudflared tunnel create garamatic"; \
+		echo "   Add to .env:      echo 'CLOUDFLARE_TUNNEL_ID=<id>' >> .env"; \
+		echo "   Then run:          make tunnel-setup"; \
 		exit 1; \
 	fi
-	@echo "   Tunnel ID: $(CLOUDFLARE_TUNNEL_ID)"
-	@echo "   Exposing:"
-	@echo "   • Portal        → https://portal.$(CLOUDFLARE_DOMAIN)"
-	@echo "   • Showcase      → https://showcase.$(CLOUDFLARE_DOMAIN)"
-	@echo "   • Ticket Masala → https://api.$(CLOUDFLARE_DOMAIN)"
-	@echo "   • Mailhog       → https://mailhog.$(CLOUDFLARE_DOMAIN)"
-	@echo "   • RabbitMQ      → https://rabbitmq.$(CLOUDFLARE_DOMAIN)"
+	@if [ ! -f "cloudflared/credentials.json" ]; then \
+		echo "❌ cloudflared/credentials.json not found."; \
+		echo "   Run: make tunnel-setup"; \
+		exit 1; \
+	fi
+	@if [ ! -f "cloudflared/config.yml" ]; then \
+		echo "❌ cloudflared/config.yml not found."; \
+		echo "   Run: make tunnel-setup"; \
+		exit 1; \
+	fi
+	@NETWORK=$$(docker network ls --filter name=garamatic_demo_net --format '{{.Name}}' | head -1); \
+		[ -z "$$NETWORK" ] && { echo "❌ Demo network not found. Run 'make up' first."; exit 1; }; \
+		echo "🔗 Attaching to network: $$NETWORK"; \
+		echo "   Tunnel ID: $(shell echo '$(CLOUDFLARE_TUNNEL_ID)' | cut -c1-20)..."; \
+		DEMO_NETWORK=$$NETWORK docker compose -f $(COMPOSE_TUNNEL) up -d
+	@echo "   Exposing (from cloudflared/config.yml):"
+	@echo "   • Portal        → portal.$(CLOUDFLARE_DOMAIN)        → http://portal:80"
+	@echo "   • Garamatic Web → web.$(CLOUDFLARE_DOMAIN)             → http://garamatic-web:8080"
+	@echo "   • Masala Web    → masala.$(CLOUDFLARE_DOMAIN)          → http://masala-web:8080"
+	@echo "   • Showcase      → showcase.$(CLOUDFLARE_DOMAIN)       → http://showcase:80"
+	@echo "   • Gatekeeper    → api.$(CLOUDFLARE_DOMAIN)             → http://gatekeeper-api:8080"
+	@echo "   • Ticket Masala → tickets.$(CLOUDFLARE_DOMAIN)         → http://ticket-masala:8080"
+	@echo "   • Agentic       → agentic.$(CLOUDFLARE_DOMAIN)          → http://agentic-service:3001"
+	@echo "   • Odoo Bridge   → odoo-bridge.$(CLOUDFLARE_DOMAIN)     → http://odoo-integration:8080"
+	@echo "   • Mailhog       → mailhog.$(CLOUDFLARE_DOMAIN)         → http://mailhog:8025"
+	@echo "   • RabbitMQ      → rabbitmq.$(CLOUDFLARE_DOMAIN)        → http://rabbitmq:15672"
+	@echo "   • Odoo ERP      → odoo.$(CLOUDFLARE_DOMAIN)            → http://odoo:8069"
 	@echo ""
-	cloudflared tunnel --url http://localhost:8093 --no-autoupdate 2>&1 | tee /tmp/cloudflared.log &
-	@echo "   💡 Tunnel started in background. Check /tmp/cloudflared.log for URL."
-	@echo "   💡 Or configure DNS: cloudflared tunnel route dns $(CLOUDFLARE_TUNNEL_ID) portal.$(CLOUDFLARE_DOMAIN)"
+	@echo "✅ Tunnel container started."
+	@echo "   💡 Check status: make tunnel-status"
+	@echo "   💡 View logs:     make tunnel-logs"
+	@echo "   💡 Add DNS:       cloudflared tunnel route dns <id> <subdomain>"
 
 tunnel-down:
 	@echo "🛑 Stopping Cloudflare Tunnel..."
-	@pkill -f "cloudflared tunnel" 2>/dev/null || echo "   No tunnel process found"
+	@docker compose -f $(COMPOSE_TUNNEL) down
+
+tunnel-logs:
+	@docker compose -f $(COMPOSE_TUNNEL) logs -f
 
 tunnel-status:
 	@echo "📊 Cloudflare Tunnel status:"
-	@pgrep -f "cloudflared tunnel" > /dev/null && echo "   ✅ Tunnel is running" || echo "   ⏹️  Tunnel is not running"
-	@if [ -f /tmp/cloudflared.log ]; then \
-		echo ""; \
-		echo "   Recent logs:"; \
-		tail -5 /tmp/cloudflared.log; \
-	fi
+	@docker compose -f $(COMPOSE_TUNNEL) ps
 
 # ─── Full Stack (App + Monitoring) ─────────────────────────────────────────
 stack-up:
@@ -211,9 +248,11 @@ help:
 	@echo "  make monitor-up   Start monitoring stack (Grafana + health dashboard)"
 	@echo "  make monitor-down Stop monitoring stack"
 	@echo "  make monitor-logs Tail monitoring logs"
-	@echo "  make tunnel-up    Start Cloudflare Tunnel for remote access"
+	@echo "  make tunnel-setup Generate tunnel config + copy credentials"
+	@echo "  make tunnel-up    Start Cloudflare Tunnel (Docker container)"
 	@echo "  make tunnel-down  Stop Cloudflare Tunnel"
-	@echo "  make tunnel-status Check tunnel status"
+	@echo "  make tunnel-status Check tunnel container status"
+	@echo "  make tunnel-logs  Tail Cloudflare Tunnel logs"
 	@echo "  make stack-up     Start full stack (services + monitoring)"
 	@echo "  make stack-down   Stop full stack"
 	@echo "  make backup       Create backup of all volumes and databases"
