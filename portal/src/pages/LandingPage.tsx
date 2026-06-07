@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { FilePlus, List, ArrowRight, SpeakerHigh, House, Scroll } from '@phosphor-icons/react'
+import { SpeakerHigh, House, Scroll } from '@phosphor-icons/react'
 
 const services = [
   {
@@ -42,56 +42,6 @@ export function LandingPage() {
 
   return (
     <div>
-      {/* Hero */}
-      <section className="bg-primary text-white">
-        <div className="container-page py-16 md:py-24">
-          <div className="max-w-2xl mx-auto text-center animate-fade-in">
-            {/* City Logo */}
-            <div className="inline-block p-3 rounded-full bg-white/10 mb-8 border border-white/20">
-              <div className="w-20 h-20 rounded-full bg-surface flex items-center justify-center overflow-hidden">
-                <img
-                  src="/desgoffe.png"
-                  alt="Ville de Desgoffe"
-                  className="h-16 w-auto"
-                />
-              </div>
-            </div>
-
-            {/* Title */}
-            <h1 className="text-4xl md:text-5xl font-heading font-bold mb-4 uppercase tracking-[0.05em] text-balance">
-              Guichet Citoyen
-            </h1>
-
-            {/* Subtitle */}
-            <p className="text-lg text-white/90 font-serif italic mb-8">
-              Ville de Desgoffe — Services Municipaux
-            </p>
-
-            <p className="text-white/80 leading-relaxed mb-10 max-w-lg mx-auto text-pretty">
-              Soumettez vos demandes municipales en ligne. Un service rapide, transparent et accessible à tous les citoyens.
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <button
-                onClick={() => navigate('/submit')}
-                className="btn bg-white text-primary hover:bg-white/90 px-6 py-3 text-base"
-              >
-                <FilePlus size={20} weight="bold" />
-                Faire une demande
-                <ArrowRight size={18} />
-              </button>
-              <button
-                onClick={() => navigate('/requests')}
-                className="btn bg-white/10 text-white border border-white/30 hover:bg-white/20 px-6 py-3 text-base"
-              >
-                <List size={20} />
-                Suivre mes demandes
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Services */}
       <section className="container-page py-12 md:py-16">
         <h2 className="text-xl font-heading font-semibold text-primary mb-8 text-center uppercase tracking-[0.05em] text-balance">
