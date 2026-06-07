@@ -45,7 +45,7 @@ interface TicketViewModel {
 
 // ── Mock fallback data ─────────────────────────────────────────────
 const MOCK_DB: Record<string, TicketViewModel[]> = {
-  'jean.dupont@example.be': [
+  'jean.dupont@citoyen.be': [
     {
       id: 'TM-2025-0042',
       number: 'TM-2025-0042',
@@ -85,7 +85,7 @@ const MOCK_DB: Record<string, TicketViewModel[]> = {
       comment: 'Lampadaire remplacé le 1er juin. Merci pour votre signalement.',
     },
   ],
-  'marie.curie@example.be': [
+  'marie.curie@science.be': [
     {
       id: 'TM-2025-0015',
       number: 'TM-2025-0015',

@@ -117,16 +117,6 @@ export function SubmitPage() {
     setSubmitting(true)
 
     try {
-      const fd = new FormData()
-      fd.append('CustomerName', sanitize(formData.customerName))
-      fd.append('CustomerEmail', sanitize(formData.customerEmail))
-      if (formData.customerPhone) fd.append('CustomerPhone', sanitize(formData.customerPhone))
-      fd.append('Description', sanitize(formData.description))
-      fd.append('WorkItemType', sanitize(formData.requestType))
-      fd.append('PriorityScore', formData.priority)
-      fd.append('Tags', `Quartier:${sanitize(formData.quartier)}`)
-      if (formData.attachment) fd.append('Attachment', formData.attachment)
-
       const response = await fetch(API_ENDPOINT, {
         method: 'POST',
         headers: {
@@ -142,6 +132,10 @@ export function SubmitPage() {
           priority: formData.priority,
           source: 'desgoffe-portal',
           tags: `Quartier:${sanitize(formData.quartier)},Type:${sanitize(formData.requestType)}`,
+          metadata: {
+            quartier: sanitize(formData.quartier),
+            hasAttachment: !!formData.attachment,
+          }
         }),
       })
 
