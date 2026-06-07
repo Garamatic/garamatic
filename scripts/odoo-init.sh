@@ -28,7 +28,6 @@ else
     --db_host=odoo-db \
     --db_user=odoo \
     --db_password=odoo \
-    --admin-password admin \
     --stop-after-init \
     --no-http
   echo "Odoo database initialized."

@@ -51,7 +51,6 @@ services:
       - TENANT=${TENANT:-desgoffe}
     volumes:
       - ${TENANT_CONFIG:-../ticket-masala/config}:/app/config:ro
-      - ./config/seed_data.json:/app/config/seed_data.json:ro
       - ticket_masala_demo_data:/app/data
     networks:
       - garamatic_demo_net

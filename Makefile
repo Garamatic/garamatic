@@ -35,7 +35,7 @@ COMPOSE_FILE := demo/docker-compose.yml
 COMPOSE_MONITOR := demo/docker-compose.monitoring.yml
 COMPOSE_TUNNEL := docker-compose.tunnel.yml
 TENANT ?= desgoffe
-TENANT_CONFIG = ./demo/config
+TENANT_CONFIG = $(CURDIR)/demo/config
 
 up:
 	@echo "🚀 Starting Garamatic demo stack (tenant: $(TENANT))..."
