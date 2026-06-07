@@ -177,7 +177,7 @@ services:
       - Odoo__Database=odoo
       - Odoo__Username=admin
       - Odoo__Password=admin
-      - Odoo__DefaultIncomeAccountId=21
+      - Odoo__DefaultIncomeAccountId=1
     volumes:
       - odoo_demo_data:/app/data
     networks:
