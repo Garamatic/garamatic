@@ -21,10 +21,15 @@ function log(status, message) {
   console.log(`  ${color}${status === 'pass' ? '✓' : '✗'}${COLORS.reset} ${message}`);
 }
 
+const TENANT = process.env.TENANT || 'default';
+
 async function seed() {
   console.log('Seeding gatekeeper API...');
+  console.log(`  Tenant: ${TENANT}`);
 
-  const events = require('../data/events.json');
+  const dataDir = TENANT === 'desgoffe' ? '../data-desgoffe' : '../data';
+  const events = require(`${dataDir}/events.json`);
+  console.log(`  Loaded ${events.length} events from ${dataDir}`);
 
   for (const event of events) {
     try {

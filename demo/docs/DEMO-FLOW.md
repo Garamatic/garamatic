@@ -143,7 +143,7 @@ scripts/health-check.sh
 4. Save
 5. Switch naar Odoo (`http://localhost:8069`)
 6. Login: `admin` / `admin`
-7. Navigeer naar **Invoicing** → **Customers** → zoek `Alice Johnson`
+7. Navigeer naar **Invoicing** → **Customers** → zoek `Jean Dupont`
 8. Navigeer naar **Invoicing** → **Invoices** — toon de nieuwe factuur
 
 **Wat je zegt:**

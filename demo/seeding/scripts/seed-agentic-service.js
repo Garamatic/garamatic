@@ -20,11 +20,16 @@ function log(status, message) {
   console.log(`  ${color}${status === 'pass' ? '✓' : '✗'}${COLORS.reset} ${message}`);
 }
 
+const TENANT = process.env.TENANT || 'default';
+
 async function seed() {
   console.log('Seeding agentic service...');
+  console.log(`  Tenant: ${TENANT}`);
 
-  const tickets = require('../data/tickets.json');
-  const customers = require('../data/customers.json');
+  const dataDir = TENANT === 'desgoffe' ? '../data-desgoffe' : '../data';
+  const tickets = require(`${dataDir}/tickets.json`);
+  const customers = require(`${dataDir}/customers.json`);
+  console.log(`  Loaded ${tickets.length} tickets and ${customers.length} customers from ${dataDir}`);
 
   // Create tickets via agentic API
   for (const ticket of tickets.slice(0, 8)) {

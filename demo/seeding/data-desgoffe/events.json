@@ -1,0 +1,95 @@
+[
+  {
+    "event_type": "ticket.created",
+    "ticket_id": "T-DGF-2024-001",
+    "customer_email": "jean.dupont@citoyen.be",
+    "customer_name": "Jean Dupont",
+    "tenant_id": "desgoffe",
+    "description": "Nuisance sonore — Chantier rue de la Loi. Bruit excessif venant du chantier de construction, tous les jours de 6h à 22h.",
+    "priority": "urgent",
+    "created_at": "2024-01-15T09:00:00Z"
+  },
+  {
+    "event_type": "ticket.resolved",
+    "ticket_id": "T-DGF-2024-001",
+    "customer_email": "jean.dupont@citoyen.be",
+    "customer_name": "Jean Dupont",
+    "service_description": "Mise en demeure envoyée à l'entreprise de construction pour respect des horaires autorisés.",
+    "amount": 150.00,
+    "tenant_id": "desgoffe",
+    "resolved_at": "2024-01-15T14:30:00Z",
+    "resolution_notes": "Un agent a été dépêché sur place. Le permis de travail est conforme, mais les horaires sont dépassés. Mise en demeure envoyée."
+  },
+  {
+    "event_type": "ticket.created",
+    "ticket_id": "T-DGF-2024-002",
+    "customer_email": "marie.curie@science.be",
+    "customer_name": "Marie Curie",
+    "tenant_id": "desgoffe",
+    "description": "Demande de permis pour une extension de terrasse de 15m² sur l'arrière de la maison.",
+    "priority": "high",
+    "created_at": "2024-01-20T10:00:00Z"
+  },
+  {
+    "event_type": "invoice.create_requested",
+    "ticket_id": "T-DGF-2024-001",
+    "customer_email": "jean.dupont@citoyen.be",
+    "customer_name": "Jean Dupont",
+    "amount": 150.00,
+    "description": "Frais d'intervention pour nuisance sonore — Chantier rue de la Loi",
+    "requested_at": "2024-01-15T14:35:00Z"
+  },
+  {
+    "event_type": "invoice.created",
+    "invoice_id": "INV-DGF-2024-001",
+    "odoo_invoice_id": 12345,
+    "ticket_id": "T-DGF-2024-001",
+    "customer_email": "jean.dupont@citoyen.be",
+    "amount": 150.00,
+    "currency": "EUR",
+    "status": "posted",
+    "created_at": "2024-01-15T15:00:00Z"
+  },
+  {
+    "event_type": "invoice.overdue",
+    "invoice_id": "INV-DGF-2024-002",
+    "odoo_invoice_id": 12346,
+    "customer_email": "pierre.martin@entreprise.be",
+    "amount": 250.00,
+    "days_overdue": 14
+  },
+  {
+    "event_type": "payment.received",
+    "invoice_id": "INV-DGF-2024-001",
+    "odoo_invoice_id": 12345,
+    "amount": 150.00,
+    "payment_method": "virement_bancaire",
+    "paid_at": "2024-01-20T10:00:00Z"
+  },
+  {
+    "event_type": "email.send",
+    "to_email": "jean.dupont@citoyen.be",
+    "subject": "Votre demande a été traitée — Ville de Desgoffe",
+    "body_html": "<p>Monsieur Dupont,</p><p>Votre demande concernant la nuisance sonore rue de la Loi a été traitée. Une mise en demeure a été envoyée à l'entreprise de construction.</p><p>Cordialement,<br>Services Techniques — Ville de Desgoffe</p>",
+    "from_email": "services.techniques@ville-desgoffe.be",
+    "from_name": "Services Techniques — Ville de Desgoffe"
+  },
+  {
+    "event_type": "user.created",
+    "user_id": "USR-DGF-001",
+    "email": "emma.roux@associations.be",
+    "name": "Emma Roux",
+    "role": "customer",
+    "tenant_id": "desgoffe",
+    "created_at": "2024-01-10T08:00:00Z"
+  },
+  {
+    "event_type": "ticket.assigned",
+    "ticket_id": "T-DGF-2024-002",
+    "customer_email": "marie.curie@science.be",
+    "customer_name": "Marie Curie",
+    "assigned_to": "agent-001",
+    "assigned_by": "supervisor-001",
+    "assigned_at": "2024-01-20T11:00:00Z"
+  }
+]
