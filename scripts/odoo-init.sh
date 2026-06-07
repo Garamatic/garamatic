@@ -1,8 +1,16 @@
 #!/usr/bin/env bash
 # ═══════════════════════════════════════════════════════════════════════════
-# Odoo Auto-Init — Initialize the database on first run
+# Odoo Auto-Init — Initialize the database on first run + seed demo data
 # ═══════════════════════════════════════════════════════════════════════════
 set -e
+
+cleanup() {
+  echo "Received signal, shutting down Odoo..."
+  kill $ODOO_PID 2>/dev/null || true
+  wait $ODOO_PID 2>/dev/null || true
+  exit 0
+}
+trap cleanup SIGTERM SIGINT
 
 # Wait for PostgreSQL
 until pg_isready -h odoo-db -U odoo; do
@@ -15,15 +23,36 @@ if psql -h odoo-db -U odoo -d odoo -c "SELECT 1 FROM ir_module_module WHERE name
   echo "Odoo database already initialized."
 else
   echo "Initializing Odoo database..."
-  # Create database and install base module
-  odoo -i base -d odoo \
+  # Install base + account modules (account is required for invoicing)
+  odoo -i base,account -d odoo \
     --db_host=odoo-db \
     --db_user=odoo \
     --db_password=odoo \
+    --admin-password admin \
     --stop-after-init \
     --no-http
   echo "Odoo database initialized."
 fi
 
-# Start Odoo normally
-exec odoo --db_host=odoo-db --db_user=odoo --db_password=odoo
+# Start Odoo in background
+echo "Starting Odoo..."
+odoo --db_host=odoo-db --db_user=odoo --db_password=odoo &
+ODOO_PID=$!
+
+# Wait for Odoo to be ready
+for i in $(seq 1 60); do
+  if curl -sf http://localhost:8069/web > /dev/null 2>&1; then
+    echo "Odoo is ready"
+    break
+  fi
+  sleep 2
+done
+
+# Seed Odoo with demo data
+if [ -f "/odoo-seed.py" ]; then
+  echo "Seeding Odoo with demo data..."
+  python3 /odoo-seed.py || echo "Odoo seeding failed (non-critical)"
+fi
+
+# Keep running until Odoo exits
+wait $ODOO_PID

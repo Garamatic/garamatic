@@ -177,6 +177,7 @@ services:
       - Odoo__Database=odoo
       - Odoo__Username=admin
       - Odoo__Password=admin
+      - Odoo__DefaultIncomeAccountId=21
     volumes:
       - odoo_demo_data:/app/data
     networks:
@@ -280,6 +281,7 @@ services:
       - ../odoo-integration/config:/etc/odoo:ro
       - ../odoo-integration/addons:/mnt/extra-addons:ro
       - ../scripts/odoo-init.sh:/odoo-init.sh:ro
+      - ../scripts/odoo-seed.py:/odoo-seed.py:ro
     command: ["/bin/bash", "/odoo-init.sh"]
     networks:
       - garamatic_demo_net

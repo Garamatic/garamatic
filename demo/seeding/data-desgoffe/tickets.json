@@ -9,7 +9,7 @@
     "customer_email": "jean.dupont@citoyen.be",
     "customer_name": "Jean Dupont",
     "resolution_notes": "Un agent a été dépêché sur place. Le permis de travail est conforme, mais les horaires sont dépassés. Mise en demeure envoyée à l'entreprise de construction.",
-    "billable_amount": null
+    "billable_amount": 150.00
   },
   {
     "title": "Demande de permis — Extension terrasse",
@@ -33,7 +33,7 @@
     "customer_email": "sophie.bernard@ecole.be",
     "customer_name": "Sophie Bernard",
     "resolution_notes": "Inspection réalisée le 25 mai. L'usine a été mise en demeure de mettre en place des filtres à charbon actif dans les 30 jours.",
-    "billable_amount": null
+    "billable_amount": 200.00
   },
   {
     "title": "Demande générale — Réparation lampadaire",
@@ -45,7 +45,7 @@
     "customer_email": "pierre.martin@entreprise.be",
     "customer_name": "Pierre Martin",
     "resolution_notes": "Lampadaire remplacé le 1er juin. Merci pour votre signalement.",
-    "billable_amount": null
+    "billable_amount": 120.00
   },
   {
     "title": "Nuisance sonore — Fête de quartier excessive",
@@ -93,7 +93,7 @@
     "customer_email": "lucas.garcia@artisan.be",
     "customer_name": "Lucas Garcia",
     "resolution_notes": "",
-    "billable_amount": null
+    "billable_amount": 50.00
   },
   {
     "title": "Demande générale — Inscription crèche municipale",
