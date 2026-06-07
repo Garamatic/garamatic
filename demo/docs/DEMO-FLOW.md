@@ -135,15 +135,15 @@ scripts/health-check.sh
 > "Wanneer een ticket is opgelost, wordt automatisch een factuur gegenereerd. We gebruiken Odoo ERP als ons factureringssysteem. De Odoo Bridge communiceert via JSON-RPC — Odoo Community Edition heeft geen REST API."
 
 **Click-by-click:**
-1. In Ticket Masala: zoek het ticket, klik **Edit**
+1. In Ticket Masala: zoek het ticket **Demande de permis — Extension terrasse**, klik **Edit**
 2. Verander status naar **Completed**
 3. Vul in:
-   - **Resolution notes:** `"Contact gelegd met aannemer. Geen vergunning. Stopzetting bevolen."`
+   - **Resolution notes:** `"Permis approuvé conformément au plan d'urbanisme. Taxe d'urbanisme: €150."`
    - **Billable amount:** `€150.00`
 4. Save
 5. Switch naar Odoo (`http://localhost:8069`)
 6. Login: `admin` / `admin`
-7. Navigeer naar **Invoicing** → **Customers** → zoek `Jean Dupont`
+7. Navigeer naar **Invoicing** → **Customers** → zoek `Marie Curie`
 8. Navigeer naar **Invoicing** → **Invoices** — toon de nieuwe factuur
 
 **Wat je zegt:**

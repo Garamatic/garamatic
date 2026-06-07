@@ -12,19 +12,6 @@
     "created_at": "2024-01-15T09:00:00Z"
   },
   {
-    "event_type": "ticket.resolved",
-    "timestamp": "2024-01-15T14:30:00Z",
-    "source": "demo-seeder",
-    "ticket_id": "T-DGF-2024-001",
-    "customer_email": "jean.dupont@citoyen.be",
-    "customer_name": "Jean Dupont",
-    "service_description": "Mise en demeure envoyée à l'entreprise de construction pour respect des horaires autorisés.",
-    "amount": 150.00,
-    "tenant_id": "desgoffe",
-    "resolved_at": "2024-01-15T14:30:00Z",
-    "resolution_notes": "Un agent a été dépêché sur place. Le permis de travail est conforme, mais les horaires sont dépassés. Mise en demeure envoyée."
-  },
-  {
     "event_type": "ticket.created",
     "timestamp": "2024-01-20T10:00:00Z",
     "source": "demo-seeder",
