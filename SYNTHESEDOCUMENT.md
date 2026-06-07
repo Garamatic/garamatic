@@ -139,14 +139,14 @@
 
 ### Ticket Masala (Core Engine)
 
-| Omgeving | URL | Rol | Email | Wachtwoord |
-|----------|-----|-----|-------|-----------|
-| **Lokaal** | `http://localhost:8085` | Admin | `gustave@desgoffe.gov` | `Admin123!` |
-| | | Employee | `sarah@liberty.tech` | `Employee123!` |
-| | | Customer | `jean.dupont@email.com` | `Customer123!` |
-| **Fly.io (Prod)** | `https://ticket-masala.fly.dev` | Admin | `gustave@desgoffe.gov` | `Admin123!` |
-| | | Employee | `arthur@liberty.tech` | `Employee123!` |
-| | | Customer | `jean.dupont@email.com` | `Customer123!` |
+| Omgeving | URL | Rol | Gebruikersnaam / Email | Wachtwoord |
+|----------|-----|-----|------------------------|-----------|
+| **Lokaal** | `http://localhost:8085` | Admin | `admin` | `Admin123!` |
+| | | Employee | `employee` | `Employee123!` |
+| | | Customer (Portal) | `jean.dupont@citoyen.be` | `Customer123!` |
+| **Fly.io (Prod)** | `https://ticket-masala.fly.dev` | Admin | `admin` | `Admin123!` |
+| | | Employee | `employee` | `Employee123!` |
+| | | Customer (Portal) | `jean.dupont@citoyen.be` | `Customer123!` |
 
 > **Opmerking:** Wachtwoorden zijn configureerbaar via environment variables (`MASALA_SEEDED_*_PASSWORD`). Standaard wachtwoorden zijn hierboven vermeld.
 
