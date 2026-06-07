@@ -1,4 +1,5 @@
 import { Clock, Warning, CheckCircle } from '@phosphor-icons/react'
+import { addBusinessDays } from '../config/municipality'
 
 interface SLACountdownProps {
   createdAt: string
@@ -17,55 +18,70 @@ export function SLACountdown({ createdAt, slaDays = 7, status }: SLACountdownPro
   }
 
   const created = new Date(createdAt)
-  const deadline = new Date(created)
-  deadline.setDate(deadline.getDate() + slaDays)
+  const deadline = addBusinessDays(created, slaDays)
 
   const now = new Date()
-  const diffMs = deadline.getTime() - now.getTime()
-  const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24))
+
+  // Count business days remaining
+  let businessDaysRemaining = 0
+  const current = new Date(now)
+  while (current < deadline) {
+    current.setDate(current.getDate() + 1)
+    const day = current.getDay()
+    if (day !== 0 && day !== 6) {
+      businessDaysRemaining++
+    }
+  }
 
   let color: string
   let bgColor: string
   let icon: React.ReactNode
   let label: string
 
-  if (diffDays < 0) {
+  if (businessDaysRemaining < 0) {
     color = 'text-error'
     bgColor = 'bg-error-bg'
     icon = <Warning size={16} weight="fill" />
-    label = `En retard (${Math.abs(diffDays)}j)`
-  } else if (diffDays <= 2) {
+    label = `En retard (${Math.abs(businessDaysRemaining)}j)`
+  } else if (businessDaysRemaining <= 2) {
     color = 'text-amber-600'
     bgColor = 'bg-warning-bg'
     icon = <Clock size={16} />
-    label = `${diffDays}j restant${diffDays > 1 ? 's' : ''}`
+    label = `${businessDaysRemaining}j ouvrable${businessDaysRemaining > 1 ? 's' : ''} restant${businessDaysRemaining > 1 ? 's' : ''}`
   } else {
     color = 'text-success'
     bgColor = 'bg-success-bg'
     icon = <Clock size={16} />
-    label = `${diffDays}j restant${diffDays > 1 ? 's' : ''}`
+    label = `${businessDaysRemaining}j ouvrables restants`
   }
 
   return (
     <div className={`flex items-center gap-2 text-sm px-3 py-1.5 rounded-md ${bgColor}`}>
       <span className={color}>{icon}</span>
       <span className={`font-medium ${color}`}>{label}</span>
+      <span className="text-xs text-text-muted ml-1">(jusqu'au {deadline.toLocaleDateString('fr-BE')})</span>
     </div>
   )
 }
 
 export function SLAInfo({ createdAt, slaDays = 7 }: { createdAt: string; slaDays?: number }) {
   const created = new Date(createdAt)
-  const deadline = new Date(created)
-  deadline.setDate(deadline.getDate() + slaDays)
+  const deadline = addBusinessDays(created, slaDays)
 
   const now = new Date()
-  const diffMs = deadline.getTime() - now.getTime()
-  const diffDays = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)))
+  let diffDays = 0
+  const current = new Date(now)
+  while (current < deadline) {
+    current.setDate(current.getDate() + 1)
+    const day = current.getDay()
+    if (day !== 0 && day !== 6) {
+      diffDays++
+    }
+  }
 
   return (
     <div className="text-xs text-text-muted">
-      Délai de réponse : {deadline.toLocaleDateString('fr-BE')} ({diffDays}j)
+      Délai de réponse : {deadline.toLocaleDateString('fr-BE')} ({diffDays}j ouvrables)
     </div>
   )
 }

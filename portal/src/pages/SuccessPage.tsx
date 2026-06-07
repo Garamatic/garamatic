@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { CheckCircle, Copy, ArrowLeft, List, ArrowClockwise } from '@phosphor-icons/react'
+import { CheckCircle, Copy, ArrowLeft, List, ArrowClockwise, Clock, Phone, Printer, Envelope } from '@phosphor-icons/react'
+import { MUNICIPALITY, typeLabels, getServiceByValue } from '../config/municipality'
 
 interface SubmissionResult {
   success: boolean
   ticketId?: string
   queue?: string
   message?: string
+  serviceType?: string
+  slaDays?: number
 }
 
 export function SuccessPage() {
@@ -23,7 +26,6 @@ export function SuccessPage() {
         setResult(parsed)
         sessionStorage.removeItem('submissionResult')
       } catch {
-        // Fallback
         setResult({
           success: true,
           ticketId: urlTicketId,
@@ -31,7 +33,6 @@ export function SuccessPage() {
         })
       }
     } else {
-      // If no session data, use URL param or fallback
       setResult({
         success: true,
         ticketId: urlTicketId,
@@ -41,7 +42,10 @@ export function SuccessPage() {
   }, [urlTicketId])
 
   const displayTicketId = result?.ticketId || '---'
-  const displayQueue = result?.queue || 'Services Municipaux'
+  const serviceType = result?.serviceType || 'DEMANDE'
+  const service = getServiceByValue(serviceType)
+  const slaDays = service?.slaDays ?? 10
+  const typeLabel = typeLabels[serviceType] || 'Demande'
 
   const copyToClipboard = async () => {
     try {
@@ -49,7 +53,6 @@ export function SuccessPage() {
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     } catch {
-      // Fallback
       const textArea = document.createElement('textarea')
       textArea.value = displayTicketId
       document.body.appendChild(textArea)
@@ -93,14 +96,47 @@ export function SuccessPage() {
           )}
         </div>
 
-        {/* Queue info */}
-        <div className="text-sm text-text-secondary mb-8">
-          <p>File d'attente : <span className="font-medium text-primary">{displayQueue}</span></p>
-          <p className="mt-1">Délai de traitement estimé : <span className="font-medium text-primary">5 jours ouvrables</span></p>
+        {/* Service info */}
+        <div className="text-sm text-text-secondary mb-6 max-w-md mx-auto space-y-2">
+          <div className="flex items-center justify-center gap-2">
+            <span className="text-text-muted">Type :</span>
+            <span className="font-medium text-primary">{typeLabel}</span>
+          </div>
+          <div className="flex items-center justify-center gap-2">
+            <span className="text-text-muted">Service :</span>
+            <span className="font-medium text-primary">{service?.department || 'Services Municipaux'}</span>
+          </div>
+          <div className="flex items-center justify-center gap-2">
+            <Clock size={14} className="text-text-muted" />
+            <span className="text-text-muted">Délai de traitement estimé :</span>
+            <span className="font-medium text-primary">{slaDays} jours ouvrables</span>
+          </div>
+        </div>
+
+        {/* Next steps */}
+        <div className="bg-accent-subtle border border-border rounded-md p-4 mb-8 max-w-md mx-auto text-left">
+          <h3 className="text-sm font-heading font-semibold text-text-primary mb-2 uppercase tracking-wider">
+            Prochaines étapes
+          </h3>
+          <ol className="text-sm text-text-secondary space-y-2 list-decimal list-inside">
+            <li>Un email de confirmation a été envoyé à votre adresse.</li>
+            <li>Le service compétent examinera votre demande dans les plus brefs délais.</li>
+            <li>Vous pouvez suivre l'avancement via le numéro de ticket ci-dessus.</li>
+          </ol>
+        </div>
+
+        {/* Contact */}
+        <div className="text-sm text-text-secondary mb-8 max-w-md mx-auto">
+          <div className="flex items-center justify-center gap-2">
+            <Phone size={14} className="text-text-muted" />
+            <span>En cas d'urgence, contactez le guichet au{' '}
+              <a href={`tel:${MUNICIPALITY.phone}`} className="text-primary hover:underline font-medium">{MUNICIPALITY.phone}</a>
+            </span>
+          </div>
         </div>
 
         {/* Actions */}
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+        <div className="flex flex-col sm:flex-row gap-3 justify-center mb-4">
           <button
             onClick={() => navigate('/requests')}
             className="btn btn-primary px-6 py-3"
@@ -117,9 +153,31 @@ export function SuccessPage() {
           </button>
         </div>
 
+        {/* Print / Email */}
+        <div className="flex flex-col sm:flex-row gap-3 justify-center mb-4">
+          <button
+            onClick={() => window.print()}
+            className="btn btn-ghost px-4 py-2 text-sm"
+          >
+            <Printer size={16} />
+            Imprimer
+          </button>
+          <button
+            onClick={async () => {
+              const subject = `Confirmation de demande - ${displayTicketId}`
+              const body = `Bonjour,%0D%0A%0D%0AVeuillez trouver ci-joint la confirmation de ma demande déposée sur le Guichet Citoyen de ${MUNICIPALITY.name}.%0D%0A%0D%0ANuméro de ticket : ${displayTicketId}%0D%0AType : ${typeLabel}%0D%0ADélai : ${slaDays} jours ouvrables%0D%0A%0D%0ACordialement,`
+              window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${body}`
+            }}
+            className="btn btn-ghost px-4 py-2 text-sm"
+          >
+            <Envelope size={16} />
+            Envoyer par email
+          </button>
+        </div>
+
         <button
           onClick={() => navigate('/')}
-          className="btn btn-ghost mt-4 text-sm"
+          className="btn btn-ghost mt-2 text-sm"
         >
           <ArrowLeft size={16} />
           Retour à l'accueil

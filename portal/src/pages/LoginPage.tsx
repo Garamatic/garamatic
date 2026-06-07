@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { SignIn, ArrowRight } from '@phosphor-icons/react'
+import { SignIn, ArrowRight, Info } from '@phosphor-icons/react'
+import { MUNICIPALITY } from '../config/municipality'
 
 export function LoginPage() {
   const navigate = useNavigate()
@@ -8,7 +9,6 @@ export function LoginPage() {
   const [email, setEmail] = useState('')
   const [error, setError] = useState('')
 
-  // Where to redirect after login (default: dashboard)
   const from = (location.state as { from?: string })?.from || '/requests'
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -25,7 +25,6 @@ export function LoginPage() {
       return
     }
 
-    // Store email in sessionStorage for demo
     sessionStorage.setItem('portalEmail', email)
     navigate(from, { replace: true })
   }
@@ -37,7 +36,7 @@ export function LoginPage() {
           <div className="w-14 h-14 rounded-full bg-surface flex items-center justify-center mx-auto mb-4 border border-border shadow-sm">
             <img
               src="/desgoffe.png"
-              alt="Ville de Desgoffe"
+              alt="Commune de Desgoffe"
               className="h-10 w-auto rounded-full"
             />
           </div>
@@ -60,7 +59,7 @@ export function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className={`input ${error ? 'input-error' : ''}`}
-              placeholder="citoyen@example.be"
+              placeholder="citoyen@desgoffe.be"
               autoComplete="email"
               autoFocus
             />
@@ -80,10 +79,24 @@ export function LoginPage() {
         </form>
 
         <div className="mt-6 p-4 bg-accent-subtle rounded-md border border-border">
-          <p className="text-xs text-text-secondary text-center">
-            <strong>Mode démonstration</strong> — Aucun mot de passe requis.
-            <br />
-            Saisissez simplement l'email utilisé lors de votre demande.
+          <div className="flex items-start gap-2">
+            <Info size={16} className="text-primary shrink-0 mt-0.5" />
+            <div className="text-xs text-text-secondary space-y-1">
+              <p className="font-medium text-text-primary">Identification</p>
+              <p>
+                Pour consulter vos demandes, saisissez l'adresse email utilisée lors de la soumission.
+                L'identification via eID ou itsme sera progressivement déployée.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-6 pt-6 border-t border-border text-center">
+          <p className="text-xs text-text-muted">
+            En cas de difficulté, contactez le Service Informatique au{' '}
+            <a href={`tel:${MUNICIPALITY.phone}`} className="text-primary hover:underline">
+              {MUNICIPALITY.phone}
+            </a>.
           </p>
         </div>
       </div>

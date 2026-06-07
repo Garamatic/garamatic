@@ -1,7 +1,8 @@
-import { useState, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { PaperPlaneRight, FilePdf, X, Warning, User, FileText, Stamp } from '@phosphor-icons/react'
+import { useState, useCallback, useEffect } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import { PaperPlaneRight, FilePdf, X, Warning, User, FileText, Stamp, ArrowLeft, Clock, MapPin, ArrowClockwise } from '@phosphor-icons/react'
 import { useToast } from '../components/Toast'
+import { SERVICE_TYPES, QUARTIERS, getServiceByValue } from '../config/municipality'
 
 interface FormData {
   customerName: string
@@ -9,7 +10,10 @@ interface FormData {
   customerPhone: string
   requestType: string
   quartier: string
-  priority: string
+  localisation: string
+  typeProbleme: string
+  surface: string
+  typeTravaux: string
   description: string
   attachment: File | null
   declaration: boolean
@@ -21,29 +25,25 @@ interface FormErrors {
 
 // Gatekeeper API endpoint for ticket ingestion
 const API_BASE = import.meta.env.VITE_API_BASE ?? ''
-const GATEKEEPER_API_KEY = import.meta.env.VITE_GATEKEEPER_API_KEY ?? 'demo-api-key'
+const GATEKEEPER_API_KEY = import.meta.env.VITE_GATEKEEPER_API_KEY ?? ''
 const API_ENDPOINT = `${API_BASE}/api/ingest`
 
-const requestTypes = [
-  { value: '', label: '-- Sélectionnez un type --' },
-  { value: 'NUISANCE', label: 'Nuisance Sonore' },
-  { value: 'PERMIS', label: 'Demande de Permis' },
-  { value: 'PLAINTE', label: 'Plainte' },
-  { value: 'DEMANDE', label: 'Demande Générale' },
+const problemTypes = [
+  { value: '', label: '-- Sélectionnez --' },
+  { value: 'NID_POULE', label: 'Nid-de-poule' },
+  { value: 'LAMPADAIRE', label: 'Éclairage public' },
+  { value: 'TROTTOIR', label: 'Trottoir endommagé' },
+  { value: 'SIGNALISATION', label: 'Signalisation routière' },
+  { value: 'AUTRE', label: 'Autre' },
 ]
 
-const quartiers = [
-  { value: '', label: '-- Sélectionnez un quartier --' },
-  { value: 'Centre-Ville', label: 'Centre-Ville' },
-  { value: 'Faubourg Nord', label: 'Faubourg Nord' },
-  { value: 'Quartier Est', label: 'Quartier Est' },
-  { value: 'Zone Industrielle', label: 'Zone Industrielle' },
-]
-
-const priorities = [
-  { value: '5', label: 'Standard' },
-  { value: '10', label: 'Urgent' },
-  { value: '15', label: 'Très Urgent' },
+const travauxTypes = [
+  { value: '', label: '-- Sélectionnez --' },
+  { value: 'EXTENSION', label: 'Extension' },
+  { value: 'NOUVELLE_CONSTRUCTION', label: 'Nouvelle construction' },
+  { value: 'RENOVATION', label: 'Rénovation' },
+  { value: 'TERRASSE', label: 'Terrasse / Véranda' },
+  { value: 'AUTRE', label: 'Autre' },
 ]
 
 function sanitize(input: string): string {
@@ -52,14 +52,20 @@ function sanitize(input: string): string {
 
 export function SubmitPage() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const preselectedType = searchParams.get('type') || ''
+
   const { addToast } = useToast()
   const [formData, setFormData] = useState<FormData>({
     customerName: '',
     customerEmail: '',
     customerPhone: '',
-    requestType: '',
+    requestType: preselectedType,
     quartier: '',
-    priority: '5',
+    localisation: '',
+    typeProbleme: '',
+    surface: '',
+    typeTravaux: '',
     description: '',
     attachment: null,
     declaration: false,
@@ -68,9 +74,16 @@ export function SubmitPage() {
   const [submitting, setSubmitting] = useState(false)
   const [dragOver, setDragOver] = useState(false)
 
+  const selectedService = getServiceByValue(formData.requestType)
+
+  useEffect(() => {
+    if (preselectedType) {
+      setFormData((prev) => ({ ...prev, requestType: preselectedType }))
+    }
+  }, [preselectedType])
+
   const updateField = useCallback(<K extends keyof FormData>(field: K, value: FormData[K]) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
-    // Clear error for this field
     if (errors[field]) {
       setErrors((prev) => {
         const next = { ...prev }
@@ -106,6 +119,17 @@ export function SubmitPage() {
       newErrors.declaration = 'Vous devez certifier l\'exactitude des informations.'
     }
 
+    // Service-specific validation
+    if (formData.requestType === 'VOIRIE' && !formData.typeProbleme) {
+      newErrors.typeProbleme = 'Le type de problème est requis.'
+    }
+    if (formData.requestType === 'PERMIS' && !formData.typeTravaux) {
+      newErrors.typeTravaux = 'Le type de travaux est requis.'
+    }
+    if (formData.requestType === 'PERMIS' && !formData.surface.trim()) {
+      newErrors.surface = 'La surface est requise.'
+    }
+
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -117,26 +141,34 @@ export function SubmitPage() {
     setSubmitting(true)
 
     try {
+      // Build tags string with all service-specific data
+      const tags = [
+        `Quartier:${sanitize(formData.quartier)}`,
+        `Type:${sanitize(formData.requestType)}`,
+        ...(formData.localisation ? [`Localisation:${sanitize(formData.localisation)}`] : []),
+        ...(formData.typeProbleme ? [`Probleme:${sanitize(formData.typeProbleme)}`] : []),
+        ...(formData.surface ? [`Surface:${sanitize(formData.surface)}`] : []),
+        ...(formData.typeTravaux ? [`Travaux:${sanitize(formData.typeTravaux)}`] : []),
+      ].join(',')
+
+      const payload = {
+        event_type: 'ticket.created',
+        ticket_id: crypto.randomUUID(),
+        customer_email: sanitize(formData.customerEmail),
+        customer_name: sanitize(formData.customerName),
+        description: sanitize(formData.description),
+        priority: selectedService?.isUrgent ? '10' : '5',
+        source: 'desgoffe-portal',
+        tags,
+      }
+
       const response = await fetch(API_ENDPOINT, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'X-Api-Key': GATEKEEPER_API_KEY,
         },
-        body: JSON.stringify({
-          event_type: 'ticket.created',
-          ticket_id: crypto.randomUUID(),
-          customer_email: sanitize(formData.customerEmail),
-          customer_name: sanitize(formData.customerName),
-          description: sanitize(formData.description),
-          priority: formData.priority,
-          source: 'desgoffe-portal',
-          tags: `Quartier:${sanitize(formData.quartier)},Type:${sanitize(formData.requestType)}`,
-          metadata: {
-            quartier: sanitize(formData.quartier),
-            hasAttachment: !!formData.attachment,
-          }
-        }),
+        body: JSON.stringify(payload),
       })
 
       if (!response.ok) {
@@ -147,27 +179,14 @@ export function SubmitPage() {
 
       if (result.success) {
         const ticketId = result.ticketId || crypto.randomUUID().slice(0, 8).toUpperCase()
-        const ticketNumber = `TM-${new Date().getFullYear()}-${ticketId}`
 
         // Store for success page
-        sessionStorage.setItem('submissionResult', JSON.stringify(result))
+        sessionStorage.setItem('submissionResult', JSON.stringify({
+          ...result,
+          serviceType: formData.requestType,
+          slaDays: selectedService?.slaDays ?? 10,
+        }))
         sessionStorage.setItem('portalEmail', formData.customerEmail)
-
-        // Store in mock DB for dashboard
-        const submitted = JSON.parse(sessionStorage.getItem('submittedTickets') || '[]')
-        submitted.push({
-          id: ticketNumber,
-          type: formData.requestType,
-          quartier: formData.quartier,
-          description: formData.description,
-          status: 'submitted',
-          priority: formData.priority,
-          date: new Date().toISOString().split('T')[0],
-          updatedAt: new Date().toISOString().split('T')[0],
-          hasAttachment: !!formData.attachment,
-          email: formData.customerEmail,
-        })
-        sessionStorage.setItem('submittedTickets', JSON.stringify(submitted))
 
         addToast('Votre demande a été enregistrée avec succès.', 'success')
         navigate(`/success/${ticketId}`)
@@ -188,19 +207,50 @@ export function SubmitPage() {
     setDragOver(false)
     const file = e.dataTransfer.files[0]
     if (file && file.type === 'application/pdf') {
+      if (file.size > 10 * 1024 * 1024) {
+        setErrors((prev) => ({ ...prev, attachment: 'Le fichier dépasse 10 Mo.' }))
+        return
+      }
       updateField('attachment', file)
+      if (errors.attachment) {
+        setErrors((prev) => { const next = { ...prev }; delete next.attachment; return next })
+      }
     }
   }
 
   return (
     <div className="container-narrow py-8 md:py-12">
+      {/* Back link */}
+      <button
+        onClick={() => navigate('/demarches')}
+        className="btn btn-ghost text-sm mb-6"
+      >
+        <ArrowLeft size={16} />
+        Retour aux démarches
+      </button>
+
       <div className="mb-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-text-primary mb-2">
+        <h1 className="text-2xl md:text-3xl font-bold text-text-primary mb-2 font-heading uppercase tracking-wider">
           Nouvelle Demande
         </h1>
         <p className="text-text-secondary">
           Remplissez le formulaire ci-dessous. Les champs marqués d'un * sont obligatoires.
         </p>
+        {selectedService && (
+          <div className="mt-3 flex items-center gap-3 text-sm">
+            <span className="inline-flex items-center gap-1 px-2 py-1 bg-primary/10 text-primary rounded font-medium">
+              {selectedService.label}
+            </span>
+            <span className="text-text-muted flex items-center gap-1">
+              <Clock size={14} />
+              Délai : {selectedService.slaDays} jours ouvrables
+            </span>
+            <span className="text-text-muted flex items-center gap-1">
+              <MapPin size={14} />
+              {selectedService.department}
+            </span>
+          </div>
+        )}
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-8" noValidate>
@@ -242,7 +292,7 @@ export function SubmitPage() {
                   value={formData.customerEmail}
                   onChange={(e) => updateField('customerEmail', e.target.value)}
                   className={`input ${errors.customerEmail ? 'input-error' : ''}`}
-                  placeholder="citoyen@example.be"
+                  placeholder="citoyen@desgoffe.be"
                   autoComplete="email"
                 />
                 {errors.customerEmail && (
@@ -262,7 +312,7 @@ export function SubmitPage() {
                   value={formData.customerPhone}
                   onChange={(e) => updateField('customerPhone', e.target.value)}
                   className="input"
-                  placeholder="+32 2 555 00 00"
+                  placeholder="+32 61 46 52 00"
                   autoComplete="tel"
                 />
               </div>
@@ -288,8 +338,9 @@ export function SubmitPage() {
                   onChange={(e) => updateField('requestType', e.target.value)}
                   className={`input ${errors.requestType ? 'input-error' : ''}`}
                 >
-                  {requestTypes.map((t) => (
-                    <option key={t.value} value={t.value}>{t.label}</option>
+                  <option value="">-- Sélectionnez un type --</option>
+                  {SERVICE_TYPES.map((s) => (
+                    <option key={s.value} value={s.value}>{s.label}</option>
                   ))}
                 </select>
                 {errors.requestType && (
@@ -309,7 +360,7 @@ export function SubmitPage() {
                   onChange={(e) => updateField('quartier', e.target.value)}
                   className={`input ${errors.quartier ? 'input-error' : ''}`}
                 >
-                  {quartiers.map((q) => (
+                  {QUARTIERS.map((q) => (
                     <option key={q.value} value={q.value}>{q.label}</option>
                   ))}
                 </select>
@@ -321,21 +372,91 @@ export function SubmitPage() {
               </div>
             </div>
 
+            {/* Localisation */}
             <div>
-              <label className="label" htmlFor="priority">
-                Priorité
+              <label className="label" htmlFor="localisation">
+                Adresse ou localisation exacte
               </label>
-              <select
-                id="priority"
-                value={formData.priority}
-                onChange={(e) => updateField('priority', e.target.value)}
+              <input
+                id="localisation"
+                type="text"
+                value={formData.localisation}
+                onChange={(e) => updateField('localisation', e.target.value)}
                 className="input"
-              >
-                {priorities.map((p) => (
-                  <option key={p.value} value={p.value}>{p.label}</option>
-                ))}
-              </select>
+                placeholder="Rue des Fleurs 15, 6830 Desgoffe"
+                autoComplete="street-address"
+              />
+              <p className="helper-text">
+                Précisez l'adresse exacte concernée par la demande.
+              </p>
             </div>
+
+            {/* Service-specific fields */}
+            {formData.requestType === 'VOIRIE' && (
+              <div>
+                <label className="label" htmlFor="typeProbleme">
+                  Type de problème <span className="text-secondary">*</span>
+                </label>
+                <select
+                  id="typeProbleme"
+                  value={formData.typeProbleme}
+                  onChange={(e) => updateField('typeProbleme', e.target.value)}
+                  className={`input ${errors.typeProbleme ? 'input-error' : ''}`}
+                >
+                  {problemTypes.map((t) => (
+                    <option key={t.value} value={t.value}>{t.label}</option>
+                  ))}
+                </select>
+                {errors.typeProbleme && (
+                  <p className="error-text flex items-center gap-1">
+                    <Warning size={14} /> {errors.typeProbleme}
+                  </p>
+                )}
+              </div>
+            )}
+
+            {formData.requestType === 'PERMIS' && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                  <label className="label" htmlFor="typeTravaux">
+                    Type de travaux <span className="text-secondary">*</span>
+                  </label>
+                  <select
+                    id="typeTravaux"
+                    value={formData.typeTravaux}
+                    onChange={(e) => updateField('typeTravaux', e.target.value)}
+                    className={`input ${errors.typeTravaux ? 'input-error' : ''}`}
+                  >
+                    {travauxTypes.map((t) => (
+                      <option key={t.value} value={t.value}>{t.label}</option>
+                    ))}
+                  </select>
+                  {errors.typeTravaux && (
+                    <p className="error-text flex items-center gap-1">
+                      <Warning size={14} /> {errors.typeTravaux}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <label className="label" htmlFor="surface">
+                    Surface (m²) <span className="text-secondary">*</span>
+                  </label>
+                  <input
+                    id="surface"
+                    type="text"
+                    value={formData.surface}
+                    onChange={(e) => updateField('surface', e.target.value)}
+                    className={`input ${errors.surface ? 'input-error' : ''}`}
+                    placeholder="Ex: 25"
+                  />
+                  {errors.surface && (
+                    <p className="error-text flex items-center gap-1">
+                      <Warning size={14} /> {errors.surface}
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
 
             <div>
               <label className="label" htmlFor="description">
@@ -388,14 +509,29 @@ export function SubmitPage() {
                     className="sr-only"
                     onChange={(e) => {
                       const file = e.target.files?.[0]
-                      if (file && file.type === 'application/pdf') {
-                        updateField('attachment', file)
+                      if (file) {
+                        if (file.size > 10 * 1024 * 1024) {
+                          setErrors((prev) => ({ ...prev, attachment: 'Le fichier dépasse 10 Mo.' }))
+                          return
+                        }
+                        if (file.type === 'application/pdf') {
+                          updateField('attachment', file)
+                          if (errors.attachment) {
+                            setErrors((prev) => { const next = { ...prev }; delete next.attachment; return next })
+                          }
+                        }
                       }
                     }}
                   />
                 </label>
                 <p className="text-xs text-text-muted mt-2">PDF uniquement, max 10 Mo</p>
               </div>
+
+              {errors.attachment && (
+                <p className="error-text flex items-center gap-1 mt-2">
+                  <Warning size={14} /> {errors.attachment}
+                </p>
+              )}
 
               {formData.attachment && (
                 <div className="flex items-center gap-3 mt-3 p-3 bg-surface-hover rounded-md border border-border">
@@ -438,6 +574,10 @@ export function SubmitPage() {
               <label htmlFor="declaration" className="text-sm text-text-secondary leading-relaxed cursor-pointer">
                 Je certifie que les informations fournies sont exactes et conformes à la réalité.
                 Je comprends que toute fausse déclaration peut entraîner le rejet de ma demande.
+                J'ai lu et j'accepte la{' '}
+                <a href="/privacy" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                  politique de confidentialité
+                </a>.
               </label>
             </div>
             {errors.declaration && (
@@ -456,7 +596,10 @@ export function SubmitPage() {
                     customerPhone: '',
                     requestType: '',
                     quartier: '',
-                    priority: '5',
+                    localisation: '',
+                    typeProbleme: '',
+                    surface: '',
+                    typeTravaux: '',
                     description: '',
                     attachment: null,
                     declaration: false,
@@ -466,6 +609,7 @@ export function SubmitPage() {
                 className="btn btn-secondary px-6 py-3"
                 disabled={submitting}
               >
+                <ArrowClockwise size={16} />
                 Réinitialiser
               </button>
               <button

@@ -1,29 +1,18 @@
 import { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
-import { House, FilePlus, List, X, List as MenuIcon, SignIn, SignOut, User } from '@phosphor-icons/react'
+import { House, FilePlus, List, X, List as MenuIcon, SignIn, SignOut, User, FileText } from '@phosphor-icons/react'
 
 const navItems = [
   { path: '/', label: 'Accueil', icon: House },
+  { path: '/demarches', label: 'Démarches', icon: FileText },
   { path: '/submit', label: 'Nouvelle Demande', icon: FilePlus },
   { path: '/requests', label: 'Mes Demandes', icon: List },
 ]
-
-function getPendingCount() {
-  const tickets = JSON.parse(sessionStorage.getItem('submittedTickets') || '[]')
-  const email = sessionStorage.getItem('portalEmail')
-  if (!email) return 0
-  return tickets.filter((t: any) => 
-    t.email === email && 
-    ['submitted', 'received', 'in_progress'].includes(t.status)
-  ).length
-}
 
 export function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
   const navigate = useNavigate()
   const email = sessionStorage.getItem('portalEmail')
-  const pendingCount = getPendingCount()
-  const isDemoMode = !import.meta.env.VITE_API_BASE || import.meta.env.VITE_API_BASE === ''
 
   const handleLogout = () => {
     sessionStorage.removeItem('portalEmail')
@@ -32,11 +21,6 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 bg-primary border-b border-primary-hover shadow-md">
-      {isDemoMode && (
-        <div className="bg-secondary text-white text-center py-1 text-xs font-medium">
-          🏛️ Mode Démonstration — Les données sont fictives
-        </div>
-      )}
       <div className="container-page">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -44,13 +28,13 @@ export function Header() {
             <div className="h-10 w-10 rounded-md bg-surface flex items-center justify-center border border-white/30 overflow-hidden">
               <img
                 src="/desgoffe.png"
-                alt="Ville de Desgoffe"
+                alt="Commune de Desgoffe"
                 className="h-8 w-auto"
               />
             </div>
             <div className="hidden sm:block">
               <span className="font-semibold text-white leading-tight block font-heading">Guichet Citoyen</span>
-              <span className="text-xs text-white/70 leading-tight block">Ville de Desgoffe</span>
+              <span className="text-xs text-white/70 leading-tight block">Commune de Desgoffe</span>
             </div>
           </NavLink>
 
@@ -70,11 +54,6 @@ export function Header() {
               >
                 <item.icon size={18} weight="regular" />
                 {item.label}
-                {item.path === '/requests' && pendingCount > 0 && (
-                  <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 text-xs font-bold text-white bg-secondary rounded-full">
-                    {pendingCount}
-                  </span>
-                )}
               </NavLink>
             ))}
           </nav>
@@ -137,11 +116,6 @@ export function Header() {
               >
                 <item.icon size={20} weight="regular" />
                 {item.label}
-                {item.path === '/requests' && pendingCount > 0 && (
-                  <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 text-xs font-bold text-white bg-secondary rounded-full">
-                    {pendingCount}
-                  </span>
-                )}
               </NavLink>
             ))}
             {email ? (

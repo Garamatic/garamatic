@@ -4,58 +4,58 @@ const statusConfig = {
   submitted: {
     label: 'Soumise',
     icon: Dot,
-    className: 'bg-gray-100 text-gray-700',
+    className: 'bg-accent-subtle text-text-secondary',
   },
   received: {
     label: 'Reçue',
     icon: Tray,
-    className: 'bg-blue-50 text-blue-700',
+    className: 'bg-primary/10 text-primary',
   },
   in_progress: {
     label: 'En cours',
     icon: Clock,
-    className: 'bg-amber-50 text-amber-700',
+    className: 'bg-warning-bg text-warning',
   },
   resolved: {
     label: 'Résolue',
     icon: CheckCircle,
-    className: 'bg-green-50 text-green-700',
+    className: 'bg-success-bg text-success',
   },
   rejected: {
     label: 'Rejetée',
     icon: XCircle,
-    className: 'bg-red-50 text-red-700',
+    className: 'bg-error-bg text-error',
   },
   // Backend status mappings
   pending: {
     label: 'Reçue',
     icon: Tray,
-    className: 'bg-blue-50 text-blue-700',
+    className: 'bg-primary/10 text-primary',
   },
   assigned: {
     label: 'En cours',
     icon: Clock,
-    className: 'bg-amber-50 text-amber-700',
+    className: 'bg-warning-bg text-warning',
   },
   inprogress: {
     label: 'En cours',
     icon: Clock,
-    className: 'bg-amber-50 text-amber-700',
+    className: 'bg-warning-bg text-warning',
   },
   completed: {
     label: 'Résolue',
     icon: CheckCircle,
-    className: 'bg-green-50 text-green-700',
+    className: 'bg-success-bg text-success',
   },
   failed: {
     label: 'Rejetée',
     icon: XCircle,
-    className: 'bg-red-50 text-red-700',
+    className: 'bg-error-bg text-error',
   },
   cancelled: {
     label: 'Rejetée',
     icon: XCircle,
-    className: 'bg-red-50 text-red-700',
+    className: 'bg-error-bg text-error',
   },
 } as const
 

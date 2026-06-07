@@ -1,5 +1,5 @@
 ---
-name: Guichet Citoyen — Ville de Desgoffe
+name: Guichet Citoyen — Commune de Desgoffe
 description: Municipal citizen portal with a warm, tactile letterpress aesthetic — old-world craftsmanship meets digital clarity.
 colors:
   canvas: "#FDF5E6"
@@ -140,7 +140,7 @@ The palette is built around the materials of a municipal office: paper, ink, sta
 - **Stamp Pad Deep** (#4a2e4a): Hover and active state for primary elements. Darker, denser, like ink that has pressed deeper into the paper.
 
 ### Secondary
-- **Cancellation Red** (#9A2A2A): The stamp red used for errors, urgent badges, and the demo mode banner. Evokes the urgency of an official cancellation stamp.
+- **Cancellation Red** (#9A2A2A): The stamp red used for errors, urgent badges, and the emergency banner. Evokes the urgency of an official cancellation stamp.
 
 ### Accent
 - **Filing Tab** (#D4A574): Warm gold used for subtle highlights, hover backgrounds, and secondary accents. The color of a well-worn folder tab.
@@ -230,7 +230,7 @@ Shadows are the memory of a stamp pressed into paper. They are always tinted wit
 - **Logo:** City logo (desgoffe.png) in a small rounded container with white/30 border.
 - **Nav items:** Uppercase, white/80 default, white on hover with white/10 background. Active state: white text on white/90 background, rounded-md.
 - **Mobile:** Hamburger menu → full-screen overlay with vertical nav list. Logo + title hidden on mobile.
-- **Demo banner:** Cancellation Red background, white text, centered, small — a thin strip above the header.
+- **Emergency banner:** Cancellation Red background, white text, centered, small — a thin strip above the header. Shows urgent municipal contact information outside office hours.
 
 ### Footer
 - **Style:** Stamp Pad background, white text, border-top in Stamp Pad Deep.

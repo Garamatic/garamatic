@@ -3,13 +3,91 @@ import { useNavigate } from 'react-router-dom'
 import {
   FileText, Clock, CheckCircle, MagnifyingGlass,
   ArrowRight, CaretDown, X, DownloadSimple,
-  Calendar, MapPin, Hash, Warning, ArrowClockwise, FilePlus
+  Calendar, MapPin, Hash, Warning, ArrowClockwise, FilePlus,
+  ChatCircle, Gavel
 } from '@phosphor-icons/react'
 import { StatusBadge, type StatusKey } from '../components/StatusBadge'
 import { StatusTimeline } from '../components/StatusTimeline'
 import { TicketCardSkeleton, StatCardSkeleton, DetailSkeleton } from '../components/Skeleton'
 import { SLACountdown } from '../components/SLACountdown'
 import { useToast } from '../components/Toast'
+import { MUNICIPALITY, typeLabels, getServiceByValue } from '../config/municipality'
+
+// ── Message Thread ──────────────────────────────────────────────────
+interface Message {
+  id: string
+  from: 'citoyen' | 'service'
+  author: string
+  date: string
+  content: string
+}
+
+function buildConversationThread(req: TicketViewModel): Message[] {
+  const messages: Message[] = []
+
+  // Initial submission
+  messages.push({
+    id: 'msg-1',
+    from: 'citoyen',
+    author: 'Vous',
+    date: req.date,
+    content: req.description,
+  })
+
+  if (req.status === 'submitted') {
+    return messages
+  }
+
+  // Service acknowledgement
+  const service = getServiceByValue(req.type)
+  const dept = service?.department || 'Service Municipal'
+  messages.push({
+    id: 'msg-2',
+    from: 'service',
+    author: dept,
+    date: req.date,
+    content: `Votre demande a bien été reçue et enregistrée sous le numéro ${req.id}. Elle sera traitée dans les plus brefs délais.`,
+  })
+
+  if (req.status === 'received') {
+    return messages
+  }
+
+  if (req.status === 'in_progress') {
+    messages.push({
+      id: 'msg-3',
+      from: 'service',
+      author: dept,
+      date: req.updatedAt,
+      content: req.comment || 'Votre demande est en cours d\'examen. Un agent vous contactera prochainement.',
+    })
+    return messages
+  }
+
+  if (req.status === 'resolved') {
+    messages.push({
+      id: 'msg-3',
+      from: 'service',
+      author: dept,
+      date: req.updatedAt,
+      content: req.comment || 'Votre demande a été traitée. Une réponse officielle vous a été transmise par email.',
+    })
+    return messages
+  }
+
+  if (req.status === 'rejected') {
+    messages.push({
+      id: 'msg-3',
+      from: 'service',
+      author: dept,
+      date: req.updatedAt,
+      content: req.comment || 'Votre demande ne peut pas être traitée dans sa forme actuelle. Merci de consulter les motifs ci-dessus.',
+    })
+    return messages
+  }
+
+  return messages
+}
 
 const API_BASE = import.meta.env.VITE_API_BASE ?? ''
 const PORTAL_SECRET = import.meta.env.VITE_PORTAL_SECRET ?? ''
@@ -43,78 +121,19 @@ interface TicketViewModel {
   comment?: string
 }
 
-// ── Mock fallback data ─────────────────────────────────────────────
-const MOCK_DB: Record<string, TicketViewModel[]> = {
-  'jean.dupont@citoyen.be': [
-    {
-      id: 'TM-2025-0042',
-      number: 'TM-2025-0042',
-      type: 'NUISANCE',
-      quartier: 'Centre-Ville',
-      description: 'Bruit excessif venant du chantier de construction rue de la Loi, tous les jours de 6h à 22h.',
-      status: 'in_progress',
-      priority: '10',
-      date: '2025-06-04',
-      updatedAt: '2025-06-05',
-      hasAttachment: true,
-      comment: 'Un agent a été dépêché sur place. Le permis de travail est conforme, mais les horaires sont dépassés.',
-    },
-    {
-      id: 'TM-2025-0038',
-      number: 'TM-2025-0038',
-      type: 'PERMIS',
-      quartier: 'Faubourg Nord',
-      description: 'Demande de permis pour une extension de terrasse de 15m² sur l\'arrière de la maison.',
-      status: 'received',
-      priority: '5',
-      date: '2025-06-02',
-      updatedAt: '2025-06-03',
-      hasAttachment: true,
-    },
-    {
-      id: 'TM-2025-0029',
-      number: 'TM-2025-0029',
-      type: 'DEMANDE',
-      quartier: 'Quartier Est',
-      description: 'Demande de réparation d\'un lampadaire défectueux au coin de la rue des Fleurs.',
-      status: 'resolved',
-      priority: '5',
-      date: '2025-05-28',
-      updatedAt: '2025-06-01',
-      hasAttachment: false,
-      comment: 'Lampadaire remplacé le 1er juin. Merci pour votre signalement.',
-    },
-  ],
-  'marie.curie@science.be': [
-    {
-      id: 'TM-2025-0015',
-      number: 'TM-2025-0015',
-      type: 'PLAINTE',
-      quartier: 'Zone Industrielle',
-      description: 'Odeurs nauséabondes provenant de l\'usine de recyclage.',
-      status: 'resolved',
-      priority: '15',
-      date: '2025-05-20',
-      updatedAt: '2025-05-25',
-      hasAttachment: true,
-      comment: 'Inspection réalisée. L\'usine a été mise en demeure.',
-    },
-  ],
+const statusMap: Record<string, StatusKey> = {
+  pending: 'pending',
+  assigned: 'assigned',
+  inprogress: 'inprogress',
+  completed: 'resolved',
+  rejected: 'rejected',
+  failed: 'rejected',
+  cancelled: 'rejected',
 }
 
 function mapApiTicket(t: ApiTicket): TicketViewModel {
   const quartierMatch = t.tags?.match(/Quartier:([^,]+)/)
   const quartier = quartierMatch ? quartierMatch[1] : 'Non spécifié'
-
-  const statusMap: Record<string, StatusKey> = {
-    pending: 'pending',
-    assigned: 'assigned',
-    inprogress: 'inprogress',
-    completed: 'resolved',
-    rejected: 'rejected',
-    failed: 'rejected',
-    cancelled: 'rejected',
-  }
 
   return {
     id: t.number,
@@ -128,13 +147,6 @@ function mapApiTicket(t: ApiTicket): TicketViewModel {
     updatedAt: t.updatedAt,
     hasAttachment: t.hasAttachment,
   }
-}
-
-const typeLabels: Record<string, string> = {
-  NUISANCE: 'Nuisance',
-  PERMIS: 'Permis',
-  PLAINTE: 'Plainte',
-  DEMANDE: 'Demande',
 }
 
 const priorityLabels: Record<string, string> = {
@@ -192,17 +204,9 @@ export function DashboardPage() {
         setTickets(mapped)
       } catch (err) {
         console.error('Failed to fetch tickets:', err)
-        addToast('Impossible de charger les demandes depuis le serveur. Mode hors-ligne activé.', 'info')
-        setApiError('Impossible de charger les demandes depuis le serveur. Mode hors-ligne activé.')
-        // Fallback to mock data
-        const mock = MOCK_DB[email] || []
-        const submitted = JSON.parse(sessionStorage.getItem('submittedTickets') || '[]')
-          .filter((t: TicketViewModel & { email?: string }) => t.email === email)
-          .map((t: TicketViewModel & { email?: string }) => {
-            const { email: _, ...rest } = t
-            return rest as TicketViewModel
-          })
-        setTickets([...mock, ...submitted])
+        addToast('Impossible de charger les demandes depuis le serveur. Veuillez réessayer plus tard.', 'error')
+        setApiError('Le service est temporairement indisponible. Veuillez réessayer plus tard ou contacter le guichet au ' + MUNICIPALITY.phone)
+        setTickets([])
       } finally {
         setLoading(false)
       }
@@ -276,23 +280,23 @@ export function DashboardPage() {
 
       {/* API Error Banner */}
       {apiError && (
-        <div className="mb-6 p-3 bg-warning-bg border border-warning rounded-md flex items-start gap-2">
-          <Warning size={16} className="text-warning shrink-0 mt-0.5" weight="fill" />
-          <p className="text-xs text-text-secondary">{apiError}</p>
+        <div className="mb-6 p-4 bg-warning-bg border border-warning rounded-md flex items-start gap-3">
+          <Warning size={18} className="text-warning shrink-0 mt-0.5" weight="fill" />
+          <div className="text-sm text-text-secondary">
+            <p className="font-medium text-text-primary mb-1">Service temporairement indisponible</p>
+            <p>{apiError}</p>
+          </div>
         </div>
       )}
 
       {/* Loading */}
       {loading ? (
         <>
-          {/* Stats Skeleton */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             {Array.from({ length: 4 }).map((_, i) => (
               <StatCardSkeleton key={i} />
             ))}
           </div>
-
-          {/* List Skeleton */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-3">
               {Array.from({ length: 3 }).map((_, i) => (
@@ -362,9 +366,9 @@ export function DashboardPage() {
                   </div>
                   <h3 className="font-heading font-semibold text-primary mb-2 uppercase tracking-wider">Aucune demande trouvée</h3>
                   <p className="text-text-secondary mb-6 max-w-sm mx-auto">
-                    {searchQuery || statusFilter !== 'all' 
+                    {searchQuery || statusFilter !== 'all'
                       ? 'Essayez de modifier vos filtres ou votre recherche.'
-                      : 'Vous n\'avez pas encore de demandes. Soumettez votre première demande pour commencer.'}
+                      : 'Vous n\'avez pas encore de demandes en cours. Soumettez votre première demande pour commencer.'}
                   </p>
                   <div className="flex flex-col sm:flex-row gap-3 justify-center">
                     {(searchQuery || statusFilter !== 'all') && (
@@ -439,6 +443,16 @@ export function DashboardPage() {
             <div className="hidden lg:block">
               {selected ? (
                 <div className="card p-6 sticky top-24">
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="font-heading font-semibold text-text-primary uppercase tracking-wider text-sm">Détails</h2>
+                    <button
+                      onClick={() => setSelectedId(null)}
+                      className="p-1.5 rounded-md hover:bg-surface-hover text-text-muted hover:text-text-primary transition-colors"
+                      aria-label="Fermer les détails"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
                   <DetailContent req={selected} timeline={timelineFor(selected)} />
                 </div>
               ) : (
@@ -490,7 +504,81 @@ function StatCard({ label, value, icon: Icon, color }: { label: string; value: n
   )
 }
 
+function MessageThread({ messages }: { messages: Message[] }) {
+  return (
+    <div className="space-y-3">
+      {messages.map((msg) => (
+        <div
+          key={msg.id}
+          className={`flex gap-3 ${msg.from === 'citoyen' ? 'flex-row' : 'flex-row-reverse'}`}
+        >
+          <div className={`shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium ${
+            msg.from === 'citoyen'
+              ? 'bg-primary/10 text-primary'
+              : 'bg-success/10 text-success'
+          }`}>
+            {msg.from === 'citoyen' ? 'V' : 'S'}
+          </div>
+          <div className={`flex-grow ${msg.from === 'citoyen' ? '' : 'text-right'}`}>
+            <div className={`inline-block rounded-lg p-3 text-sm ${
+              msg.from === 'citoyen'
+                ? 'bg-primary/5 text-text-primary'
+                : 'bg-success-bg text-text-primary'
+            }`}>
+              <p className="text-xs font-medium text-text-muted mb-1">
+                {msg.author} — {msg.date}
+              </p>
+              <p className="leading-relaxed">{msg.content}</p>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function RecoursSection({ req }: { req: TicketViewModel }) {
+  if (req.status !== 'rejected') return null
+
+  return (
+    <div className="border-t border-border pt-6">
+      <h3 className="text-sm font-semibold text-text-primary mb-3 flex items-center gap-2">
+        <Gavel size={16} className="text-error" />
+        Recours
+      </h3>
+      <div className="bg-error-bg rounded-md p-4 border border-error/20">
+        <p className="text-sm text-text-secondary leading-relaxed mb-3">
+          Si vous n'êtes pas d'accord avec la décision de rejet, vous disposez d'un délai de
+          <strong className="text-text-primary"> 30 jours</strong> pour introduire un recours.
+        </p>
+        <div className="space-y-1 text-sm text-text-secondary">
+          <p className="flex items-center gap-2">
+            <span className="text-text-muted">1.</span>
+            Contactez le service compétent par téléphone au{' '}
+            <a href={`tel:${MUNICIPALITY.phone}`} className="text-primary hover:underline">{MUNICIPALITY.phone}</a>
+          </p>
+          <p className="flex items-center gap-2">
+            <span className="text-text-muted">2.</span>
+            Envoyez un courrier motivé à la Maison Communale
+          </p>
+          <p className="flex items-center gap-2">
+            <span className="text-text-muted">3.</span>
+            En cas de persistance, saisissez le{' '}
+            <a href="https://www.ombudsman.be" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+              Médiateur fédéral
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function DetailContent({ req, timeline }: { req: TicketViewModel; timeline: Parameters<typeof StatusTimeline>[0]['steps'] }) {
+  const service = getServiceByValue(req.type)
+  const slaDays = service?.slaDays ?? 10
+  const messages = buildConversationThread(req)
+
   return (
     <div className="space-y-6">
       <div>
@@ -525,31 +613,34 @@ function DetailContent({ req, timeline }: { req: TicketViewModel; timeline: Para
         </div>
       </div>
 
-      <SLACountdown createdAt={req.date} status={req.status} />
+      <SLACountdown createdAt={req.date} status={req.status} slaDays={slaDays} />
 
       {req.hasAttachment && (
         <div className="p-3 bg-surface-hover rounded-md border border-border flex items-center gap-3">
           <DownloadSimple size={20} className="text-primary" />
           <span className="text-sm text-text-primary flex-grow">Document justificatif</span>
-          <button className="text-sm text-primary hover:text-primary-hover font-medium">
-            Télécharger
-          </button>
+          <span className="text-xs text-text-muted">Téléchargement non disponible</span>
         </div>
       )}
 
       <div className="border-t border-border pt-6">
-        <h3 className="text-sm font-semibold text-text-primary mb-4">Historique</h3>
+        <h3 className="text-sm font-semibold text-text-primary mb-4 flex items-center gap-2">
+          <Clock size={16} className="text-text-muted" />
+          Historique
+        </h3>
         <StatusTimeline steps={timeline} />
       </div>
 
-      {req.comment && (
-        <div className="border-t border-border pt-6">
-          <h3 className="text-sm font-semibold text-text-primary mb-3">Commentaire du service</h3>
-          <div className="bg-primary/5 rounded-md p-4">
-            <p className="text-sm text-text-secondary leading-relaxed">{req.comment}</p>
-          </div>
-        </div>
-      )}
+      {/* Messages / Conversation */}
+      <div className="border-t border-border pt-6">
+        <h3 className="text-sm font-semibold text-text-primary mb-4 flex items-center gap-2">
+          <ChatCircle size={16} className="text-text-muted" />
+          Messages ({messages.length})
+        </h3>
+        <MessageThread messages={messages} />
+      </div>
+
+      <RecoursSection req={req} />
     </div>
   )
 }

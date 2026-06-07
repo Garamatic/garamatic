@@ -1,4 +1,6 @@
-import { Phone, Envelope, MapPin } from '@phosphor-icons/react'
+import { Phone, Envelope, MapPin, Clock } from '@phosphor-icons/react'
+import { NavLink } from 'react-router-dom'
+import { MUNICIPALITY } from '../config/municipality'
 
 export function Footer() {
   return (
@@ -11,15 +13,19 @@ export function Footer() {
               <div className="h-8 w-8 rounded-md bg-surface flex items-center justify-center border border-white/30 overflow-hidden">
                 <img
                   src="/desgoffe.png"
-                  alt="Ville de Desgoffe"
+                  alt={MUNICIPALITY.name}
                   className="h-6 w-auto"
                 />
               </div>
-              <span className="font-semibold text-white font-heading">Ville de Desgoffe</span>
+              <span className="font-semibold text-white font-heading">{MUNICIPALITY.name}</span>
             </div>
-            <p className="text-sm text-white/80 leading-relaxed">
-              Guichet Citoyen — Services municipaux en ligne pour les citoyens de Desgoffe.
+            <p className="text-sm text-white/80 leading-relaxed mb-4">
+              Guichet Citoyen — Services municipaux en ligne pour les citoyens de {MUNICIPALITY.name}.
             </p>
+            <div className="space-y-1 text-sm text-white/70">
+              <p>RPM : {MUNICIPALITY.rpm}</p>
+              <p>N° d'entreprise : {MUNICIPALITY.enterpriseNumber}</p>
+            </div>
           </div>
 
           {/* Contact */}
@@ -28,15 +34,25 @@ export function Footer() {
             <ul className="space-y-2">
               <li className="flex items-center gap-2 text-sm text-white/80">
                 <Phone size={16} />
-                <span>+32 2 555 01 01</span>
+                <a href={`tel:${MUNICIPALITY.phone}`} className="hover:text-white transition-colors">{MUNICIPALITY.phone}</a>
               </li>
               <li className="flex items-center gap-2 text-sm text-white/80">
                 <Envelope size={16} />
-                <span>contact@desgoffe.be</span>
+                <a href={`mailto:${MUNICIPALITY.email}`} className="hover:text-white transition-colors">{MUNICIPALITY.email}</a>
               </li>
-              <li className="flex items-center gap-2 text-sm text-white/80">
-                <MapPin size={16} />
-                <span>Grand-Place 1, 1000 Desgoffe</span>
+              <li className="flex items-start gap-2 text-sm text-white/80">
+                <MapPin size={16} className="shrink-0 mt-0.5" />
+                <span>
+                  {MUNICIPALITY.address.street}<br />
+                  {MUNICIPALITY.address.postcode} {MUNICIPALITY.address.locality}
+                </span>
+              </li>
+              <li className="flex items-start gap-2 text-sm text-white/80">
+                <Clock size={16} className="shrink-0 mt-0.5" />
+                <span className="text-xs leading-relaxed">
+                  Lun–Ven : {MUNICIPALITY.hours.monday}<br />
+                  Mercredi après-midi : sur rendez-vous
+                </span>
               </li>
             </ul>
           </div>
@@ -46,19 +62,29 @@ export function Footer() {
             <h3 className="text-sm font-semibold text-white mb-3 font-heading uppercase tracking-wider">Liens utiles</h3>
             <ul className="space-y-2">
               <li>
-                <a href="#" className="text-sm text-white/80 hover:text-white transition-colors">
+                <NavLink to="/privacy" className="text-sm text-white/80 hover:text-white transition-colors">
                   Politique de confidentialité
-                </a>
+                </NavLink>
               </li>
               <li>
-                <a href="#" className="text-sm text-white/80 hover:text-white transition-colors">
+                <NavLink to="/terms" className="text-sm text-white/80 hover:text-white transition-colors">
                   Conditions d'utilisation
-                </a>
+                </NavLink>
               </li>
               <li>
-                <a href="#" className="text-sm text-white/80 hover:text-white transition-colors">
+                <NavLink to="/accessibility" className="text-sm text-white/80 hover:text-white transition-colors">
                   Accessibilité
-                </a>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/demarches" className="text-sm text-white/80 hover:text-white transition-colors">
+                  Démarches administratives
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/plan-du-site" className="text-sm text-white/80 hover:text-white transition-colors">
+                  Plan du site
+                </NavLink>
               </li>
             </ul>
           </div>
@@ -66,10 +92,14 @@ export function Footer() {
 
         <div className="mt-8 pt-6 border-t border-white/20 text-center">
           <p className="text-sm font-bold text-white tracking-widest uppercase">
-            &copy; {new Date().getFullYear()} Ville de Desgoffe
+            &copy; {new Date().getFullYear()} {MUNICIPALITY.name}
           </p>
           <p className="text-xs text-white/60 mt-1">
-            Pour toute question, contactez le Service Municipal au +32 2 555 01 01
+            Délégué à la Protection des Données : {MUNICIPALITY.dpo.name} —{' '}
+            <a href={`mailto:${MUNICIPALITY.dpo.email}`} className="underline hover:text-white">{MUNICIPALITY.dpo.email}</a>
+          </p>
+          <p className="text-xs text-white/60 mt-1">
+            Pour toute question, contactez le Service Municipal au {MUNICIPALITY.phone}
           </p>
         </div>
       </div>

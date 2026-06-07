@@ -1,4 +1,4 @@
-# Multi-stage build for the Desgoffe Citizen Portal
+# Multi-stage build for the Goffe-sur-Semois Citizen Portal
 # Stage 1: Build the React app
 FROM node:22-alpine AS builder
 
