@@ -226,6 +226,15 @@ Tunnel configuratie: `cloudflared/config.yml`
 - `docker-compose.ecosystem.yml` — Volledig ecosysteem
 - `integration-tests/docker/docker-compose.test.yml` — Test omgeving
 
+### Health Monitoring & Metrics
+
+| Component | Implementatie | Opmerking |
+|-----------|---------------|-----------|
+| **Health Checks** | `GerdaHealthCheck`, `EmailIngestionHealthCheck`, `BackgroundQueueHealthCheck` — beschikbaar op `/health` | De app heeft 3 custom health checks. De container healthcheck gebruikt `dotnet --info` (limitatie van chiseled base image voor minimale attack surface). |
+| **Process Metrics** | `/metrics` endpoint — JSON met uptime, memory, GC stats | JSON-formaat voor interne monitoring. |
+| **Business Metrics** | `MetricsService` — real-time dashboard (SLA, agent workload, forecast, priority distribution) | Berekent in-memory uit de database. |
+| **Prometheus/Grafana** | `docker-compose.monitoring.yml` beschikbaar | Niet opgenomen in de demo compose om de stack lichter te houden (15 containers is al substantieel). |
+
 ---
 
 *Dit document is opgesteld door het Garamatic team. Bij vragen: contact via GitHub Issues of ClickUp.*
