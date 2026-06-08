@@ -67,11 +67,20 @@ export function Header() {
           {/* Logo */}
           <NavLink to="/" className="flex items-center gap-3 group">
             <div className="h-11 w-11 rounded-full bg-white flex items-center justify-center shadow-lg shadow-black/20 overflow-hidden ring-2 ring-white/50">
-              <img
-                src="/desgoffe.svg"
-                alt="Commune de Desgoffe"
-                className="h-9 w-auto"
-                style={{ imageRendering: 'auto' }}
+              <div
+                className="h-9 w-9 bg-primary"
+                style={{
+                  maskImage: 'url(/desgoffe_transparent.png)',
+                  maskSize: 'contain',
+                  maskRepeat: 'no-repeat',
+                  maskPosition: 'center',
+                  WebkitMaskImage: 'url(/desgoffe_transparent.png)',
+                  WebkitMaskSize: 'contain',
+                  WebkitMaskRepeat: 'no-repeat',
+                  WebkitMaskPosition: 'center',
+                }}
+                aria-label="Commune de Desgoffe"
+                role="img"
               />
             </div>
             <div className="hidden sm:block">
