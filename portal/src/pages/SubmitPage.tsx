@@ -159,10 +159,16 @@ export function SubmitPage() {
         formPayload.append('Attachment', formData.attachment)
       }
 
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 15000)
+
       const response = await fetch(API_ENDPOINT, {
         method: 'POST',
         body: formPayload,
+        signal: controller.signal,
       })
+
+      clearTimeout(timeoutId)
 
       if (!response.ok) {
         throw new Error(`Server error: ${response.status}`)
@@ -172,7 +178,7 @@ export function SubmitPage() {
 
       if (result.success) {
         const ticketGuid = result.ticketGuid ?? ''
-        const ticketId = ticketGuid ? ticketGuid.toString().slice(0, 8).toUpperCase() : 'UNKNOWN'
+        const ticketId = ticketGuid ? ticketGuid.slice(0, 8).toUpperCase() : 'UNKNOWN'
 
         // Store for success page
         sessionStorage.setItem('submissionResult', JSON.stringify({
@@ -191,8 +197,13 @@ export function SubmitPage() {
       }
     } catch (err) {
       console.error('Submission error:', err)
-      addToast('Une erreur est survenue lors de la soumission. Veuillez réessayer.', 'error')
-      setErrors({ submit: 'Une erreur est survenue lors de la soumission. Veuillez réessayer.' })
+      if (err instanceof Error && err.name === 'AbortError') {
+        addToast('La requête a expiré. Veuillez réessayer.', 'error')
+        setErrors({ submit: 'La requête a expiré. Veuillez réessayer.' })
+      } else {
+        addToast('Une erreur est survenue lors de la soumission. Veuillez réessayer.', 'error')
+        setErrors({ submit: 'Une erreur est survenue lors de la soumission. Veuillez réessayer.' })
+      }
     } finally {
       setSubmitting(false)
     }
@@ -599,6 +610,12 @@ export function SubmitPage() {
             {errors.declaration && (
               <p id="declaration-error" className="error-text flex items-center gap-1" aria-live="polite">
                 <Warning size={14} /> {errors.declaration}
+              </p>
+            )}
+
+            {errors.submit && (
+              <p className="error-text flex items-center gap-1" aria-live="polite">
+                <Warning size={14} /> {errors.submit}
               </p>
             )}
 

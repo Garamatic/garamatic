@@ -6,6 +6,7 @@ import { MUNICIPALITY, typeLabels, getServiceByValue } from '../config/municipal
 interface SubmissionResult {
   success: boolean
   ticketId?: string
+  ticketGuid?: string
   queue?: string
   message?: string
   serviceType?: string
@@ -15,7 +16,7 @@ interface SubmissionResult {
 export function SuccessPage() {
   const { ticketId: urlTicketId } = useParams()
   const navigate = useNavigate()
-  const result: SubmissionResult = (() => {
+  const [result] = useState<SubmissionResult>(() => {
     const raw = sessionStorage.getItem('submissionResult')
     if (raw) {
       try {
@@ -26,11 +27,7 @@ export function SuccessPage() {
           ticketId: parsed.ticketId || urlTicketId,
         }
       } catch {
-        return {
-          success: true,
-          ticketId: urlTicketId,
-          queue: 'Services Municipaux',
-        }
+        // ignore parse error, fall back to URL param
       }
     }
     return {
@@ -38,7 +35,7 @@ export function SuccessPage() {
       ticketId: urlTicketId,
       queue: 'Services Municipaux',
     }
-  })()
+  })
   const [copied, setCopied] = useState(false)
 
   const displayTicketId = result?.ticketId || '---'
