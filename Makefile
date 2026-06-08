@@ -46,7 +46,7 @@ up:
 	@echo "   • Ticket Masala   → http://localhost:8085"
 	@echo "   • Gatekeeper      → http://localhost:8086"
 	@echo "   • Mailing Service → http://localhost:8087"
-	@echo "   • Agentic API     → http://localhost:3001/sse"
+	@echo "   • Agentic API     → http://localhost:3001"
 	@echo "   • Odoo Bridge     → http://localhost:8089/health"
 	@echo "   • Garamatic Web   → http://localhost:8090"
 	@echo "   • Masala Web      → http://localhost:8091"

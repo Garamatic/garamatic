@@ -44,6 +44,7 @@ services:
       - MasalaConfig__ConfigPath=/app/config
       - MasalaConfig__SeedDataPath=/app/config/seed_data.json
       - TEST_MODE=false
+      - TICKETMASALA_ALLOW_SEED_BYPASS=true
       - RabbitMQ__HostName=rabbitmq
       - OPENAI_BASE_URL=${OLLAMA_BASE_URL:-http://ollama:11434/v1}
       - OPENAI_API_KEY=${OLLAMA_API_KEY:-ollama}
@@ -135,7 +136,7 @@ services:
     ports:
       - "3001:3001"
     environment:
-      - MCP_TRANSPORT=sse
+      - CORS_ORIGINS=*
       - ticket_api_url=http://ticket-masala:8080
       - rabbitmq_host=rabbitmq
       - LLM_PROVIDER=ollama
@@ -154,7 +155,7 @@ services:
       ollama:
         condition: service_started
     healthcheck:
-      test: ["CMD", "sh", "-c", "curl -s -o /dev/null -w '%{http_code}' --max-time 2 http://localhost:3001/sse | grep -q 200"]
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
       interval: 5s
       timeout: 5s
       retries: 10

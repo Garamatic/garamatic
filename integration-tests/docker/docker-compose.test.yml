@@ -28,6 +28,7 @@ services:
       - ConnectionStrings__DefaultConnection=Data Source=/app/data/masala_test.db;Cache=Shared;Mode=ReadWriteCreate
       - MasalaConfig__ConfigPath=/app/config
       - TEST_MODE=true
+      - TICKETMASALA_ALLOW_SEED_BYPASS=true
       - RabbitMQ__HostName=rabbitmq
       - Agentic__ApiKey=masala-test-key
     volumes:
@@ -124,7 +125,7 @@ services:
     ports:
       - "3001:3001"
     environment:
-      - MCP_TRANSPORT=sse
+      - CORS_ORIGINS=*
       - ticket_api_url=http://ticket-masala:8080
       - rabbitmq_host=rabbitmq
       - ticket_api_key=masala-test-key

@@ -16,7 +16,7 @@ const SERVICES = {
   ticketMasala: { url: process.env.TICKET_MASALA_URL || 'http://ticket-masala:8080', path: '/health' },
   gatekeeper: { url: process.env.GATEKEEPER_URL || 'http://gatekeeper-api:8080', path: '/health' },
   mailing: { url: process.env.MAILING_URL || 'http://mailing-service:8080', path: '/health' },
-  agentic: { url: process.env.AGENTIC_URL || 'http://agentic-service:3001', path: '/sse', sse: true },
+  agentic: { url: process.env.AGENTIC_URL || 'http://agentic-service:3001', path: '/health' },
   odoo: { url: process.env.ODOO_URL || 'http://odoo-integration:8080', path: '/health' },
   mailhog: { url: process.env.MAILHOG_URL || 'http://mailhog:8025', path: '/api/v2/messages' },
   rabbitmq: { url: process.env.RABBITMQ_URL || 'http://rabbitmq:15672', path: '/api/overview', auth: 'guest:guest' }
