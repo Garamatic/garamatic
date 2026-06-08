@@ -205,8 +205,8 @@
 
 | Omgeving | URL | Rol | Gebruikersnaam / Email | Wachtwoord |
 |----------|-----|-----|------------------------|-----------|
-| **Lokaal** | `http://localhost:8085` | Admin | `admin` | `Admin123!` |
-| | | Employee | `employee` | `Employee123!` |
+| **Lokaal** | `http://localhost:8085` | Admin | `gustave@desgoffe.gov` | `Admin123!` |
+| | | Employee | `serge@desgoffe.gov` | `Employee123!` |
 | | | Customer (Portal) | `jean.dupont@citoyen.be` | `Customer123!` |
 | **Fly.io (Prod)** | `https://ticket-masala.fly.dev` | Admin | `admin` | `Admin123!` |
 | | | Employee | `employee` | `Employee123!` |

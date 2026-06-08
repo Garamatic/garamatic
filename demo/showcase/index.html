@@ -1085,6 +1085,16 @@
         <div class="card span-full">
           <h2 class="card-title">Demo Flow (~9 min)</h2>
           <div class="steps-list">
+            <div class="step" role="button" tabindex="0" onclick="window.open('http://localhost:8092','_blank')" onkeydown="if(event.key==='Enter'||event.key===' ')window.open('http://localhost:8092','_blank')">
+              <div class="step-num">0</div>
+              <div class="step-content">
+                <div class="step-title">Intro — Architecture Overview <span class="step-time">0:00 — 0:30</span></div>
+                <div class="step-desc">Show the Architecture Dashboard with all services running. Introduce the team (Juan Benjumea, Wito De Schrijver, Maarten Görtz, Charlotte Schröer), the project, and the multi-tenant containerized microservices ecosystem.</div>
+                <div class="step-actions">
+                  <a href="http://localhost:8092" target="_blank" rel="noopener" onclick="event.stopPropagation()">Open Dashboard</a>
+                </div>
+              </div>
+            </div>
             <div class="step" role="button" tabindex="0" onclick="window.open('http://localhost:8093','_blank')" onkeydown="if(event.key==='Enter'||event.key===' ')window.open('http://localhost:8093','_blank')">
               <div class="step-num">1</div>
               <div class="step-content">
@@ -1122,7 +1132,7 @@
               <div class="step-num">4</div>
               <div class="step-content">
                 <div class="step-title">Invoicing + Odoo ERP <span class="step-time">6:00 — 8:00</span></div>
-                <div class="step-desc">Resolve a ticket with a billable amount. The Odoo Bridge receives <code>ticket.resolved</code>, creates a customer and invoice via JSON-RPC, and publishes <code>invoice.created</code>. Zero manual work.</div>
+                <div class="step-desc">Resolve a ticket with a billable amount. The Odoo Bridge receives <code>ticket.resolved</code>, creates a customer and invoice via JSON-RPC, and publishes <code>invoice.created</code>. Zero manual work. <strong>Tip:</strong> Use the pre-seeded ticket <em>Demande de permis — Extension terrasse</em> (Marie Curie), set status to <strong>Completed</strong>, add resolution notes and billable amount <strong>€150</strong>. You must be logged in to resolve a ticket.</div>
                 <div class="step-actions">
                   <a href="http://localhost:8069" target="_blank" rel="noopener" onclick="event.stopPropagation()">Odoo ERP</a>
                   <a href="http://localhost:8089" target="_blank" rel="noopener" onclick="event.stopPropagation()">Odoo Bridge</a>
@@ -1191,9 +1201,12 @@
                 <tr><th>Service</th><th>URL</th><th>Username</th><th>Password</th></tr>
               </thead>
               <tbody>
-                <tr><td>Ticket Masala (Admin)</td><td class="code">localhost:8085</td><td class="code">admin</td><td class="code">Admin123!</td></tr>
-                <tr><td>Ticket Masala (Employee)</td><td class="code">localhost:8085</td><td class="code">employee</td><td class="code">Employee123!</td></tr>
-                <tr><td>Ticket Masala (Customer)</td><td class="code">localhost:8085</td><td class="code">jean.dupont@citoyen.be</td><td class="code">Customer123!</td></tr>
+                <tr><td>Desgoffe Admin</td><td class="code">localhost:8085</td><td class="code">gustave@desgoffe.gov</td><td class="code">Admin123!</td></tr>
+                <tr><td>Desgoffe Admin (alt)</td><td class="code">localhost:8085</td><td class="code">admin@desgoffe.gov</td><td class="code">Admin123!</td></tr>
+                <tr><td>Desgoffe Employee</td><td class="code">localhost:8085</td><td class="code">serge@desgoffe.gov</td><td class="code">Employee123!</td></tr>
+                <tr><td>Desgoffe Employee</td><td class="code">localhost:8085</td><td class="code">claire@desgoffe.gov</td><td class="code">Employee123!</td></tr>
+                <tr><td>Desgoffe Employee (Travaux)</td><td class="code">localhost:8085</td><td class="code">rene@desgoffe.gov</td><td class="code">Employee123!</td></tr>
+                <tr><td>Desgoffe Customer</td><td class="code">localhost:8085</td><td class="code">jean.dupont@citoyen.be</td><td class="code">Customer123!</td></tr>
                 <tr><td>Gatekeeper API</td><td class="code">localhost:8086</td><td class="code">—</td><td class="code">demo-api-key</td></tr>
                 <tr><td>RabbitMQ</td><td class="code">localhost:15672</td><td class="code">guest</td><td class="code">guest</td></tr>
                 <tr><td>Odoo ERP</td><td class="code">localhost:8069</td><td class="code">admin</td><td class="code">admin</td></tr>
@@ -1246,7 +1259,7 @@
             <div class="flow">
               <span class="flow-node">event_exchange</span>
               <span class="flow-arrow" aria-hidden="true">→</span>
-              <span class="flow-node">agentic.queue</span>
+              <span class="flow-node">agentic_consumer</span>
               <span class="flow-arrow" aria-hidden="true">→</span>
               <span class="flow-node">mailing.queue</span>
               <span class="flow-arrow" aria-hidden="true">→</span>
@@ -1420,6 +1433,44 @@
               <span class="repo-name">mailing-service</span>
               <span class="repo-desc">SendGrid transactional emails</span>
             </a>
+          </div>
+        </div>
+
+        <!-- Pre-Demo Checklist -->
+        <div class="card span-full">
+          <h2 class="card-title">Pre-Demo Checklist</h2>
+          <div class="step-desc">
+            <ul style="list-style:none;padding:0;">
+              <li style="margin-bottom:8px;">✅ All services healthy (run <code>scripts/health-check.sh</code>)</li>
+              <li style="margin-bottom:8px;">✅ <code>OPENAI_API_KEY</code> set (or accept graceful AI error)</li>
+              <li style="margin-bottom:8px;">✅ Mailhog has at least 1 test email</li>
+              <li style="margin-bottom:8px;">✅ Odoo reachable at <code>localhost:8069</code> (admin/admin)</li>
+              <li style="margin-bottom:8px;">✅ Pre-seeded ticket present (run <code>make up</code> or seed below)</li>
+            </ul>
+          </div>
+          <div class="curl-block mt-3">
+            <button class="copy-btn" onclick="copy(this)" aria-label="Copy curl command">Copy</button>
+            <pre>curl -X POST http://localhost:8093/api/ingest \
+  -H "Content-Type: application/json" \
+  -d '{"event_type":"ticket.created","ticket_id":"$(uuidgen)","customer_email":"marie.curie@science.be","customer_name":"Marie Curie","description":"Bouwhoerrie zonder vergunning","priority":"10","source":"desgoffe-portal","tags":"Quartier:Centre-Ville,Type:NUISANCE"}'</pre>
+          </div>
+        </div>
+
+        <!-- Troubleshooting -->
+        <div class="card">
+          <h2 class="card-title">Troubleshooting</h2>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Symptom</th><th>Solution</th></tr></thead>
+              <tbody>
+                <tr><td>AI Chat says "unavailable"</td><td><code>OPENAI_API_KEY</code> not set. Export or show graceful error.</td></tr>
+                <tr><td>No email in Mailhog</td><td>Check <code>docker compose logs agentic-service</code></td></tr>
+                <tr><td>No invoice in Odoo</td><td>Check Odoo Bridge logs, wait for <code>odoo-db</code> healthy</td></tr>
+                <tr><td>RabbitMQ queue empty</td><td>Check <code>docker compose logs ticket-masala</code> — OutboxPublisher running?</td></tr>
+                <tr><td>Portal 404</td><td>Check <code>docker compose logs portal</code> — Gatekeeper reachable?</td></tr>
+                <tr><td>Demo too long</td><td>Skip Segment 5 (RabbitMQ detail), focus on AI Chat + Odoo</td></tr>
+              </tbody>
+            </table>
           </div>
         </div>
 

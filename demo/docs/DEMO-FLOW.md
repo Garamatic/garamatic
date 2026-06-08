@@ -36,6 +36,20 @@ scripts/health-check.sh
 - [ ] Pre-seeded ticket aanwezig in Ticket Masala
 - [ ] `OPENAI_API_KEY` gezet (of graceful error accepteren)
 
+### Demo Login Credentials
+
+| Service | URL | Login | Password |
+|---------|-----|-------|----------|
+| 🏛️ Desgoffe Admin | `http://localhost:8085` | `gustave@desgoffe.gov` | `Admin123!` |
+| 🏛️ Desgoffe Admin | `http://localhost:8085` | `admin@desgoffe.gov` | `Admin123!` |
+| 👷 Desgoffe Employee | `http://localhost:8085` | `serge@desgoffe.gov` | `Employee123!` |
+| 👷 Desgoffe Employee | `http://localhost:8085` | `claire@desgoffe.gov` | `Employee123!` |
+| 👷 Desgoffe Employee (Travaux) | `http://localhost:8085` | `rene@desgoffe.gov` | `Employee123!` |
+| 📊 RabbitMQ | `http://localhost:15672` | `guest` | `guest` |
+| 🏭 Odoo ERP | `http://localhost:8069` | `admin` | `admin` |
+| 📧 Mailhog | `http://localhost:8025` | *(geen login nodig)* | |
+| 💬 Agentic MCP | `http://localhost:3001/sse` | *(SSE endpoint — geen login)* | |
+
 ---
 
 ## Segment 0: Intro (0:00 — 0:30)
@@ -43,7 +57,7 @@ scripts/health-check.sh
 **Wat je toont:** Architecture Dashboard (`http://localhost:8092`)
 
 **Wat je zegt:**
-> "Dit is Ticket Masala — ons multi-tenant ticket management platform. We zijn een team van 4 personen: Juan, Aiko, Gijs, S. We hebben 1095 uur gewerkt aan een volledig containerized microservices-ecosysteem. Wat je hier ziet is onze architecture dashboard met alle 7 services live: Ticket Masala, Gatekeeper API, Agentic Service, Mailing Service, Odoo Bridge, Portal, en RabbitMQ als event bus."
+> "Dit is Ticket Masala — ons multi-tenant ticket management platform. We zijn een team van 4 personen: Juan Benjumea, Wito De Schrijver, Maarten Görtz, Charlotte Schröer. We hebben 1095 uur gewerkt aan een volledig containerized microservices-ecosysteem. Wat je hier ziet is onze architecture dashboard met alle 7 services live: Ticket Masala, Gatekeeper API, Agentic Service, Mailing Service, Odoo Bridge, Portal, en RabbitMQ als event bus."
 
 **Screen:** Showcase pagina met service topology en health indicators.
 
@@ -83,7 +97,7 @@ scripts/health-check.sh
 > "We loggen in als manager. Hier zien we alle tickets. De GERDA AI sidebar analyseert elk ticket automatisch: complexiteit, prioriteit, tags, en een agent aanbeveling."
 
 **Click-by-click:**
-1. Login: `manager.john` / `Employee123!`
+1. Login: `gustave@desgoffe.gov` / `Admin123!` (of eender welke employee: `serge@desgoffe.gov` / `Employee123!`)
 2. Open het net aangemaakte ticket (of een pre-seeded ticket)
 3. Toon de **GERDA AI Insights** sidebar:
    - **Complexity:** X punten
@@ -134,20 +148,30 @@ scripts/health-check.sh
 **Wat je zegt:**
 > "Wanneer een ticket is opgelost, wordt automatisch een factuur gegenereerd. We gebruiken Odoo ERP als ons factureringssysteem. De Odoo Bridge communiceert via JSON-RPC — Odoo Community Edition heeft geen REST API."
 
+> **Belangrijk:** Je moet ingelogd zijn op Ticket Masala om een ticket te kunnen resolven. Gebruik credentials uit de Pre-Demo Checklist hierboven.
+
 **Click-by-click:**
-1. In Ticket Masala: zoek het ticket **Demande de permis — Extension terrasse**, klik **Edit**
-2. Verander status naar **Completed**
-3. Vul in:
+1. Navigeer naar de ticket lijst in Ticket Masala (`http://localhost:8085`)
+2. Zoek het ticket **Demande de permis — Extension terrasse** (Marie Curie), klik **Edit**
+3. Verander status naar **Completed**
+4. Vul in:
    - **Resolution notes:** `"Permis approuvé conformément au plan d'urbanisme. Taxe d'urbanisme: €150."`
    - **Billable amount:** `€150.00`
-4. Save
-5. Switch naar Odoo (`http://localhost:8069`)
-6. Login: `admin` / `admin`
-7. Navigeer naar **Invoicing** → **Customers** → zoek `Marie Curie`
-8. Navigeer naar **Invoicing** → **Invoices** — toon de nieuwe factuur
+5. Klik **Save**
+6. Het `ticket.resolved` event wordt automatisch gepubliceerd naar **RabbitMQ**
+7. De **Odoo Bridge** consumer pikt het op en maakt een factuur aan in Odoo
+
+**Wat je zegt (tijdens save):**
+> "Wanneer de status op completed wordt gezet, publiceert Ticket Masala automatisch een `ticket.resolved` event naar RabbitMQ. De Odoo Bridge luistert naar deze events — hij maakt een factuur aan, zoekt of maakt de klant aan, en valideert de factuur. Dit werkt zonder dat iemand naar Odoo moet gaan."
+
+8. Switch naar Odoo (`http://localhost:8069`)
+9. Login: `admin` / `admin`
+10. Navigeer naar **Invoicing** → **Invoices**
+11. Toon de nieuwe factuur: **INV/2026/000XX** — status **Posted**, bedrag **€150.00**
+12. Klik op de factuur om details te tonen: klant **Marie Curie**, referentie naar het ticket
 
 **Wat je zegt:**
-> "De factuur wordt automatisch aangemaakt in Odoo. Klantgegevens, servicebeschrijving, bedrag — alles komt uit het ticket. De factuur start in 'draft' en wordt direct gevalideerd naar 'posted'. De bridge houdt elke ticket bij in een LiteDB state machine — geen dubbele facturen."
+> "De factuur staat in Odoo — status 'posted', automatisch gevalideerd. Klantgegevens, omschrijving, bedrag — alles komt uit het ticket. De Odoo Bridge gebruikt een LiteDB state machine om dubbele facturen te voorkomen: als dezelfde ticket opnieuw binnenkomt, herkent de bridge de bestaande factuur."
 
 **Screen:** Split screen — links Ticket Masala, rechts Odoo Invoices.
 
@@ -226,15 +250,22 @@ scripts/health-check.sh
 Maak **voor** de demo al een ticket aan zodat je direct naar het AI chat moment kan springen als je tijd tekort komt.
 
 ```bash
-# Pre-seed een ticket
-curl -X POST http://localhost:8085/api/portal/submit \
-  -F "CustomerName=Marie Curie" \
-  -F "CustomerEmail=marie.curie@science.be" \
-  -F "Description=Bouwhoerrie zonder vergunning" \
-  -F "WorkItemType=NUISANCE" \
-  -F "PriorityScore=10" \
-  -F "Tenant=desgoffe"
+# Pre-seed een ticket via de Gatekeeper API (werkt zonder login)
+curl -X POST http://localhost:8093/api/ingest \
+  -H "Content-Type: application/json" \
+  -d '{
+    "event_type": "ticket.created",
+    "ticket_id": "$(uuidgen)",
+    "customer_email": "marie.curie@science.be",
+    "customer_name": "Marie Curie",
+    "description": "Bouwhoerrie zonder vergunning - pre-seeded voor demo",
+    "priority": "10",
+    "source": "desgoffe-portal",
+    "tags": "Quartier:Centre-Ville,Type:NUISANCE"
+  }'
 ```
+
+Of gebruik `make up` — de seeder draait automatisch en creëert 10 Desgoffe tickets met verschillende statussen.
 
 ### Screen Layout
 - **Primair:** Browser (portal, Ticket Masala, Odoo)
