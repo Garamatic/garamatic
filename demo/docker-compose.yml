@@ -101,10 +101,9 @@ services:
       - RabbitMQ__Port=5672
       - RabbitMQ__Username=guest
       - RabbitMQ__Password=guest
-      - Smtp__Host=mailhog
-      - Smtp__Port=1025
-      - Smtp__FromEmail=demo@garamatic.io
-      - Smtp__FromName=Garamatic Demo
+      - SendGrid__ApiKey=${SENDGRID_API_KEY}
+      - SendGrid__FromEmail=${SENDGRID_FROM_EMAIL:-demo@garamatic.io}
+      - SendGrid__FromName=${SENDGRID_FROM_NAME:-Garamatic Demo}
     networks:
       - garamatic_demo_net
     depends_on:

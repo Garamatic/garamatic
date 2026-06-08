@@ -39,7 +39,7 @@ TENANT_CONFIG = $(CURDIR)/demo/config
 
 up:
 	@echo "🚀 Starting Garamatic demo stack (tenant: $(TENANT))..."
-	TENANT=$(TENANT) TENANT_CONFIG=$(TENANT_CONFIG) docker compose -f $(COMPOSE_FILE) up --build -d
+	TENANT=$(TENANT) TENANT_CONFIG=$(TENANT_CONFIG) docker compose -f $(COMPOSE_FILE) --env-file .env up --build -d
 	@echo ""
 	@echo "   Services:"
 	@echo "   • Showcase        → http://localhost:8092"
