@@ -196,3 +196,16 @@ h6,
 .form-group textarea[aria-invalid="true"] {
     border-color: #dc3545;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   Logo Colorization (from transparent black)
+   ══════════════════════════════════════════════════════════════ */
+.navbar-logo {
+    /* Converts black to Cream (#FDF5E6) for the dark sidebar */
+    filter: invert(93%) sepia(13%) saturate(763%) hue-rotate(309deg) brightness(107%) contrast(101%);
+}
+
+.branding-logo {
+    /* Converts black to Faded Purple (#5D3A5D) for the login screen */
+    filter: invert(24%) sepia(21%) saturate(1637%) hue-rotate(256deg) brightness(94%) contrast(92%);
+}
