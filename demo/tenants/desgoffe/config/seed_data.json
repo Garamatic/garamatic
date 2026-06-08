@@ -1,0 +1,686 @@
+{
+    "Admins": [
+        {
+            "UserName": "bourgmestre.gustave",
+            "Email": "gustave@desgoffe.gov",
+            "FirstName": "Gustave",
+            "LastName": "Desgoffe",
+            "Phone": "+32 2 555 01 01",
+            "Code": "ADM-001"
+        },
+        {
+            "UserName": "admin.desgoffe",
+            "Email": "admin@desgoffe.gov",
+            "FirstName": "System",
+            "LastName": "Administrator",
+            "Phone": "+32 2 555 01 02",
+            "Code": "ADM-002"
+        }
+    ],
+    "Employees": [
+        {
+            "UserName": "greffier.serge",
+            "Email": "serge@desgoffe.gov",
+            "FirstName": "Serge",
+            "LastName": "Leclerc",
+            "Team": "Clergé Municipal",
+            "Level": "Manager",
+            "Language": "fr-BE",
+            "Specializations": "Urbanisme, État Civil, Permis de bâtir",
+            "MaxCapacityPoints": 50,
+            "Region": "Desgoffe-Centre"
+        },
+        {
+            "UserName": "conseiller.claire",
+            "Email": "claire@desgoffe.gov",
+            "FirstName": "Claire",
+            "LastName": "Valmont",
+            "Team": "Affaires Juridiques",
+            "Level": "Lead",
+            "Language": "fr-BE",
+            "Specializations": "Droit Administratif, Expropriation, Contentieux",
+            "MaxCapacityPoints": 45,
+            "Region": "Desgoffe-Centre"
+        },
+        {
+            "UserName": "travaux.rene",
+            "Email": "rene@desgoffe.gov",
+            "FirstName": "René",
+            "LastName": "Magritte",
+            "Team": "Travaux Publics",
+            "Level": "Expert",
+            "Language": "fr-BE",
+            "Specializations": "Signalisation, Voirie, Éclairage public",
+            "MaxCapacityPoints": 40,
+            "Region": "Desgoffe-Centre"
+        },
+        {
+            "UserName": "agent.sarah",
+            "Email": "sarah.bernard@desgoffe.gov",
+            "FirstName": "Sarah",
+            "LastName": "Bernard",
+            "Team": "Urbanisme",
+            "Level": "Support",
+            "Language": "fr-BE",
+            "Specializations": "Permis de construction, Urbanisme, Zonage",
+            "MaxCapacityPoints": 30,
+            "Region": "Centre-Ville"
+        },
+        {
+            "UserName": "specialist.mike",
+            "Email": "mike.martin@desgoffe.gov",
+            "FirstName": "Mike",
+            "LastName": "Martin",
+            "Team": "Environnement",
+            "Level": "Lead",
+            "Language": "fr-BE",
+            "Specializations": "Nuisances, Pollution, Inspections",
+            "MaxCapacityPoints": 45,
+            "Region": "Global"
+        },
+        {
+            "UserName": "support.lisa",
+            "Email": "lisa.petit@desgoffe.gov",
+            "FirstName": "Lisa",
+            "LastName": "Petit",
+            "Team": "Services Citoyens",
+            "Level": "Support",
+            "Language": "fr-BE",
+            "Specializations": "Inscriptions, Demandes générales, Plaintes",
+            "MaxCapacityPoints": 30,
+            "Region": "Faubourg Nord"
+        },
+        {
+            "UserName": "dev.alex",
+            "Email": "alex.leroy@desgoffe.gov",
+            "FirstName": "Alex",
+            "LastName": "Leroy",
+            "Team": "Informatique",
+            "Level": "Lead",
+            "Language": "fr-BE",
+            "Specializations": "Développement, API, Infrastructure",
+            "MaxCapacityPoints": 40,
+            "Region": "Global"
+        },
+        {
+            "UserName": "dev.maria",
+            "Email": "maria.garcia@desgoffe.gov",
+            "FirstName": "Maria",
+            "LastName": "Garcia",
+            "Team": "Informatique",
+            "Level": "Support",
+            "Language": "fr-BE",
+            "Specializations": "Frontend, UI/UX, Accessibilité",
+            "MaxCapacityPoints": 35,
+            "Region": "Global"
+        },
+        {
+            "UserName": "qa.david",
+            "Email": "david.moreau@desgoffe.gov",
+            "FirstName": "David",
+            "LastName": "Moreau",
+            "Team": "Qualité",
+            "Level": "Lead",
+            "Language": "fr-BE",
+            "Specializations": "Tests, Validation, Procédures",
+            "MaxCapacityPoints": 40,
+            "Region": "Centre-Ville"
+        },
+        {
+            "UserName": "security.rachel",
+            "Email": "rachel.dubois@desgoffe.gov",
+            "FirstName": "Rachel",
+            "LastName": "Dubois",
+            "Team": "Sécurité",
+            "Level": "Lead",
+            "Language": "fr-BE",
+            "Specializations": "Audits, Conformité, Réglementation",
+            "MaxCapacityPoints": 45,
+            "Region": "Global"
+        },
+        {
+            "UserName": "devops.james",
+            "Email": "james.roux@desgoffe.gov",
+            "FirstName": "James",
+            "LastName": "Roux",
+            "Team": "Infrastructure",
+            "Level": "Lead",
+            "Language": "fr-BE",
+            "Specializations": "Réseaux, Serveurs, Monitoring",
+            "MaxCapacityPoints": 42,
+            "Region": "Global"
+        },
+        {
+            "UserName": "sales.olivia",
+            "Email": "olivia.lambert@desgoffe.gov",
+            "FirstName": "Olivia",
+            "LastName": "Lambert",
+            "Team": "Communication",
+            "Level": "Manager",
+            "Language": "fr-BE",
+            "Specializations": "Relations publiques, Événements, Presse",
+            "MaxCapacityPoints": 38,
+            "Region": "Centre-Ville"
+        },
+        {
+            "UserName": "gerda.system",
+            "Email": "gerda@desgoffe.gov",
+            "FirstName": "GERDA",
+            "LastName": "AI",
+            "Team": "Système",
+            "Level": "Lead",
+            "Language": "fr-BE",
+            "Specializations": "Analyse de sentiment, Routage, Validation, Auto-Triage",
+            "MaxCapacityPoints": 999,
+            "Region": "Global"
+        }
+    ],
+    "Customers": [
+        {
+            "UserName": "customer.alice",
+            "Email": "jean.dupont@citoyen.be",
+            "FirstName": "Jean",
+            "LastName": "Dupont",
+            "Phone": "+32 471 23 45 67",
+            "Code": "CIT-001"
+        },
+        {
+            "UserName": "customer.bob",
+            "Email": "marie.curie@science.be",
+            "FirstName": "Marie",
+            "LastName": "Curie",
+            "Phone": "+32 472 34 56 78",
+            "Code": "CIT-002"
+        },
+        {
+            "UserName": "customer.carol",
+            "Email": "pierre.martin@entreprise.be",
+            "FirstName": "Pierre",
+            "LastName": "Martin",
+            "Phone": "+32 473 45 67 89",
+            "Code": "CIT-003"
+        },
+        {
+            "UserName": "customer.daniel",
+            "Email": "sophie.bernard@ecole.be",
+            "FirstName": "Sophie",
+            "LastName": "Bernard",
+            "Phone": "+32 474 56 78 90",
+            "Code": "CIT-004"
+        },
+        {
+            "UserName": "customer.eva",
+            "Email": "emma.roux@associations.be",
+            "FirstName": "Emma",
+            "LastName": "Roux",
+            "Phone": "+32 476 78 90 12",
+            "Code": "CIT-005"
+        },
+        {
+            "UserName": "customer.frank",
+            "Email": "antoine.moreau@retraite.be",
+            "FirstName": "Antoine",
+            "LastName": "Moreau",
+            "Phone": "+32 477 89 01 23",
+            "Code": "CIT-006"
+        }
+    ],
+    "WorkContainers": [
+        {
+            "Name": "Rénovation École Maternelle — Faubourg Nord",
+            "Description": "Rénovation complète de l'école maternelle du Faubourg Nord, incluant nouvelle toiture, isolation thermique, et mise aux normes d'accessibilité.",
+            "Status": "InProgress",
+            "CustomerEmail": "emma.roux@associations.be",
+            "ProjectManagerEmail": "mike.martin@desgoffe.gov",
+            "CompletionTargetMonths": 8,
+            "WorkItems": [
+                {
+                    "Description": "Étude architecturale et plans de rénovation",
+                    "Status": "InProgress",
+                    "Type": "Task",
+                    "ResponsibleEmail": "maria.garcia@desgoffe.gov",
+                    "CompletionTargetDays": 21,
+                    "EstimatedEffortPoints": 13,
+                    "PriorityScore": 15,
+                    "GerdaTags": "Architecture, Urbanisme, Priorité Haute",
+                    "Comments": [
+                        {
+                            "Body": "Nous devons aligner sur la conformité aux normes d'accessibilité avant de procéder. Peut-on planifier une réunion ?",
+                            "AuthorEmail": "emma.roux@associations.be",
+                            "CreatedDaysAgo": 2
+                        },
+                        {
+                            "Body": "🤖 **Analyse GERDA** : Révision architecturale requise (Confiance : 92%). Alignement des parties prenantes nécessaire. Action recommandée : Organiser une réunion de révision.",
+                            "AuthorEmail": "gerda@desgoffe.gov",
+                            "CreatedDaysAgo": 1
+                        },
+                        {
+                            "Body": "J'ai préparé trois options de plans. Je les partagerai demain en réunion.",
+                            "AuthorEmail": "maria.garcia@desgoffe.gov",
+                            "CreatedDaysAgo": 1
+                        }
+                    ]
+                },
+                {
+                    "Description": "Isolation thermique des murs extérieurs",
+                    "Status": "InProgress",
+                    "Type": "Task",
+                    "ResponsibleEmail": "maria.garcia@desgoffe.gov",
+                    "CompletionTargetDays": 30,
+                    "EstimatedEffortPoints": 8,
+                    "PriorityScore": 8,
+                    "GerdaTags": "Isolation, Énergie, Environnement"
+                },
+                {
+                    "Description": "Installation de la nouvelle toiture et gouttières",
+                    "Status": "Pending",
+                    "Type": "Task",
+                    "ResponsibleEmail": "james.roux@desgoffe.gov",
+                    "CompletionTargetDays": 45,
+                    "EstimatedEffortPoints": 13,
+                    "PriorityScore": 12,
+                    "GerdaTags": "Toiture, Infrastructure, Urgent"
+                },
+                {
+                    "Description": "Mise aux normes d'accessibilité — rampe et ascenseur",
+                    "Status": "Pending",
+                    "Type": "Task",
+                    "ResponsibleEmail": "maria.garcia@desgoffe.gov",
+                    "CompletionTargetDays": 60,
+                    "EstimatedEffortPoints": 8,
+                    "PriorityScore": 18,
+                    "GerdaTags": "Accessibilité, Conformité, Réglementation"
+                }
+            ]
+        },
+        {
+            "Name": "Aménagement Parc Central — Phase 2",
+            "Description": "Aménagement du Parc Central : nouveaux bancs, aire de jeux, piste cyclable, et éclairage LED solaire.",
+            "Status": "InProgress",
+            "CustomerEmail": "pierre.martin@entreprise.be",
+            "ProjectManagerEmail": "mike.martin@desgoffe.gov",
+            "CompletionTargetMonths": 4,
+            "WorkItems": [
+                {
+                    "Description": "Installation de l'éclairage solaire LED dans le parc",
+                    "Status": "Completed",
+                    "Type": "Task",
+                    "ResponsibleEmail": "alex.leroy@desgoffe.gov",
+                    "CompletionTargetDays": 14,
+                    "EstimatedEffortPoints": 5,
+                    "PriorityScore": 20,
+                    "GerdaTags": "Éclairage, Énergie, Environnement",
+                    "Comments": [
+                        {
+                            "Body": "Installation des panneaux solaires terminée. Les lampes fonctionnent correctement.",
+                            "AuthorEmail": "alex.leroy@desgoffe.gov",
+                            "CreatedDaysAgo": 3
+                        }
+                    ]
+                },
+                {
+                    "Description": "Pose de la piste cyclable et signalisation",
+                    "Status": "InProgress",
+                    "Type": "Task",
+                    "ResponsibleEmail": "alex.leroy@desgoffe.gov",
+                    "CompletionTargetDays": 30,
+                    "EstimatedEffortPoints": 8,
+                    "PriorityScore": 22,
+                    "GerdaTags": "Voirie, Cyclisme, Accessibilité"
+                },
+                {
+                    "Description": "Installation de l'aire de jeux pour enfants",
+                    "Status": "Pending",
+                    "Type": "Task",
+                    "ResponsibleEmail": "alex.leroy@desgoffe.gov",
+                    "CompletionTargetDays": 21,
+                    "EstimatedEffortPoints": 5,
+                    "PriorityScore": 15,
+                    "GerdaTags": "Jeux, Enfants, Sécurité"
+                }
+            ]
+        },
+        {
+            "Name": "Signalisation Urbaine — Centre-Ville",
+            "Description": "Mise à jour de la signalisation urbaine du Centre-Ville : nouveaux panneaux, marquage au sol, et panneaux numériques d'information.",
+            "Status": "InProgress",
+            "CustomerEmail": "jean.dupont@citoyen.be",
+            "ProjectManagerEmail": "olivia.lambert@desgoffe.gov",
+            "CompletionTargetMonths": 3,
+            "WorkItems": [
+                {
+                    "Description": "Remplacement des panneaux de signalisation obsolètes",
+                    "Status": "InProgress",
+                    "Type": "Task",
+                    "ResponsibleEmail": "alex.leroy@desgoffe.gov",
+                    "CompletionTargetDays": 21,
+                    "EstimatedEffortPoints": 13,
+                    "PriorityScore": 25,
+                    "GerdaTags": "Signalisation, Voirie, Sécurité"
+                },
+                {
+                    "Description": "Marquage au sol des passages piétons",
+                    "Status": "InProgress",
+                    "Type": "Task",
+                    "ResponsibleEmail": "alex.leroy@desgoffe.gov",
+                    "CompletionTargetDays": 14,
+                    "EstimatedEffortPoints": 8,
+                    "PriorityScore": 25,
+                    "GerdaTags": "Marquage, Piétons, Sécurité"
+                },
+                {
+                    "Description": "Installation de panneaux d'information numériques",
+                    "Status": "Pending",
+                    "Type": "Task",
+                    "ResponsibleEmail": "james.roux@desgoffe.gov",
+                    "CompletionTargetDays": 21,
+                    "EstimatedEffortPoints": 8,
+                    "PriorityScore": 18,
+                    "GerdaTags": "Numérique, Information, Technologie"
+                }
+            ]
+        }
+    ],
+    "UnassignedWorkItems": [
+        {
+            "Description": "URGENT : Nuisance sonore — Chantier rue de la Loi, dépassement horaire 6h-22h",
+            "Status": "Pending",
+            "Type": "Incident",
+            "CustomerEmail": "jean.dupont@citoyen.be",
+            "CompletionTargetDays": 1,
+            "EstimatedEffortPoints": 34,
+            "PriorityScore": 95,
+            "GerdaTags": "Sentiment: critique, Nuisance, Urgent, P0",
+            "Comments": [
+                {
+                    "Body": "C'est critique ! Les riverains ne peuvent plus dormir. Le bruit dépasse les limites autorisées. Intervention urgente demandée !",
+                    "AuthorEmail": "jean.dupont@citoyen.be",
+                    "CreatedDaysAgo": 0
+                },
+                {
+                    "Body": "🤖 **Autopilot GERDA** : Alerte Nuisance Critique. Analyse de sentiment : 99% Urgent. Nombreux riverains affectés. Auto-escalade vers l'équipe Environnement. SLA : 1 heure de réponse.",
+                    "AuthorEmail": "gerda@desgoffe.gov",
+                    "CreatedDaysAgo": 0
+                }
+            ]
+        },
+        {
+            "Description": "Dégradation de la qualité de l'air — Zone Industrielle, émissions excessives",
+            "Status": "Pending",
+            "Type": "Incident",
+            "CustomerEmail": "sophie.bernard@ecole.be",
+            "CompletionTargetDays": 2,
+            "EstimatedEffortPoints": 28,
+            "PriorityScore": 85,
+            "GerdaTags": "Environnement, Pollution, Qualité de l'air, P1",
+            "Comments": [
+                {
+                    "Body": "Les émissions de l'usine de recyclage sont 5 fois plus élevées que la normale entre 14h et 16h. Les élèves de l'école voisine sont incommodés.",
+                    "AuthorEmail": "sophie.bernard@ecole.be",
+                    "CreatedDaysAgo": 1
+                },
+                {
+                    "Body": "🤖 **Analyse GERDA** : Problème environnemental détecté (Confiance : 87%). Pattern : Quotidien. Recommandé : Inspection des filtres et revue des autorisations.",
+                    "AuthorEmail": "gerda@desgoffe.gov",
+                    "CreatedDaysAgo": 1
+                }
+            ]
+        },
+        {
+            "Description": "Infraction au code de l'urbanisme — Construction sans permis rue des Lilas",
+            "Status": "Pending",
+            "Type": "Incident",
+            "CustomerEmail": "emma.roux@associations.be",
+            "CompletionTargetDays": 1,
+            "EstimatedEffortPoints": 40,
+            "PriorityScore": 98,
+            "GerdaTags": "Urbanisme, Infraction, Critique, P0",
+            "Comments": [
+                {
+                    "Body": "Notre association a constaté une construction sans permis visible. Cela doit être traité immédiatement !",
+                    "AuthorEmail": "emma.roux@associations.be",
+                    "CreatedDaysAgo": 0
+                },
+                {
+                    "Body": "🤖 **Autopilot GERDA** : ALERTE URBANISME — Infraction critique détectée. Auto-assignée au responsable Urbanisme. Réponse immédiate requise. Risque juridique : ÉLEVÉ.",
+                    "AuthorEmail": "gerda@desgoffe.gov",
+                    "CreatedDaysAgo": 0
+                }
+            ]
+        },
+        {
+            "Description": "Demande d'information — Modalités d'inscription à la crèche municipale",
+            "Status": "Pending",
+            "Type": "ServiceRequest",
+            "CustomerEmail": "marie.curie@science.be",
+            "CompletionTargetDays": 30,
+            "EstimatedEffortPoints": 21,
+            "PriorityScore": 12,
+            "GerdaTags": "Information, Crèche, Basse Priorité",
+            "Comments": [
+                {
+                    "Body": "Quelles sont les modalités d'inscription pour la crèche municipale ? Les documents requis et les délais ?",
+                    "AuthorEmail": "marie.curie@science.be",
+                    "CreatedDaysAgo": 5
+                }
+            ]
+        },
+        {
+            "Description": "Demande d'intervention — Lampadaire défectueux rue des Fleurs",
+            "Status": "Pending",
+            "Type": "ServiceRequest",
+            "CustomerEmail": "pierre.martin@entreprise.be",
+            "CompletionTargetDays": 21,
+            "EstimatedEffortPoints": 18,
+            "PriorityScore": 25,
+            "GerdaTags": "Éclairage, Voirie, Intervention",
+            "Comments": [
+                {
+                    "Body": "Le lampadaire au coin de la rue des Fleurs et de la rue de la Paix clignote depuis une semaine. Cela devient dangereux la nuit.",
+                    "AuthorEmail": "pierre.martin@entreprise.be",
+                    "CreatedDaysAgo": 3
+                },
+                {
+                    "Body": "🤖 **Analyse GERDA** : Demande d'intervention (Confiance : 95%). Impact : Sécurité. Recommandé : Ajouter au planning d'intervention prioritaire.",
+                    "AuthorEmail": "gerda@desgoffe.gov",
+                    "CreatedDaysAgo": 2
+                }
+            ]
+        },
+        {
+            "Description": "Demande d'autorisation — Fête de quartier au Faubourg Nord, 200 participants",
+            "Status": "Pending",
+            "Type": "ServiceRequest",
+            "CustomerEmail": "antoine.moreau@retraite.be",
+            "CompletionTargetDays": 7,
+            "EstimatedEffortPoints": 15,
+            "PriorityScore": 35,
+            "GerdaTags": "Événement, Autorisation, Fête de quartier",
+            "Comments": [
+                {
+                    "Body": "Nous organisons une fête de quartier au Faubourg Nord avec 200 participants. Nous avons besoin de l'autorisation et d'une dérogation pour le stationnement.",
+                    "AuthorEmail": "antoine.moreau@retraite.be",
+                    "CreatedDaysAgo": 2
+                }
+            ]
+        },
+        {
+            "Description": "Question : Comment obtenir un permis de construction pour une extension ?",
+            "Status": "Pending",
+            "Type": "ServiceRequest",
+            "CustomerEmail": "jean.dupont@citoyen.be",
+            "CompletionTargetDays": 3,
+            "EstimatedEffortPoints": 8,
+            "PriorityScore": 15,
+            "GerdaTags": "Permis, Urbanisme, Documentation",
+            "Comments": [
+                {
+                    "Body": "Je souhaite construire une extension de 20m². Quelle est la procédure ? Quels documents sont nécessaires ?",
+                    "AuthorEmail": "jean.dupont@citoyen.be",
+                    "CreatedDaysAgo": 1
+                }
+            ]
+        },
+        {
+            "Description": "Erreur de facturation — Taxe foncière surévaluée pour l'année 2025",
+            "Status": "Pending",
+            "Type": "Incident",
+            "CustomerEmail": "marie.curie@science.be",
+            "CompletionTargetDays": 3,
+            "EstimatedEffortPoints": 12,
+            "PriorityScore": 45,
+            "GerdaTags": "Facturation, Finances, Urgent",
+            "Comments": [
+                {
+                    "Body": "Ma taxe foncière a été calculée sur une surface de 150m² alors que ma maison fait 120m². Veuillez corriger et rembourser le trop-perçu.",
+                    "AuthorEmail": "marie.curie@science.be",
+                    "CreatedDaysAgo": 1
+                },
+                {
+                    "Body": "🤖 **Analyse GERDA** : Problème de facturation (Confiance : 91%). Sentiment : Négatif. Auto-routé vers le service Finances. SLA : 48 heures pour résolution.",
+                    "AuthorEmail": "gerda@desgoffe.gov",
+                    "CreatedDaysAgo": 1
+                }
+            ]
+        },
+        {
+            "Description": "Demande de formation — Utilisation du portail citoyen pour les seniors",
+            "Status": "Pending",
+            "Type": "ServiceRequest",
+            "CustomerEmail": "antoine.moreau@retraite.be",
+            "CompletionTargetDays": 14,
+            "EstimatedEffortPoints": 25,
+            "PriorityScore": 20,
+            "GerdaTags": "Formation, Seniors, Numérique",
+            "Comments": [
+                {
+                    "Body": "Je souhaite une session de formation pour les seniors sur l'utilisation du portail citoyen. Nous sommes un groupe de 15 personnes.",
+                    "AuthorEmail": "antoine.moreau@retraite.be",
+                    "CreatedDaysAgo": 4
+                }
+            ]
+        },
+        {
+            "Description": "Accident de la route — Trou dans la chaussée avenue du Boulevard, risque pour les cyclistes",
+            "Status": "Pending",
+            "Type": "Incident",
+            "CustomerEmail": "pierre.martin@entreprise.be",
+            "CompletionTargetDays": 5,
+            "EstimatedEffortPoints": 22,
+            "PriorityScore": 65,
+            "GerdaTags": "Voirie, Accident, Cyclistes, Urgent",
+            "Comments": [
+                {
+                    "Body": "Un trou important dans la chaussée de l'avenue du Boulevard a causé une chute d'un cycliste ce matin. Intervention urgente demandée.",
+                    "AuthorEmail": "pierre.martin@entreprise.be",
+                    "CreatedDaysAgo": 0
+                },
+                {
+                    "Body": "🤖 **Autopilot GERDA** : Danger de sécurité détecté (Confiance : 94%). Impact : Risque d'accident. Auto-escalade vers l'équipe Voirie. Priorité : P1.",
+                    "AuthorEmail": "gerda@desgoffe.gov",
+                    "CreatedDaysAgo": 0
+                }
+            ]
+        }
+    ],
+    "KnowledgeBaseArticles": [
+        {
+            "Title": "Comment demander un permis de construction",
+            "Content": "Guide étape par étape pour demander un permis de construction à la Ville de Desgoffe :\n\n**Étapes :**\n1. Remplir le formulaire en ligne sur le portail citoyen.\n2. Joindre les plans architecturaux et le certificat d'urbanisme.\n3. Payer les frais de dossier (150€ pour une extension, 300€ pour une nouvelle construction).\n4. Attendre l'instruction du dossier (délai : 45 jours ouvrables).\n5. Recevoir la décision par email et dans votre espace citoyen.\n\n*Note : Les travaux ne peuvent commencer qu'après réception du permis.*",
+            "Tags": "Permis, Construction, Urbanisme, Citoyen",
+            "AuthorEmail": "sarah.bernard@desgoffe.gov",
+            "CreatedDaysAgo": 30
+        },
+        {
+            "Title": "Signalement de nuisances — Procédure",
+            "Content": "Comment signaler une nuisance (bruit, odeurs, pollution) à la Ville de Desgoffe :\n\n**Procédure :**\n1. Connectez-vous au portail citoyen.\n2. Cliquez sur 'Nouveau signalement'.\n3. Décrivez la nuisance avec précision (lieu, horaires, durée).\n4. Ajoutez des photos si possible.\n5. Soumettez le signalement.\n\n**Délais de traitement :**\n* Nuisance critique (P0) : 1 heure de réponse\n* Nuisance élevée (P1) : 4 heures de réponse\n* Nuisance standard (P2) : 24 heures de réponse\n\n**Suivi :**\nVous recevrez des notifications par email à chaque mise à jour de votre signalement.",
+            "Tags": "Nuisance, Signalement, Procédure, Citoyen",
+            "AuthorEmail": "mike.martin@desgoffe.gov",
+            "CreatedDaysAgo": 15
+        },
+        {
+            "Title": "Guide de démarrage — Portail Citoyen",
+            "Content": "Bienvenue sur le Portail Citoyen de la Ville de Desgoffe ! Voici comment démarrer :\n\n**Pour les Citoyens :**\n1. Créez un compte ou connectez-vous.\n2. Soumettez une demande ou un signalement.\n3. Suivez l'état de votre demande en temps réel.\n4. Recevez des notifications sur les mises à jour.\n\n**Pour les Agents :**\n1. Consultez les demandes assignées dans votre tableau de bord.\n2. Mettez à jour le statut au fur et à mesure.\n3. Communiquez avec les citoyens via les commentaires.\n4. Utilisez la base de connaissances pour les solutions courantes.",
+            "Tags": "Démarrage, Tutoriel, Onboarding, Citoyen",
+            "AuthorEmail": "jean.dupont@desgoffe.gov",
+            "CreatedDaysAgo": 60
+        },
+        {
+            "Title": "Authentification API — Guide du développeur",
+            "Content": "Guide complet pour s'authentifier avec l'API de la Ville de Desgoffe :\n\n**Méthodes d'authentification :**\n1. **Clés API** — Pour la communication serveur-à-serveur\n2. **OAuth 2.0** — Pour l'accès délégué par l'utilisateur\n3. **JWT Tokens** — Pour l'authentification par session\n\n**Obtenir votre clé API :**\n1. Allez dans Paramètres > Clés API\n2. Cliquez sur 'Générer une nouvelle clé'\n3. Copiez et stockez sécurisément votre clé\n4. Ajoutez aux en-têtes de requête : `Authorization: Bearer VOTRE_CLE`\n\n**Limites de débit :**\n* Gratuit : 100 requêtes/minute\n* Professionnel : 500 requêtes/minute\n* Entreprise : Limites personnalisées\n\n**Bonnes pratiques :**\n* Ne jamais commiter les clés API dans le contrôle de version\n* Faire tourner les clés tous les 90 jours\n* Utiliser des variables d'environnement pour le stockage\n* Implémenter un backoff exponentiel pour les retries",
+            "Tags": "API, Authentification, Sécurité, Développeur",
+            "AuthorEmail": "alex.leroy@desgoffe.gov",
+            "CreatedDaysAgo": 45
+        },
+        {
+            "Title": "Procédure de recours — Taxe foncière",
+            "Content": "Comment faire un recours contre votre taxe foncière à la Ville de Desgoffe :\n\n**Étapes :**\n1. Vérifiez les données cadastrales sur le portail.\n2. Remplissez le formulaire de recours en ligne.\n3. Joignez les documents justificatifs (plans, acte notarié, etc.).\n4. Soumettez le recours avant le 31 mars de l'année en cours.\n\n**Délai de traitement :**\n* 90 jours ouvrables pour un recours standard\n* 45 jours pour un recours urgent (erreur matérielle avérée)\n\n**Contact :**\n* Service Finances : finances@desgoffe.gov\n* Téléphone : +32 2 555 02 00\n\n*Note : Un recours ne suspend pas le paiement de la taxe. Vous devez payer dans les délais et un remboursement sera effectué si le recours est accepté.*",
+            "Tags": "Recours, Taxe foncière, Finances, Citoyen",
+            "AuthorEmail": "rachel.dubois@desgoffe.gov",
+            "CreatedDaysAgo": 20
+        },
+        {
+            "Title": "Optimisation des services municipaux — Bonnes pratiques",
+            "Content": "Lignes directrices pour optimiser les services municipaux de la Ville de Desgoffe :\n\n**Gestion des demandes :**\n* Traiter les demandes P0 en 1 heure\n* Utiliser GERDA pour le routage automatique\n* Mettre à jour le statut en temps réel\n* Communiquer proactivement avec les citoyens\n\n**Gestion des projets :**\n* Suivre les jalons avec le tableau de bord GERDA\n* Allouer les ressources selon la capacité\n* Prévenir les dépassements de délais\n* Documenter les décisions\n\n**Gestion des nuisances :**\n* Répondre aux signalements dans les délais SLA\n* Documenter les inspections\n* Suivre les mises en demeure\n* Vérifier la conformité des entreprises\n\n**Technologie :**\n* Utiliser le portail citoyen pour les demandes\n* Activer les notifications par email\n* Utiliser l'API pour les intégrations\n* Implémenter la surveillance des performances",
+            "Tags": "Optimisation, Bonnes pratiques, Municipal, Processus",
+            "AuthorEmail": "james.roux@desgoffe.gov",
+            "CreatedDaysAgo": 10
+        },
+        {
+            "Title": "Comprendre les niveaux de priorité et les SLA",
+            "Content": "Guide des niveaux de priorité et des accords de niveau de service de la Ville de Desgoffe :\n\n**Niveaux de priorité :**\n\n**P0 — Critique (Score de priorité : 90-100)**\n* Danger imminent pour la sécurité\n* Nuisance massive affectant des centaines de personnes\n* Risque d'accident grave\n* SLA : 1 heure de réponse, 4 heures de résolution\n\n**P1 — Élevé (Score de priorité : 70-89)**\n* Nuisance importante\n* Plusieurs riverains affectés\n* Risque de dégradation\n* SLA : 4 heures de réponse, 24 heures de résolution\n\n**P2 — Moyen (Score de priorité : 40-69)**\n* Nuisance modérée\n* Solution de contournement disponible\n* Quelques personnes affectées\n* SLA : 24 heures de réponse, 5 jours de résolution\n\n**P3 — Faible (Score de priorité : 0-39)**\n* Demandes d'information\n* Problèmes cosmétiques\n* Mises à jour de documentation\n* SLA : 48 heures de réponse, 30 jours de résolution\n\n**Comment les priorités sont assignées :**\n* GERDA AI analyse le contenu du signalement\n* Analyse de sentiment appliquée\n* Évaluation de l'impact effectuée\n* Mots-clés d'urgence détectés\n* Patterns historiques considérés\n\n**Processus d'escalade :**\n* Les tickets P0/P1 sont auto-escaladés vers les responsables\n* Les dépassements de SLA déclenchent des notifications aux managers\n* Les incidents critiques escaladent vers l'ingénieur de garde",
+            "Tags": "SLA, Priorité, Support, Processus",
+            "AuthorEmail": "jean.dupont@desgoffe.gov",
+            "CreatedDaysAgo": 25
+        },
+        {
+            "Title": "Installation de l'application mobile — Portail Citoyen",
+            "Content": "Guide complet pour installer l'application mobile du Portail Citoyen de la Ville de Desgoffe :\n\n**Installation iOS :**\n1. Ouvrez l'App Store sur votre iPhone/iPad\n2. Recherchez 'Portail Citoyen Desgoffe'\n3. Appuyez sur 'Obtenir' pour télécharger\n4. Ouvrez l'application après l'installation\n5. Connectez-vous avec vos identifiants\n\n**Installation Android :**\n1. Ouvrez le Google Play Store\n2. Recherchez 'Portail Citoyen Desgoffe'\n3. Appuyez sur 'Installer'\n4. Ouvrez l'application après l'installation\n5. Connectez-vous avec vos identifiants\n\n**Configuration initiale :**\n* Activez les notifications pour les mises à jour de demandes\n* Configurez les préférences de notification\n* Activez l'authentification biométrique (optionnel)\n* Téléchargez les données hors ligne (optionnel)\n\n**Fonctionnalités :**\n* Créer et gérer des demandes en déplacement\n* Notifications en temps réel\n* Mode hors ligne\n* Connexion biométrique\n* Mode sombre\n\n**Dépannage :**\n* L'application ne s'ouvre pas : Réinstallez depuis le store\n* Problèmes de connexion : Réinitialisez le mot de passe sur le web\n* Notifications non reçues : Vérifiez les paramètres de l'appareil\n* Problèmes de synchronisation : Tirez vers le bas pour rafraîchir",
+            "Tags": "Mobile, Installation, iOS, Android, Configuration",
+            "AuthorEmail": "maria.garcia@desgoffe.gov",
+            "CreatedDaysAgo": 35
+        },
+        {
+            "Title": "Export de données et rapports — Guide des agents",
+            "Content": "Comment exporter des données et générer des rapports pour les agents municipaux :\n\n**Formats d'export :**\n* CSV — Pour l'analyse dans les tableurs\n* Excel — Pour les rapports formatés\n* JSON — Pour l'intégration API\n* PDF — Pour les présentations\n\n**Exporter les demandes :**\n1. Allez sur la page des demandes\n2. Appliquez les filtres souhaités\n3. Cliquez sur 'Exporter'\n4. Sélectionnez le format\n5. Téléchargez le fichier\n\n**Générer des rapports :**\n\n**Rapports standards :**\n* Volume de demandes par statut\n* Temps moyen de résolution\n* Performance des agents\n* Scores de satisfaction des citoyens\n* Conformité aux SLA\n\n**Rapports personnalisés :**\n1. Allez dans Rapports > Rapports personnalisés\n2. Sélectionnez les métriques et dimensions\n3. Appliquez la plage de dates et les filtres\n4. Prévisualisez le rapport\n5. Exportez ou planifiez la livraison\n\n**Rapports planifiés :**\n* Configurez la livraison quotidienne/hebdomadaire/mensuelle\n* Envoyez par email aux parties prenantes\n* Exportez automatiquement vers le stockage cloud\n\n**Accès API :**\n* Utilisez le endpoint `/api/reports`\n* Authentifiez-vous avec la clé API\n* Spécifiez les paramètres dans la requête\n* Recevez la réponse JSON",
+            "Tags": "Rapports, Export, Analytique, Données",
+            "AuthorEmail": "sarah.bernard@desgoffe.gov",
+            "CreatedDaysAgo": 18
+        },
+        {
+            "Title": "Bonnes pratiques de sécurité pour les administrateurs",
+            "Content": "Lignes directrices de sécurité essentielles pour les administrateurs municipaux :\n\n**Contrôle d'accès :**\n* Implémenter le principe du moindre privilège\n* Utiliser le contrôle d'accès basé sur les rôles (RBAC)\n* Auditer régulièrement les permissions des utilisateurs\n* Supprimer les comptes inactifs\n* Appliquer des politiques de mots de passe forts\n\n**Authentification :**\n* Activer l'authentification multi-facteurs (MFA)\n* Configurer le SSO quand possible\n* Définir des politiques de timeout de session\n* Surveiller les tentatives de connexion échouées\n* Implémenter des politiques de verrouillage de compte\n\n**Protection des données :**\n* Activer le chiffrement au repos\n* Utiliser TLS pour les données en transit\n* Planifier des sauvegardes régulières\n* Tester la restauration des sauvegardes\n* Implémenter des politiques de rétention des données\n\n**Surveillance :**\n* Activer la journalisation d'audit\n* Surveiller les activités suspectes\n* Configurer des alertes de sécurité\n* Réviser les journaux régulièrement\n* Suivre les patterns d'utilisation de l'API\n\n**Conformité :**\n* Checklist de conformité RGPD\n* Exigences SOC 2\n* Lignes directrices HIPAA (si applicable)\n* Audits de sécurité réguliers\n* Planning de tests de pénétration\n\n**Réponse aux incidents :**\n* Avoir un plan de réponse aux incidents\n* Définir les procédures d'escalade\n* Maintenir une liste de contacts de sécurité\n* Documenter les incidents de sécurité\n* Conduire des revues post-incident",
+            "Tags": "Sécurité, Bonnes pratiques, Admin, Conformité",
+            "AuthorEmail": "rachel.dubois@desgoffe.gov",
+            "CreatedDaysAgo": 12
+        },
+        {
+            "Title": "Utilisation du tableau de bord GERDA AI",
+            "Content": "Le tableau de bord GERDA (Générateur d'Enregistrement et de Routage des Demandes Administratives) fournit des insights en temps réel pour les managers municipaux.\n\n**Fonctionnalités clés :**\n1. **Backlog des demandes non assignées** : Affiche les demandes en attente de triage.\n2. **Recommandations AI** : GERDA suggère le meilleur agent basé sur les compétences, la charge, et les performances passées.\n3. **Équilibrage de charge** : visualise la capacité de l'équipe pour prévenir le surmenage.\n\n**Comment utiliser :**\n* Naviguez vers **Dispatch GERDA** dans le menu latéral.\n* Revoyez le 'Score de confiance' pour les suggestions AI.\n* Cliquez sur 'Auto-Assigner' pour accepter les correspondances à haute confiance.\n* Utilisez la substitution manuelle pour les cas complexes.",
+            "Tags": "GERDA, AI, Manager, Tableau de bord",
+            "AuthorEmail": "gerda@desgoffe.gov",
+            "CreatedDaysAgo": 5
+        },
+        {
+            "Title": "Procédures d'escalade pour les incidents critiques",
+            "Content": "Procédure opérationnelle standard (SOP) pour les incidents P0/P1.\n\n**Définition :**\n* **P0 (Critique)** : Danger imminent, accident grave, nuisance massive.\n* **P1 (Élevé)** : Nuisance importante, plusieurs riverains affectés, risque de dégradation.\n\n**Chemin d'escalade :**\n1. **Accuser** : Accuser réception de la demande dans les 15 minutes.\n2. **Évaluer** : Vérifier l'impact et la portée.\n3. **Notifier** : Poster dans le canal #incidents.\n4. **Escalader** : Si non résolu en 1 heure, contacter l'ingénieur de garde.\n5. **Communiquer** : Mettre à jour la page de statut pour les citoyens toutes les 30 minutes.\n\n**Note** : GERDA flague automatiquement les demandes avec un sentiment négatif comme des escalades potentielles.",
+            "Tags": "SOP, Escalade, Processus, Critique",
+            "AuthorEmail": "jean.dupont@desgoffe.gov",
+            "CreatedDaysAgo": 45
+        },
+        {
+            "Title": "Définitions du cycle de vie des demandes",
+            "Content": "Comprendre ce que chaque statut signifie :\n\n* **En attente** : Nouvelle demande, pas encore assignée.\n* **Assignée** : Propriétaire identifié, travail planifié.\n* **En cours** : Travail actif en cours.\n* **En attente de réponse** : En attente de réponse du citoyen ou d'un tiers.\n* **En revue** : Revue de code ou QA en cours.\n* **Terminée** : Solution déployée et vérifiée.\n* **Clôturée** : Aucune action supplémentaire requise (ex. invalide, doublon).",
+            "Tags": "Statut, Processus, Cycle de vie",
+            "AuthorEmail": "sarah.bernard@desgoffe.gov",
+            "CreatedDaysAgo": 90
+        },
+        {
+            "Title": "Gestion de votre profil utilisateur",
+            "Content": "Maintenez votre profil à jour pour aider GERDA à router les demandes efficacement.\n\n**Étapes :**\n1. Cliquez sur votre avatar en haut à droite.\n2. Sélectionnez **Profil**.\n3. **Compétences** : Ajoutez des tags comme 'Urbanisme', 'Voirie', 'Environnement'.\n4. **Capacité** : Définissez votre limite de points quotidienne (défaut 40).\n5. **Région** : Mettez à jour votre fuseau horaire/région.\n\n*Astuce : Des compétences précises assurent que vous recevez les demandes dans votre domaine d'expertise !*",
+            "Tags": "Profil, Paramètres, Onboarding",
+            "AuthorEmail": "gustave@desgoffe.gov",
+            "CreatedDaysAgo": 5
+        }
+    ]
+}
