@@ -68,7 +68,7 @@ export function Header() {
           <NavLink to="/" className="flex items-center gap-3 group">
             <div className="h-11 w-11 rounded-full bg-white flex items-center justify-center shadow-lg shadow-black/20 overflow-hidden ring-2 ring-white/50">
               <img
-                src="/desgoffe.png"
+                src="/desgoffe.svg"
                 alt="Commune de Desgoffe"
                 className="h-9 w-auto"
                 style={{ imageRendering: 'auto' }}

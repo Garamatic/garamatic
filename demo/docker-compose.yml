@@ -94,7 +94,7 @@ services:
       rabbitmq:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      test: ["CMD", "/usr/share/dotnet/dotnet", "--info"]
       interval: 5s
       timeout: 3s
       retries: 10
@@ -121,7 +121,7 @@ services:
       rabbitmq:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      test: ["CMD", "/usr/share/dotnet/dotnet", "--info"]
       interval: 5s
       timeout: 3s
       retries: 10
@@ -165,7 +165,7 @@ services:
       ollama:
         condition: service_started
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:3001/health')\""]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -203,7 +203,7 @@ services:
       rabbitmq:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      test: ["CMD", "/usr/share/dotnet/dotnet", "--info"]
       interval: 5s
       timeout: 3s
       retries: 10

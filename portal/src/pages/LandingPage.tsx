@@ -59,7 +59,7 @@ export function LandingPage() {
               <div className="flex items-center gap-3 mb-4">
                 <div className="h-12 w-12 rounded-full bg-white flex items-center justify-center shadow-lg shadow-black/20 overflow-hidden ring-2 ring-white/40">
                   <img
-                    src="/desgoffe.png"
+                    src="/desgoffe.svg"
                     alt="Commune de Desgoffe"
                     className="h-10 w-auto"
                   />

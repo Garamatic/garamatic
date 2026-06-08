@@ -227,7 +227,7 @@ Shadows are the memory of a stamp pressed into paper. They are always tinted wit
 
 ### Navigation / Header
 - **Style:** Sticky top bar, Stamp Pad background (#5D3A5D), border-bottom in Stamp Pad Deep (#4a2e4a), Ambient Medium shadow.
-- **Logo:** City logo (desgoffe.png) in a small rounded container with white/30 border.
+- **Logo:** City logo (desgoffe.svg) in a small rounded container with white/30 border.
 - **Nav items:** Uppercase, white/80 default, white on hover with white/10 background. Active state: white text on white/90 background, rounded-md.
 - **Mobile:** Hamburger menu → full-screen overlay with vertical nav list. Logo + title hidden on mobile.
 - **Emergency banner:** Cancellation Red background, white text, centered, small — a thin strip above the header. Shows urgent municipal contact information outside office hours.

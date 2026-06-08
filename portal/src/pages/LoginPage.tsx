@@ -35,7 +35,7 @@ export function LoginPage() {
         <div className="text-center mb-8">
           <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center mx-auto mb-4 border border-border shadow-md overflow-hidden">
             <img
-              src="/desgoffe.png"
+              src="/desgoffe.svg"
               alt="Commune de Desgoffe"
               className="h-10 w-auto"
               loading="lazy"

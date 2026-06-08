@@ -12,7 +12,7 @@ export function Footer() {
             <div className="flex items-center gap-3 mb-3">
               <div className="h-8 w-8 rounded-full bg-white flex items-center justify-center overflow-hidden ring-1 ring-white/40">
                 <img
-                  src="/desgoffe.png"
+                  src="/desgoffe.svg"
                   alt={MUNICIPALITY.name}
                   className="h-6 w-auto"
                   loading="lazy"
