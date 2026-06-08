@@ -43,7 +43,7 @@
             "Region": "Desgoffe-Centre"
         },
         {
-            "UserName": "travaux.rené",
+            "UserName": "travaux.rene",
             "Email": "rene@desgoffe.gov",
             "FirstName": "René",
             "LastName": "Magritte",
@@ -385,7 +385,7 @@
         {
             "Description": "URGENT : Nuisance sonore — Chantier rue de la Loi, dépassement horaire 6h-22h",
             "Status": "Pending",
-            "Type": "NUISANCE",
+            "Type": "Incident",
             "CustomerEmail": "jean.dupont@citoyen.be",
             "CompletionTargetDays": 1,
             "EstimatedEffortPoints": 34,
@@ -407,7 +407,7 @@
         {
             "Description": "Dégradation de la qualité de l'air — Zone Industrielle, émissions excessives",
             "Status": "Pending",
-            "Type": "PLAINTE",
+            "Type": "Incident",
             "CustomerEmail": "sophie.bernard@ecole.be",
             "CompletionTargetDays": 2,
             "EstimatedEffortPoints": 28,
@@ -429,7 +429,7 @@
         {
             "Description": "Infraction au code de l'urbanisme — Construction sans permis rue des Lilas",
             "Status": "Pending",
-            "Type": "PLAINTE",
+            "Type": "Incident",
             "CustomerEmail": "emma.roux@associations.be",
             "CompletionTargetDays": 1,
             "EstimatedEffortPoints": 40,
@@ -451,7 +451,7 @@
         {
             "Description": "Demande d'information — Modalités d'inscription à la crèche municipale",
             "Status": "Pending",
-            "Type": "DEMANDE",
+            "Type": "ServiceRequest",
             "CustomerEmail": "marie.curie@science.be",
             "CompletionTargetDays": 30,
             "EstimatedEffortPoints": 21,
@@ -468,7 +468,7 @@
         {
             "Description": "Demande d'intervention — Lampadaire défectueux rue des Fleurs",
             "Status": "Pending",
-            "Type": "DEMANDE",
+            "Type": "ServiceRequest",
             "CustomerEmail": "pierre.martin@entreprise.be",
             "CompletionTargetDays": 21,
             "EstimatedEffortPoints": 18,
@@ -490,7 +490,7 @@
         {
             "Description": "Demande d'autorisation — Fête de quartier au Faubourg Nord, 200 participants",
             "Status": "Pending",
-            "Type": "DEMANDE",
+            "Type": "ServiceRequest",
             "CustomerEmail": "antoine.moreau@retraite.be",
             "CompletionTargetDays": 7,
             "EstimatedEffortPoints": 15,
@@ -507,7 +507,7 @@
         {
             "Description": "Question : Comment obtenir un permis de construction pour une extension ?",
             "Status": "Pending",
-            "Type": "DEMANDE",
+            "Type": "ServiceRequest",
             "CustomerEmail": "jean.dupont@citoyen.be",
             "CompletionTargetDays": 3,
             "EstimatedEffortPoints": 8,
@@ -524,7 +524,7 @@
         {
             "Description": "Erreur de facturation — Taxe foncière surévaluée pour l'année 2025",
             "Status": "Pending",
-            "Type": "PLAINTE",
+            "Type": "Incident",
             "CustomerEmail": "marie.curie@science.be",
             "CompletionTargetDays": 3,
             "EstimatedEffortPoints": 12,
@@ -546,7 +546,7 @@
         {
             "Description": "Demande de formation — Utilisation du portail citoyen pour les seniors",
             "Status": "Pending",
-            "Type": "DEMANDE",
+            "Type": "ServiceRequest",
             "CustomerEmail": "antoine.moreau@retraite.be",
             "CompletionTargetDays": 14,
             "EstimatedEffortPoints": 25,

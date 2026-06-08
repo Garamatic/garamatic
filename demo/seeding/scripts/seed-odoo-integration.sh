@@ -1,37 +1,47 @@
 #!/bin/bash
 # ═══════════════════════════════════════════════════════════════════════════
-# Seed Odoo Integration LiteDB
+# Seed Odoo Integration — verify Odoo data and LiteDB state
 #
-# Uses the C# seed script inside the odoo-integration container.
-# If not available, falls back to creating a seed JSON file.
+# The actual Odoo data is seeded by odoo-seed.py inside the Odoo container.
+# This script verifies the Odoo integration worker can connect and
+# initializes the LiteDB state volume if needed.
 # ═══════════════════════════════════════════════════════════════════════════
 
 set -e
 
 ODOO_URL="${ODOO_URL:-http://odoo-integration:8080}"
+ODOO_BACKEND="${ODOO_BACKEND_URL:-http://odoo:8069}"
 DB_PATH="/app/data/seeded_state.db"
 
-echo "Seeding odoo-integration LiteDB..."
+echo "Verifying odoo-integration seeding..."
 
-# Check if the C# seeder is available in the container
-# If running inside the container, we can execute directly
-# If running from outside, we'd use docker compose exec
+# Wait for odoo-integration health endpoint to be ready
+for i in $(seq 1 30); do
+  if curl -sf "${ODOO_URL}/health" > /dev/null 2>&1; then
+    echo "  ✓ Odoo integration worker is healthy"
+    break
+  fi
+  if [ "$i" -eq 30 ]; then
+    echo "  ⚠ Odoo integration worker not healthy — may need restart"
+  fi
+  sleep 2
+done
 
-if [ -f "/app/SeedLiteDb.cs" ] || [ -f "/app/scripts/SeedLiteDb.cs" ]; then
-  echo "  C# seed script found, compiling..."
-  # The seed script would be compiled and run here
-  # For demo purposes, we'll create a minimal seed approach
+# Check if Odoo backend is accessible
+echo "  Checking Odoo backend at ${ODOO_BACKEND}..."
+if curl -sf "${ODOO_BACKEND}/web" > /dev/null 2>&1; then
+  echo "  ✓ Odoo backend is accessible"
+else
+  echo "  ⚠ Odoo backend not accessible — invoices will be created when Odoo is ready"
 fi
 
-# Alternative: Create a seed JSON that the worker can load
-# Or just output status since the C# seeder is in the submodule
+# Ensure the LiteDB data directory exists
+mkdir -p /app/data
+echo "  ✓ LiteDB data directory ready at ${DB_PATH}"
 
-echo "  LiteDB seeding via API or direct file creation..."
+# Note: The actual Odoo customers and accounts are seeded by the
+# odoo-seed.py script that runs inside the Odoo container on startup.
+# See: ../scripts/odoo-seed.py (mounted in the Odoo container)
 
-# For the demo compose, we mount the odoo_demo_data volume
-# and the C# seed script can be run as a one-off:
-# docker compose exec odoo-integration dotnet run SeedLiteDb.cs
-
-echo "  ✓ Odoo integration seeding configured"
-echo "    Run: docker compose exec odoo-integration dotnet run SeedLiteDb.cs"
-echo "    Or: The seeder container can mount shared volume with pre-seeded data"
+echo ""
+echo "Odoo integration seeding complete"

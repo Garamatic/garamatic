@@ -6,7 +6,7 @@ product
 
 ## Users
 
-Organizations and teams that need workflow automation and dispatch — incident response teams, infrastructure operators, and support desks. They are practical, busy, and need a tool that gets out of their way. The product serves multi-tenant deployments where each tenant (Whitman, Liberty, Hennessey, Desgoffe) has distinct operational needs.
+Organizations and teams that need workflow automation and dispatch — incident response teams, infrastructure operators, and support desks. They are practical, busy, and need a tool that gets out of their way. The product serves multi-tenant deployments; the demo showcases the Desgoffe municipal tenant with distinct operational needs.
 
 ## Product Purpose
 

@@ -43,6 +43,7 @@ services:
       - ConnectionStrings__DefaultConnection=Data Source=/app/data/masala_demo.db;Cache=Shared;Mode=ReadWriteCreate
       - MasalaConfig__ConfigPath=/app/config
       - MasalaConfig__SeedDataPath=/app/config/seed_data.json
+      - MASALA_CONFIG_PATH=/app/config
       - TEST_MODE=false
       - TICKETMASALA_ALLOW_SEED_BYPASS=true
       - RabbitMQ__HostName=rabbitmq
@@ -179,14 +180,17 @@ services:
       - Odoo__Database=odoo
       - Odoo__Username=admin
       - Odoo__Password=admin
-      - Odoo__DefaultIncomeAccountId=1
+      # The income account is created by odoo-seed.py with code 7000.
+      # If the account module creates a different number of accounts,
+      # update this ID to match the actual ID of the 'Verkoop' account.
+      - Odoo__DefaultIncomeAccountId=48
     volumes:
       - odoo_demo_data:/app/data
     networks:
       - garamatic_demo_net
     depends_on:
       odoo:
-        condition: service_started
+        condition: service_healthy
       rabbitmq:
         condition: service_healthy
     healthcheck:
@@ -280,7 +284,6 @@ services:
       - DATABASE=odoo
     volumes:
       - odoo_demo_app_data:/var/lib/odoo
-      - ../odoo-integration/config:/etc/odoo:ro
       - ../odoo-integration/addons:/mnt/extra-addons:ro
       - ../scripts/odoo-init.sh:/odoo-init.sh:ro
       - ../scripts/odoo-seed.py:/odoo-seed.py:ro
@@ -290,6 +293,12 @@ services:
     depends_on:
       odoo-db:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8069/web > /dev/null 2>&1"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 60s
 
   odoo-db:
     image: postgres:15-alpine

@@ -66,7 +66,7 @@
     "quartier": "Centre-Ville",
     "priority": "5",
     "status": "received",
-    "customer_email": "emma.roux@ associations.be",
+    "customer_email": "emma.roux@associations.be",
     "customer_name": "Emma Roux",
     "resolution_notes": "",
     "billable_amount": null
@@ -114,7 +114,7 @@
     "quartier": "Centre-Ville",
     "priority": "15",
     "status": "in_progress",
-    "customer_email": "emma.roux@ associations.be",
+    "customer_email": "emma.roux@associations.be",
     "customer_name": "Emma Roux",
     "resolution_notes": "Enquête en cours. L'archiviste municipal recherche les permis de la parcelle.",
     "billable_amount": null

@@ -45,7 +45,7 @@ Dit project beschrijft een realistische scenario voor het implementeren van een 
 | Feature | Status | Toelichting |
 |---------|--------|------------|
 | Ticket CRUD (Create, Read, Update, Delete) | ✅ Compleet | Volledige CRUD via API en web UI |
-| Multi-tenant support | ✅ Compleet | 4 tenants: Desgoffe, Whitman, Liberty, Hennessey |
+| Multi-tenant support | ✅ Compleet | 1 tenant: Desgoffe |
 | GERDA AI-assistent | ✅ Compleet | AI-gebaseerde ticket routing en prioritering |
 | Email notificaties | ✅ Compleet | Automatische emails bij ticket events |
 | Custom forms per tenant | ✅ Compleet | Tenant-specifieke velden en branding |
@@ -67,7 +67,7 @@ Dit project beschrijft een realistische scenario voor het implementeren van een 
 | Agentic Service (AI/MCP) | ✅ Compleet | AI-powered ticket assistent |
 | Integration Contracts | ✅ Compleet | 9 gedefinieerde event schemas |
 | Tenant form submissions | ✅ Compleet | Portal API voor externe ticket creatie |
-| Demo showcase sites | ✅ Compleet | 4 tenant portals (Desgoffe, Whitman, Liberty, Hennessey) |
+| Demo showcase sites | ✅ Compleet | 1 tenant portal (Desgoffe) |
 
 ### 2.3 DevOps & Infrastructuur
 
@@ -134,7 +134,7 @@ Dit project beschrijft een realistische scenario voor het implementeren van een 
 | PRODUCT.md | `garamatic/PRODUCT.md` | Product visie, anti-references |
 | Event Topology | `ticket-masala/docs/event-topology.html` | Visuele event flow diagram |
 | Demo Flow | `garamatic/demo/DEMO-FLOW.md` | Demo script voor het 10-min filmpje |
-| Demo Showcase | `garamatic/demo/showcase/` | 4 tenant demo portals |
+| Demo Showcase | `garamatic/demo/showcase/` | 1 tenant demo portal |
 | Integration Tests | `garamatic/integration-tests/` | 257+ geautomatiseerde tests |
 | API Contracten | `garamatic/integration-contracts/` | JSON schemas voor 9 event types |
 

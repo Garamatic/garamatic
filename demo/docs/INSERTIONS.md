@@ -53,7 +53,7 @@
 
 | Feature | Status | Beschrijving |
 |---------|--------|-------------|
-| **Multi-Tenant Architectuur** | ✅ Volledig | 4 volledig geconfigureerde tenants (Desgoffe, Whitman, Liberty, Hennessey) met eigen theming, configuratie, database |
+| **Multi-Tenant Architectuur** | ✅ Volledig | 1 volledig geconfigureerde tenant (Desgoffe) met eigen theming, configuratie, database |
 | **GERDA AI Engine** | ✅ Volledig | Heuristische inference engine: sentiment analyse, triage, complexity estimating, dispatching, ranking, grouping, knowledge retrieval, anticipation |
 | **Event-Driven Architectuur** | ✅ Volledig | Outbox pattern, RabbitMQ publisher, domain events (ticket.created, ticket.assigned, ticket.resolved) |
 | **Workflow Engine** | ✅ Volledig | Regel-gebaseerde workflows met RuleCompiler, TicketWorkflowPolicy, state machines |

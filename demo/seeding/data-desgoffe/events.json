@@ -42,6 +42,7 @@
     "odoo_invoice_id": 12345,
     "ticket_id": "T-DGF-2024-001",
     "customer_email": "jean.dupont@citoyen.be",
+    "customer_id": "jean.dupont@citoyen.be",
     "amount": 150.00,
     "currency": "EUR",
     "status": "posted",

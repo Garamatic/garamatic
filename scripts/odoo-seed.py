@@ -71,7 +71,7 @@ def main():
         account_id = accounts[0]
         print(f"Account already exists: {account_id}")
 
-    # Create customers
+    # Create customers — matches demo/config/seed_data.json and data-desgoffe/
     customers = [
         {
             'name': 'Jean Dupont',
@@ -87,6 +87,21 @@ def main():
             'name': 'Pierre Martin',
             'email': 'pierre.martin@entreprise.be',
             'phone': '+32 473 45 67 89',
+        },
+        {
+            'name': 'Sophie Bernard',
+            'email': 'sophie.bernard@ecole.be',
+            'phone': '+32 474 56 78 90',
+        },
+        {
+            'name': 'Emma Roux',
+            'email': 'emma.roux@associations.be',
+            'phone': '+32 476 78 90 12',
+        },
+        {
+            'name': 'Antoine Moreau',
+            'email': 'antoine.moreau@retraite.be',
+            'phone': '+32 477 89 01 23',
         },
     ]
 

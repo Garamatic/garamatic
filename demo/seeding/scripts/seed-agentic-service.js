@@ -31,6 +31,16 @@ async function seed() {
   const customers = require(`${dataDir}/customers.json`);
   console.log(`  Loaded ${tickets.length} tickets and ${customers.length} customers from ${dataDir}`);
 
+  // Map numeric priority scores to agentic API priority strings
+  function mapPriority(priority) {
+    const p = parseInt(priority, 10);
+    if (isNaN(p)) return priority; // already a string like 'low', 'medium', 'high', 'urgent'
+    if (p >= 15) return 'urgent';
+    if (p >= 10) return 'high';
+    if (p >= 5) return 'medium';
+    return 'low';
+  }
+
   // Create tickets via agentic API
   for (const ticket of tickets.slice(0, 8)) {
     try {
@@ -39,7 +49,7 @@ async function seed() {
         description: ticket.description,
         customer_email: ticket.customer_email,
         customer_name: ticket.customer_name,
-        priority: ticket.priority
+        priority: mapPriority(ticket.priority)
       });
 
       if (response.status === 200 || response.status === 201) {
