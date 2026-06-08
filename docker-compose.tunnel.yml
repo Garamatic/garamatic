@@ -36,4 +36,4 @@ services:
 networks:
   garamatic_demo_net:
     external: true
-    name: ${DEMO_NETWORK:-garamatic_garamatic_demo_net}
+    name: garamatic_demo_net

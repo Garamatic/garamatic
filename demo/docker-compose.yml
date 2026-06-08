@@ -193,6 +193,7 @@ services:
       - CORS_ORIGINS=*
       - ticket_api_url=http://ticket-masala:8080
       - ticket_api_key=${AGENTIC_API_KEY:-garamatic-agentic-secret-key}
+      - API_KEY=${AGENTIC_API_KEY:-garamatic-agentic-secret-key}
       - rabbitmq_host=rabbitmq
       - LLM_PROVIDER=llamacpp
       - LLM_MODEL=qwen3.5:2b-q4_K_M
@@ -211,6 +212,12 @@ services:
         condition: service_healthy
       llama:
         condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:3001/health')\""]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
 
   odoo-integration:
     build:
@@ -409,6 +416,7 @@ services:
 
 networks:
   garamatic_demo_net:
+    name: garamatic_demo_net
     driver: bridge
 
 volumes:
