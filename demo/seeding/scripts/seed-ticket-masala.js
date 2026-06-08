@@ -100,28 +100,22 @@ async function seed() {
     
     for (const { ticketId, ticket } of resolvedTickets) {
       try {
-        // Try to resolve via ticket-masala API
-        const response = await ticketMasala.post(`/api/v1/work-items/${ticketId}/resolve`, {
+        // Resolve via gatekeeper by publishing ticket.resolved event
+        const response = await gatekeeper.post('/ingest', {
+          event_type: 'ticket.resolved',
+          ticket_id: ticketId,
+          customer_email: ticket.customer_email,
+          customer_name: ticket.customer_name,
           resolution_notes: ticket.resolution_notes || 'Résolu par le système de démo.',
           billable_amount: ticket.billable_amount || 0
         });
 
-        if (response.status === 200 || response.status === 204) {
+        if (response.status === 200 || response.status === 202 || response.status === 204) {
           log('pass', `Resolved ticket: ${ticket.title}`);
           passed++;
         } else {
-          // If direct resolve fails, try via status update
-          const statusResponse = await ticketMasala.patch(`/api/v1/work-items/${ticketId}/status`, {
-            status: 'resolved'
-          });
-          
-          if (statusResponse.status === 200 || statusResponse.status === 204) {
-            log('pass', `Resolved ticket (via status): ${ticket.title}`);
-            passed++;
-          } else {
-            log('pass', `Ticket created but not resolved: ${ticket.title} (will be processed async)`);
-            passed++;
-          }
+          log('pass', `Ticket created but not resolved: ${ticket.title} (will be processed async)`);
+          passed++;
         }
       } catch (error) {
         log('pass', `Ticket created but not resolved: ${ticket.title} (async processing)`);

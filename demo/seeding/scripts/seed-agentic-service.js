@@ -58,11 +58,11 @@ async function seed() {
         passed++;
 
         // If resolved, try to resolve
-        if (ticket.status === 'resolved' && ticket.billable_amount) {
+        if (ticket.status === 'resolved') {
           try {
             const resolveResponse = await client.post(`/tickets/${data.ticket_id}/resolve`, {
-              resolution_notes: ticket.resolution_notes,
-              billable_amount: ticket.billable_amount
+              resolution_notes: ticket.resolution_notes || 'Résolu par le système de démo.',
+              billable_amount: ticket.billable_amount || 0
             });
             if (resolveResponse.status === 200) {
               log('pass', `Resolved ticket: ${data.ticket_id}`);
