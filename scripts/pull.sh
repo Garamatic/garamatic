@@ -21,19 +21,20 @@ git pull --no-recurse-submodules --autostash
 
 echo "⬇️  Syncing submodules..."
 
+# Sync any .gitmodules changes (new submodules, URL changes, renames)
+git submodule sync --recursive
+
+# Initialize and update all submodules (including nested) to the commits
+# recorded in the root repo. This is the critical step the old script missed.
+if ! git submodule update --init --recursive; then
+    echo "   ⚠️  Some submodules failed to update, attempting per-submodule recovery..."
+fi
+
 # Read submodule paths from git status
 submodules=$(git submodule status | awk '{print $2}')
 
 for path in ${submodules}; do
     echo "   📦 ${path}"
-
-    # Initialize if missing
-    if [ ! -f "${path}/.git" ] && [ ! -d "${path}/.git" ]; then
-        if ! git submodule update --init "${path}" 2>/dev/null; then
-            echo "   ⚠️  ${path}: could not initialize, skipping"
-            continue
-        fi
-    fi
 
     cd "${path}"
 
@@ -53,7 +54,9 @@ for path in ${submodules}; do
         continue
     fi
 
-    # Check if current HEAD is an ancestor of origin/branch
+    # Check if current HEAD is an ancestor of origin/branch.
+    # If the recorded commit is missing from the remote (e.g. force-pushed),
+    # reset to the latest remote branch instead of failing.
     if ! git merge-base --is-ancestor HEAD "origin/${branch}" 2>/dev/null; then
         echo "   ⚠️  ${path}: current commit not on origin/${branch}, resetting to latest"
         if ! git diff --quiet 2>/dev/null; then
