@@ -66,11 +66,12 @@ export function Header() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <NavLink to="/" className="flex items-center gap-3 group">
-            <div className="h-10 w-10 rounded-md bg-surface flex items-center justify-center border border-white/30 overflow-hidden">
+            <div className="h-11 w-11 rounded-full bg-white flex items-center justify-center shadow-lg shadow-black/20 overflow-hidden ring-2 ring-white/50">
               <img
                 src="/desgoffe.png"
                 alt="Commune de Desgoffe"
-                className="h-8 w-auto"
+                className="h-9 w-auto"
+                style={{ imageRendering: 'auto' }}
               />
             </div>
             <div className="hidden sm:block">

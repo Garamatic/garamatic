@@ -10,7 +10,7 @@ export function Footer() {
           {/* Brand */}
           <div>
             <div className="flex items-center gap-3 mb-3">
-              <div className="h-8 w-8 rounded-md bg-surface flex items-center justify-center border border-white/30 overflow-hidden">
+              <div className="h-8 w-8 rounded-full bg-white flex items-center justify-center overflow-hidden ring-1 ring-white/40">
                 <img
                   src="/desgoffe.png"
                   alt={MUNICIPALITY.name}

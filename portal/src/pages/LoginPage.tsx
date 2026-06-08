@@ -33,11 +33,11 @@ export function LoginPage() {
     <div className="container-narrow py-16 md:py-24">
       <div className="bg-surface border-2 border-border p-8 md:p-12 shadow-md">
         <div className="text-center mb-8">
-          <div className="w-14 h-14 rounded-full bg-surface flex items-center justify-center mx-auto mb-4 border border-border shadow-sm">
+          <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center mx-auto mb-4 border border-border shadow-md overflow-hidden">
             <img
               src="/desgoffe.png"
               alt="Commune de Desgoffe"
-              className="h-10 w-auto rounded-full"
+              className="h-10 w-auto"
               loading="lazy"
             />
           </div>

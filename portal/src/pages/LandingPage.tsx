@@ -57,7 +57,7 @@ export function LandingPage() {
             {/* Left: Welcome & CTA */}
             <div>
               <div className="flex items-center gap-3 mb-4">
-                <div className="h-12 w-12 rounded-md bg-white/10 flex items-center justify-center border border-white/20">
+                <div className="h-12 w-12 rounded-full bg-white flex items-center justify-center shadow-lg shadow-black/20 overflow-hidden ring-2 ring-white/40">
                   <img
                     src="/desgoffe.png"
                     alt="Commune de Desgoffe"
