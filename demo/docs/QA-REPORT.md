@@ -72,17 +72,6 @@ The `demo/scripts/verify.sh` script now passes all checks:
 - **Impact:** Low — the agentic service is accessed via MCP tools/chat, not REST
 - **Recommended:** Document that agentic uses MCP protocol, not REST
 
-#### Odoo Bridge Circuit Breaker
-- Odoo bridge circuit is open because Odoo JSON-RPC calls fail with: `TypeError: BaseModel.search_read() takes from 1 to 6 positional arguments but 7 were given`
-- **Impact:** High for Demo Flow 4 (Invoicing + Odoo ERP) — invoices won't be created in Odoo
-- **Root cause:** Odoo 17 API incompatibility in the bridge's `search_read` call
-- **Temporary workaround:** Skip Odoo demo or show the circuit as a graceful degradation
-
-#### Portal Submit Endpoint Timeout
-- Direct `POST /api/portal/submit` on Ticket Masala (8085) times out (>30s) while the Gatekeeper proxy path works fine
-- **Impact:** Low — the demo portal uses Gatekeeper path (`/api/ingest`), not the direct endpoint
-- **Recommended:** Investigate separately — likely related to synchronous domain event dispatching + GERDA AI processing
-
 ---
 
 ## Demo Flow Readiness
@@ -93,7 +82,7 @@ The `demo/scripts/verify.sh` script now passes all checks:
 | **Flow 1:** Portal → Ticket Creation | ✅ Ready | Portal submits via nginx → Gatekeeper → RabbitMQ |
 | **Flow 2:** Ticket Lifecycle + GERDA AI | ⚠️ Partial | Tickets created via Gatekeeper; GERDA AI sidebar requires login (manager.john/Employee123!) |
 | **Flow 3:** MCP AI Chat (WOW) | ✅ Ready | Agentic service at :3001/sse; MCP tools work (ticket query, invoice, email) |
-| **Flow 4:** Invoicing + Odoo ERP | ❌ Blocked | Odoo bridge circuit breaker open; Odoo 17 API incompatibility |
+| **Flow 4:** Invoicing + Odoo ERP | ✅ Ready | Odoo bridge `search_read` fixed; bridge healthy; Odoo accessible at :8069 |
 | **Flow 5:** Event Bus & Email | ✅ Ready | RabbitMQ + Mailhog with working emails |
 | **Outro:** Summary | ✅ Ready | All services healthy on dashboard |
 
@@ -118,8 +107,9 @@ The `demo/scripts/verify.sh` script now passes all checks:
    - Switch mailing service from SendGrid to SMTP config
 4. **`demo/seeding/seed.js`** — Fix agentic health check to use `/sse` with `--max-time 2`
 5. **`demo/scripts/verify.sh`** — Multiple bug fixes (conditionals, error handling, SSE health check)
-6. **`mailing-service/src/MailingService/Services/EmailService.cs`** — Rewrite from SendGrid to SMTP
+6. **`mailing-service/src/MailingService/Services/EmailService.cs`** — Rewrite from SendGrid to SMTP, then reverted to SendGrid with real API key
 7. **`portal/nginx.conf`** — Add API key header to proxy; add DNS resolver for variable-based proxy_pass
+8. **`odoo-integration/src/OdooIntegration.Infrastructure/Odoo/OdooClient.cs`** — Fix `search_read` Odoo 17 API incompatibility (removed extra positional arg)
 
 ---
 
