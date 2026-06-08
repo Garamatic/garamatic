@@ -213,6 +213,19 @@
       white-space: nowrap;
     }
 
+    .remote-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: var(--text-xs);
+      color: var(--accent-indigo);
+      background: var(--indigo-a15);
+      padding: var(--space-1) var(--space-3);
+      border-radius: var(--radius-full);
+      font-weight: var(--weight-medium);
+      white-space: nowrap;
+    }
+
     .live-badge .pulse-dot {
       width: 6px;
       height: 6px;
@@ -1070,6 +1083,9 @@
           <span class="pulse-dot" aria-hidden="true"></span>
           <span>Live polling</span>
         </div>
+        <div class="remote-badge" id="remote-badge" style="display:none" aria-label="Remote access via Cloudflare Tunnel">
+          <span>Remote</span>
+        </div>
         <button class="btn btn-tab" id="btn-topology" onclick="switchView('topology')" aria-pressed="false">Topology</button>
         <button class="btn btn-tab active" id="btn-demo" onclick="switchView('demo')" aria-pressed="true">Demo Guide</button>
       </div>
@@ -1677,6 +1693,56 @@
       { id: 'mailhog', url: 'http://localhost:8025', name: 'Mailhog' },
     ];
 
+    function rewriteUrls() {
+      const hostname = window.location.hostname;
+      const isLocal = hostname === 'localhost' || hostname === '127.0.0.1';
+      if (isLocal) return;
+
+      const parts = hostname.split('.');
+      const baseDomain = parts.length > 2 ? parts.slice(1).join('.') : hostname;
+      const subdomains = {
+        8085: 'tickets', 8086: 'api', 3001: 'agentic', 8089: 'odoo-bridge',
+        8090: 'web', 8091: 'masala', 8092: 'showcase', 8093: 'portal',
+        15672: 'rabbitmq', 8069: 'odoo', 8025: 'mailhog',
+      };
+
+      function rewrite(url) {
+        return url.replace(/http:\/\/localhost:(\d+)/g, (_, port) => {
+          const sub = subdomains[port];
+          return sub ? 'https://' + sub + '.' + baseDomain : 'http://localhost:' + port;
+        });
+      }
+
+      document.querySelectorAll('a[href]').forEach(a => { a.href = rewrite(a.href); });
+      document.querySelectorAll('[onclick]').forEach(el => {
+        const attr = el.getAttribute('onclick');
+        if (attr && attr.includes('localhost:')) el.setAttribute('onclick', rewrite(attr));
+      });
+      document.querySelectorAll('[onkeydown]').forEach(el => {
+        const attr = el.getAttribute('onkeydown');
+        if (attr && attr.includes('localhost:')) el.setAttribute('onkeydown', rewrite(attr));
+      });
+      document.querySelectorAll('.service-row[data-url]').forEach(el => {
+        el.setAttribute('data-url', rewrite(el.getAttribute('data-url')));
+      });
+      document.querySelectorAll('.service-url').forEach(el => {
+        el.textContent = rewrite(el.textContent);
+      });
+      document.querySelectorAll('.curl-block pre').forEach(pre => {
+        pre.textContent = rewrite(pre.textContent);
+      });
+      document.querySelectorAll('.table-wrap td.code').forEach(td => {
+        if (td.textContent.includes('localhost:')) td.textContent = rewrite(td.textContent);
+      });
+      document.querySelectorAll('.endpoint .path').forEach(el => {
+        el.textContent = rewrite(el.textContent);
+      });
+      services.forEach(s => { s.url = rewrite(s.url); });
+
+      const badge = document.getElementById('remote-badge');
+      if (badge) badge.style.display = 'inline-flex';
+    }
+
     function switchView(view) {
       var demo = document.getElementById('view-demo');
       var topology = document.getElementById('view-topology');
@@ -1784,6 +1850,7 @@
       });
     }
 
+    rewriteUrls();
     checkHealth();
     setInterval(checkHealth, 5000);
   </script>
