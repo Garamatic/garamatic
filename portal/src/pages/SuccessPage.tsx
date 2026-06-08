@@ -21,7 +21,10 @@ export function SuccessPage() {
       try {
         const parsed = JSON.parse(raw) as SubmissionResult
         sessionStorage.removeItem('submissionResult')
-        return parsed
+        return {
+          ...parsed,
+          ticketId: parsed.ticketId || urlTicketId,
+        }
       } catch {
         return {
           success: true,

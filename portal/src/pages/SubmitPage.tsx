@@ -23,10 +23,8 @@ interface FormErrors {
   [key: string]: string
 }
 
-// Gatekeeper API endpoint for ticket ingestion
-const API_BASE = import.meta.env.VITE_API_BASE ?? ''
-const GATEKEEPER_API_KEY = import.meta.env.VITE_GATEKEEPER_API_KEY ?? ''
-const API_ENDPOINT = `${API_BASE}/api/ingest`
+// Portal API endpoint for direct ticket creation
+const API_ENDPOINT = '/api/portal/submit'
 
 const problemTypes = [
   { value: '', label: '-- Sélectionnez --' },
@@ -148,40 +146,39 @@ export function SubmitPage() {
         ...(formData.typeTravaux ? [`Travaux:${sanitize(formData.typeTravaux)}`] : []),
       ].join(',')
 
-      const payload = {
-        event_type: 'ticket.created',
-        ticket_id: crypto.randomUUID(),
-        customer_email: sanitize(formData.customerEmail),
-        customer_name: sanitize(formData.customerName),
-        description: sanitize(formData.description),
-        priority: selectedService?.isUrgent ? '10' : '5',
-        source: 'desgoffe-portal',
-        hasAttachment: !!formData.attachment,
-        tags,
+      const formPayload = new FormData()
+      formPayload.append('Description', sanitize(formData.description))
+      formPayload.append('CustomerEmail', sanitize(formData.customerEmail))
+      formPayload.append('CustomerName', sanitize(formData.customerName))
+      if (formData.customerPhone) {
+        formPayload.append('CustomerPhone', sanitize(formData.customerPhone))
+      }
+      formPayload.append('PriorityScore', selectedService?.isUrgent ? '10' : '5')
+      formPayload.append('Tags', tags)
+      if (formData.attachment) {
+        formPayload.append('Attachment', formData.attachment)
       }
 
       const response = await fetch(API_ENDPOINT, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Api-Key': GATEKEEPER_API_KEY,
-        },
-        body: JSON.stringify(payload),
+        body: formPayload,
       })
 
       if (!response.ok) {
         throw new Error(`Server error: ${response.status}`)
       }
 
-      const text = await response.text()
-      const result = text ? JSON.parse(text) : { success: true }
+      const result = await response.json()
 
       if (result.success) {
-        const ticketId = result.ticketId || crypto.randomUUID().slice(0, 8).toUpperCase()
+        const ticketGuid = result.ticketGuid ?? ''
+        const ticketId = ticketGuid ? ticketGuid.toString().slice(0, 8).toUpperCase() : 'UNKNOWN'
 
         // Store for success page
         sessionStorage.setItem('submissionResult', JSON.stringify({
           ...result,
+          ticketId,
+          ticketGuid,
           serviceType: formData.requestType,
           slaDays: selectedService?.slaDays ?? 10,
         }))
