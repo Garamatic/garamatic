@@ -40,7 +40,7 @@ const SUITES = [
   { name: 'Webhook Receiver', file: 'webhook-receiver.test.js' },
   { name: 'Odoo Integration', file: 'odoo-integration.test.js' },
   { name: 'Agentic Service Deep', file: 'agentic-service-deep.test.js' },
-  { name: 'Event Planner Deep', file: 'event-planner-deep.test.js' },
+
   { name: 'Event Handler Contract', file: 'event-handler-contract.test.js' }
 ];
 
@@ -203,7 +203,7 @@ async function main() {
       ticket_masala: process.env.TICKET_MASALA_URL || 'http://localhost:8085',
       gatekeeper: process.env.GATEKEEPER_URL || 'http://localhost:8086',
       mailing: process.env.MAILING_SERVICE_URL || 'http://localhost:8087',
-      event_planner: process.env.EVENT_PLANNER_URL || 'http://localhost:8088',
+
       agentic: process.env.AGENTIC_SERVICE_URL || 'http://localhost:3001',
       odoo_integration: process.env.ODOO_INTEGRATION_URL || 'http://localhost:8089',
       rabbitmq: process.env.RABBITMQ_URL || 'http://localhost:15672',

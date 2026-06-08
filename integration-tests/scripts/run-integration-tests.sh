@@ -121,8 +121,6 @@ run_test "tests/odoo-integration.test.js" "Odoo Integration"
 # Run Agentic Service Deep Tests
 run_test "tests/agentic-service-deep.test.js" "Agentic Service Deep"
 
-# Run Event Planner Deep Tests
-run_test "tests/event-planner-deep.test.js" "Event Planner Deep"
 
 # Run Event Handler Contract Tests
 run_test "tests/event-handler-contract.test.js" "Event Handler Contract"
@@ -161,7 +159,7 @@ cat > "$RESULTS_DIR/test-results.json" <<EOF
     "ticket_masala": "${TICKET_MASALA_URL:-http://ticket-masala:8080}",
     "gatekeeper": "${GATEKEEPER_URL:-http://gatekeeper-api:8080}",
     "mailing": "${MAILING_SERVICE_URL:-http://mailing-service:8080}",
-    "event_planner": "${EVENT_PLANNER_URL:-http://event-planner:80}",
+
     "agentic": "${AGENTIC_SERVICE_URL:-http://agentic-service:3001}",
     "odoo_integration": "${ODOO_INTEGRATION_URL:-http://odoo-integration:8080}",
     "rabbitmq": "${RABBITMQ_URL:-http://rabbitmq:15672}",

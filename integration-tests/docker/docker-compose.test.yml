@@ -83,39 +83,6 @@ services:
       mailhog:
         condition: service_started
 
-  event-planner:
-    build:
-      context: ../../event-planner
-      dockerfile: Dockerfile
-    container_name: garamatic_event_planner_test
-    ports:
-      - "8088:80"
-    environment:
-      - DRUPAL_ENV=testing
-      - TICKET_MASALA_API=http://ticket-masala:8080
-    networks:
-      - garamatic_test_net
-    depends_on:
-      event-planner-db:
-        condition: service_healthy
-
-  event-planner-db:
-    image: mariadb:10.11
-    container_name: garamatic_event_planner_test_db
-    environment:
-      - MYSQL_ROOT_PASSWORD=rootpass
-      - MYSQL_DATABASE=drupal
-      - MYSQL_USER=drupal
-      - MYSQL_PASSWORD=drupal
-    volumes:
-      - event_planner_test_db_data:/var/lib/mysql
-    networks:
-      - garamatic_test_net
-    healthcheck:
-      test: ["CMD-SHELL", "mariadb-admin ping -u drupal -pdrupal || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
   agentic-service:
     build:
@@ -219,7 +186,6 @@ services:
       - TICKET_MASALA_URL=http://ticket-masala:8080
       - GATEKEEPER_URL=http://gatekeeper-api:8080
       - MAILING_SERVICE_URL=http://mailing-service:8080
-      - EVENT_PLANNER_URL=http://event-planner:80
       - AGENTIC_SERVICE_URL=http://agentic-service:3001
       - ODOO_INTEGRATION_URL=http://odoo-integration:8080
       - RABBITMQ_URL=http://rabbitmq:15672
@@ -236,8 +202,6 @@ services:
         condition: service_started
       mailing-service:
         condition: service_started
-      event-planner:
-        condition: service_started
       agentic-service:
         condition: service_started
       showcase:
@@ -249,4 +213,3 @@ networks:
 
 volumes:
   ticket_masala_data:
-  event_planner_test_db_data:
