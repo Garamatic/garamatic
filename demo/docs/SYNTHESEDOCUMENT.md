@@ -127,7 +127,7 @@
 ## 5. Security Notities
 
 > ⚠️ **Opgelet:** Bij de code review (juni 2026) zijn de volgende security maatregelen doorgevoerd:
-> 
+>
 > 1. **Cloudflare Tunnel credentials verwijderd uit repo:** `cloudflared/credentials.json` en `cloudflared/config.yml` zijn verwijderd uit de repository. Deze worden gegenereerd via `make tunnel-setup` en staan nu in `.gitignore`.
 > 2. **TruffleHog secret scanning** is actief in de CI pipeline (`ci-dev.yml`).
 > 3. **Geen hardcoded API keys** in source code — alle keys worden via environment variables of `.env` geleverd.

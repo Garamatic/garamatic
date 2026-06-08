@@ -39,7 +39,7 @@ echo -e "${YELLOW}▶ Restoring Docker volumes...${NC}"
 restore_volume() {
     local volume_name=$1
     local backup_file="$BACKUP_DIR/${volume_name}_${TIMESTAMP}.tar.gz"
-    
+
     if [ -f "$backup_file" ]; then
         docker volume create "$volume_name" 2>/dev/null || true
         docker run --rm \

@@ -2,9 +2,9 @@ const potrace = require('potrace');
 const fs = require('fs');
 
 // Generate the "Detailed" variant with a black trace and transparent background
-potrace.trace('./Untitled(1).png', { 
-    turdSize: 0, 
-    optTolerance: 0.1, 
+potrace.trace('./Untitled(1).png', {
+    turdSize: 0,
+    optTolerance: 0.1,
     alphaMax: 0,
     color: '#000000'
     // Omitting "background" defaults to transparent

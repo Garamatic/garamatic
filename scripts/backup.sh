@@ -32,7 +32,7 @@ echo -e "${YELLOW}▶ Backing up Docker volumes...${NC}"
 backup_volume() {
     local volume_name=$1
     local backup_file="$BACKUP_DIR/${volume_name}_${TIMESTAMP}.tar.gz"
-    
+
     if docker volume inspect "$volume_name" &>/dev/null; then
         docker run --rm \
             -v "$volume_name:/data:ro" \

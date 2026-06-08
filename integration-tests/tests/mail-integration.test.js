@@ -53,7 +53,7 @@ async function main() {
         runner.skip('Mailing service not running');
         return;
       }
-      
+
       if (response.ok) {
         const data = await response.json();
         console.log(`    Mailing service status: ${JSON.stringify(data.status || data)}`);
@@ -82,7 +82,7 @@ async function main() {
         runner.skip('Mailhog not accessible');
         return;
       }
-      
+
       runner.assertNotNull(messages, 'Messages should not be null');
       runner.assertTrue(typeof messages.total === 'number', 'Should have total count');
       runner.assertTrue(Array.isArray(messages.items), 'Should have items array');
@@ -96,7 +96,7 @@ async function main() {
         runner.skip('Mailhog delete not accessible');
         return;
       }
-      
+
       // Verify messages are cleared
       await sleep(500);
       let messages;
@@ -106,7 +106,7 @@ async function main() {
         runner.skip('Mailhog not accessible');
         return;
       }
-      
+
       runner.assertEquals(messages.total, 0, 'Messages should be cleared');
     });
   });
@@ -162,7 +162,7 @@ async function main() {
       runner.assertTrue(messages.total > 0, 'Should have email notifications');
 
       // Check if the email was sent to the correct recipient
-      const relevantEmail = messages.items.find(m => 
+      const relevantEmail = messages.items.find(m =>
         m.Content?.Headers?.To?.includes(uniqueEmail) ||
         m.To?.some(t => t.Mailbox === uniqueEmail.split('@')[0])
       );
@@ -370,7 +370,7 @@ async function main() {
       const email = messages.items[0];
       runner.assertTrue(email.ID, 'Email should have ID');
       runner.assertTrue(email.Content, 'Email should have Content');
-      
+
       if (email.Content.Headers) {
         runner.assertTrue(
           email.Content.Headers.Subject || email.Content.Headers.subject,
@@ -399,7 +399,7 @@ async function main() {
 
       const email = messages.items[0];
       const body = email.Content?.Body || '';
-      
+
       // Check if HTML content is present
       if (body.includes('<')) {
         runner.assertTrue(
@@ -479,7 +479,7 @@ async function main() {
         runner.skip('Mailhog web UI not accessible');
         return;
       }
-      
+
       runner.assertTrue(
         response.status === 200 || response.status === 301 || response.status === 302,
         'Mailhog web UI should be accessible'
@@ -494,7 +494,7 @@ async function main() {
         runner.skip('Mailhog API not accessible');
         return;
       }
-      
+
       runner.assertResponseOk(response, 'Mailhog API v2 should be accessible');
     });
   });
@@ -509,7 +509,7 @@ async function main() {
       }
 
       const uniqueEmail = `e2e-flow-${Date.now()}@example.com`;
-      
+
       // Step 1: Create ticket
       const ticketData = generateTestTicket({
         customer_email: uniqueEmail,

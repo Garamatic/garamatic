@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * End-to-End Workflow Tests
- * 
+ *
  * Tests complete business workflows spanning multiple services:
  * - New customer ticket workflow
  * - Invoice and payment workflow
@@ -19,14 +19,14 @@ async function main() {
   } catch {
     // Ignore
   }
-  
+
   await runner.describe('New Customer Support Ticket Workflow', async () => {
     const workflow = {
       ticketId: null,
       customerEmail: `customer-${Date.now()}@example.com`,
       events: []
     };
-    
+
     await runner.it('Step 1: Customer submits ticket via portal', async () => {
       const ticketData = generateTestTicket({
         customer_email: workflow.customerEmail,
@@ -35,31 +35,31 @@ async function main() {
         priority: 'medium',
         source: 'customer-portal'
       });
-      
+
       const response = await fetchWithTimeout(`${SERVICES.ticketMasala}/api/tickets`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(ticketData)
       }, 10000);
-      
+
       if (response.status === 401 || response.status === 403) {
         runner.skip('Workflow test (auth required)');
       }
-      
+
       runner.assertResponseOk(response);
       const result = await response.json();
       workflow.ticketId = result.id || result.ticket_id;
       workflow.events.push('ticket_created');
     });
-    
+
     await runner.it('Step 2: Ticket creation triggers notification email', async () => {
       if (!workflow.ticketId) {
         runner.skip('Email notification (ticket creation failed)');
       }
-      
+
       // Wait for async email processing
       await sleep(2000);
-      
+
       // Check if email was captured (this depends on integration being configured)
       let messages;
       try {
@@ -71,12 +71,12 @@ async function main() {
       runner.assertNotNull(messages.items, 'Mailhog should return messages array');
       workflow.events.push('email_check');
     });
-    
+
     await runner.it('Step 3: Support agent can view and update ticket', async () => {
       if (!workflow.ticketId) {
         runner.skip('Agent update (ticket creation failed)');
       }
-      
+
       // Update ticket status
       const updateResponse = await fetchWithTimeout(
         `${SERVICES.ticketMasala}/api/tickets/${workflow.ticketId}`,
@@ -87,22 +87,22 @@ async function main() {
         },
         5000
       );
-      
+
       // May be 200 OK or 405 Method Not Allowed if PATCH not supported
       runner.assertTrue(
-        updateResponse.status === 200 || 
-        updateResponse.status === 204 || 
+        updateResponse.status === 200 ||
+        updateResponse.status === 204 ||
         updateResponse.status === 405,
         `Update should be handled, got ${updateResponse.status}`
       );
       workflow.events.push('ticket_updated');
     });
-    
+
     await runner.it('Step 4: Ticket resolution completes workflow', async () => {
       if (!workflow.ticketId) {
         runner.skip('Resolution (ticket creation failed)');
       }
-      
+
       // Send resolution event
       const resolutionEvent = {
         event_type: 'ticket.resolved',
@@ -113,17 +113,17 @@ async function main() {
         resolution_notes: 'Customer issue resolved',
         resolved_at: new Date().toISOString()
       };
-      
+
       const response = await fetchWithTimeout(`${SERVICES.gatekeeper}/ingest`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(resolutionEvent)
       }, 10000);
-      
+
       runner.assertTrue(response.status < 500, 'Resolution event should be processed');
       workflow.events.push('ticket_resolved');
     });
-    
+
     await runner.it('Workflow complete: All steps executed', () => {
       runner.assertTrue(
         workflow.events.length >= 2,
@@ -131,13 +131,13 @@ async function main() {
       );
     });
   });
-  
+
   await runner.describe('Invoice and Payment Workflow', async () => {
     const invoiceFlow = {
       invoiceId: randomUUID(),
       events: []
     };
-    
+
     await runner.it('Step 1: Invoice creation requested', async () => {
       const createEvent = {
         event_type: 'invoice.create_requested',
@@ -151,17 +151,17 @@ async function main() {
         ],
         currency: 'USD'
       };
-      
+
       const response = await fetchWithTimeout(`${SERVICES.gatekeeper}/ingest`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(createEvent)
       }, 10000);
-      
+
       runner.assertTrue(response.status < 500, 'Invoice creation request should be accepted');
       invoiceFlow.events.push('create_requested');
     });
-    
+
     await runner.it('Step 2: Invoice created event processed', async () => {
       const createdEvent = {
         event_type: 'invoice.created',
@@ -174,17 +174,17 @@ async function main() {
         currency: 'USD',
         due_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
       };
-      
+
       const response = await fetchWithTimeout(`${SERVICES.gatekeeper}/ingest`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(createdEvent)
       }, 10000);
-      
+
       runner.assertTrue(response.status < 500, 'Invoice created event should be processed');
       invoiceFlow.events.push('invoice_created');
     });
-    
+
     await runner.it('Step 3: Payment received updates invoice', async () => {
       const paymentEvent = {
         event_type: 'payment.received',
@@ -197,17 +197,17 @@ async function main() {
         payment_method: 'credit_card',
         transaction_id: 'txn-12345'
       };
-      
+
       const response = await fetchWithTimeout(`${SERVICES.gatekeeper}/ingest`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(paymentEvent)
       }, 10000);
-      
+
       runner.assertTrue(response.status < 500, 'Payment event should be processed');
       invoiceFlow.events.push('payment_received');
     });
-    
+
     await runner.it('Invoice workflow complete', () => {
       runner.assertTrue(
         invoiceFlow.events.length >= 2,
@@ -215,11 +215,11 @@ async function main() {
       );
     });
   });
-  
+
   await runner.describe('Multi-Tenant Isolation Workflow', async () => {
     const tenants = ['tenant-a', 'tenant-b'];
     const tenantTickets = {};
-    
+
     await runner.it('should create tickets for different tenants', async () => {
       for (const tenant of tenants) {
         const ticketData = generateTestTicket({
@@ -227,44 +227,44 @@ async function main() {
           description: `Test ticket for ${tenant}`,
           customer_email: `user@${tenant}.com`
         });
-        
+
         const response = await fetchWithTimeout(`${SERVICES.ticketMasala}/api/tickets`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(ticketData)
         }, 10000);
-        
+
         if (response.ok) {
           const result = await response.json();
           tenantTickets[tenant] = result.id || result.ticket_id;
         }
       }
-      
+
       // If we couldn't create any tickets, skip this test
       if (Object.keys(tenantTickets).length === 0) {
         runner.skip('Multi-tenant test (auth required)');
       }
-      
+
       runner.assertTrue(
         Object.keys(tenantTickets).length === tenants.length,
         `Should create tickets for all ${tenants.length} tenants`
       );
     });
-    
+
     await runner.it('tenant A should not access tenant B tickets', async () => {
       if (Object.keys(tenantTickets).length < 2) {
         runner.skip('Tenant isolation (insufficient tickets created)');
       }
-      
+
       // Try to access tenant B's ticket as tenant A
       const tenantBTicket = tenantTickets['tenant-b'];
-      
+
       const response = await fetchWithTimeout(
         `${SERVICES.ticketMasala}/api/tickets/${tenantBTicket}?tenant_id=tenant-a`,
         {},
         5000
       );
-      
+
       // Note: TicketMasala API requires authentication for GET endpoints, but the test
       // uses API key auth which is separate from tenant isolation. If the endpoint
       // returns 200, tenant filtering is not enforced via query params — skip this
@@ -272,7 +272,7 @@ async function main() {
       if (response.status === 200) {
         runner.skip('Tenant isolation via query param not enforced in TicketMasala API');
       }
-      
+
       // Should deny cross-tenant access: 401 (auth required), 403 (forbidden), or 404 (hidden from tenant)
       runner.assertTrue(
         response.status === 401 || response.status === 403 || response.status === 404,
@@ -281,7 +281,7 @@ async function main() {
     });
 
   });
-  
+
   await runner.describe('Error Recovery Workflow', async () => {
     await runner.it('should handle invalid event gracefully', async () => {
       const invalidEvent = {

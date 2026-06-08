@@ -100,13 +100,13 @@ async function main() {
         { headers: RABBITMQ_AUTH },
         10000
       );
-      
+
       // Exchange may or may not exist depending on service initialization
       runner.assertTrue(
         response.status === 200 || response.status === 404,
         `Exchange check should not error, got ${response.status}`
       );
-      
+
       if (response.ok) {
         const data = await response.json();
         runner.assertTrue(data.name === 'event_exchange', 'Should be event_exchange');
@@ -120,10 +120,10 @@ async function main() {
         10000
       );
       runner.assertResponseOk(response, 'Should list queues');
-      
+
       const queues = await response.json();
       runner.assertTrue(Array.isArray(queues), 'Should return array of queues');
-      
+
       // Log queue names for debugging
       if (queues.length > 0) {
         console.log(`    Found ${queues.length} queues: ${queues.map(q => q.name).join(', ')}`);
@@ -137,7 +137,7 @@ async function main() {
         10000
       );
       runner.assertResponseOk(response, 'Should list bindings');
-      
+
       const bindings = await response.json();
       runner.assertTrue(Array.isArray(bindings), 'Should return array of bindings');
     });
@@ -184,7 +184,7 @@ async function main() {
       }
 
       runner.assertNotNull(messages.items, 'Mailhog should have messages');
-      
+
       // Check if any emails were received
       if (messages.total > 0) {
         console.log(`    Found ${messages.total} email(s) in Mailhog`);
@@ -377,7 +377,7 @@ async function main() {
         10000
       );
       runner.assertResponseOk(response, 'RabbitMQ health check should work');
-      
+
       const data = await response.json();
       runner.assertEquals(data.status, 'ok', 'RabbitMQ should have no alarms');
     });
@@ -391,16 +391,16 @@ async function main() {
         10000
       );
       runner.assertResponseOk(response, 'Should list queues');
-      
+
       const queues = await response.json();
-      
+
       // Log queue depths for debugging
       for (const queue of queues) {
         if (queue.messages > 0) {
           console.log(`    Queue "${queue.name}": ${queue.messages} messages, ${queue.consumers} consumers`);
         }
       }
-      
+
       runner.assertTrue(true, 'Queue depths checked');
     });
   });

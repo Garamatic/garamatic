@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Integration Test Report Generator
- * 
+ *
  * Generates HTML and JSON reports from test results
  */
 
@@ -233,15 +233,15 @@ async function generateHTMLReport(results) {
 async function main() {
   try {
     await mkdir(REPORTS_DIR, { recursive: true });
-    
+
     // Read test results
     const resultsPath = join(RESULTS_DIR, 'test-results.json');
     const results = JSON.parse(await readFile(resultsPath, 'utf-8'));
-    
+
     // Generate HTML report
     const html = await generateHTMLReport(results);
     await writeFile(join(REPORTS_DIR, 'report.html'), html);
-    
+
     // Generate Markdown summary
     const md = `# Integration Test Report
 
@@ -272,11 +272,11 @@ ${Object.entries(results.services || {}).map(([name, url]) => `- **${name}:** ${
 ${results.summary?.failed === 0 ? '✅ All tests passed' : `⚠️ ${results.summary?.failed} test(s) failed`}
 `;
     await writeFile(join(REPORTS_DIR, 'report.md'), md);
-    
+
     console.log('Reports generated:');
     console.log(`  - ${join(REPORTS_DIR, 'report.html')}`);
     console.log(`  - ${join(REPORTS_DIR, 'report.md')}`);
-    
+
   } catch (error) {
     console.error('Failed to generate report:', error.message);
     process.exit(1);

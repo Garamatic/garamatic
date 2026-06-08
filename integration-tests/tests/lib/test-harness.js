@@ -106,7 +106,7 @@ export class TestRunner {
     console.log(`  ${COLORS.yellow}Skipped: ${this.skipped}${COLORS.reset}`);
     console.log(`  Duration: ${duration}ms`);
     console.log(`${COLORS.bright}═══════════════════════════════════════════════════════════════${COLORS.reset}\n`);
-    
+
   }
 
   exit() {
@@ -159,7 +159,7 @@ export async function fetchWithTimeout(url, options = {}, timeout = 5000) {
 export function generateTestTicket(overrides = {}) {
   const uuid = randomUUID();
   const now = new Date().toISOString();
-  
+
   return {
     ticket_id: uuid,
     customer_email: `test-${uuid.slice(0, 8)}@example.com`,
@@ -279,7 +279,7 @@ export const MailhogAPI = {
     if (!response.ok) throw new Error('Failed to fetch Mailhog messages');
     return response.json();
   },
-  
+
   async deleteAllMessages() {
     const response = await fetchWithTimeout(`${SERVICES.mailhog}/api/v1/messages`, { method: 'DELETE' });
     if (!response.ok) throw new Error('Failed to delete Mailhog messages');

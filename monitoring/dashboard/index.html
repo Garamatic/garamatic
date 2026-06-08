@@ -174,27 +174,27 @@
     async function checkAll() {
       const container = document.getElementById('services');
       container.innerHTML = '<div class="card"><div class="name">Checking...</div></div>';
-      
+
       let up = 0, down = 0;
       const results = [];
-      
+
       for (const svc of SERVICES) {
         const result = await checkService(svc);
         results.push({ svc, result });
         if (result.ok) up++; else down++;
-        
+
         const now = new Date().toLocaleTimeString();
         const msg = result.ok ? `OK (${result.status})` : `DOWN (${result.status})`;
         const cls = result.ok ? 'log-msg' : 'log-err';
         logs.unshift(`<span class="log-time">${now}</span> <span class="${cls}">${svc.name}: ${msg}</span>`);
         if (logs.length > MAX_LOGS) logs.pop();
       }
-      
+
       document.getElementById('count-up').textContent = up;
       document.getElementById('count-down').textContent = down;
       document.getElementById('count-total').textContent = SERVICES.length;
       document.getElementById('timestamp').textContent = new Date().toLocaleString();
-      
+
       container.innerHTML = results.map(({ svc, result }) => `
         <div class="card">
           <div class="card-header">
@@ -207,7 +207,7 @@
           </div>
         </div>
       `).join('');
-      
+
       document.getElementById('log-entries').innerHTML = logs.map(l => `<div class="log-entry">${l}</div>`).join('');
     }
 

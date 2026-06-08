@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Cross-Service Integration Tests
- * 
+ *
  * Tests interactions between multiple services:
  * - Ticket creation → Email notification
  * - Gatekeeper ingestion → Ticket creation
@@ -19,36 +19,36 @@ async function main() {
   } catch {
     // Ignore cleanup errors
   }
-  
+
   await runner.describe('Ticket Creation Flow', async () => {
     let createdTicketId = null;
-    
+
     await runner.it('should create a ticket via Ticket Masala API', async () => {
       const ticketData = generateTestTicket({
         description: 'Integration test ticket - cross-service test'
       });
-      
+
       const response = await fetchWithTimeout(`${SERVICES.ticketMasala}/api/tickets`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(ticketData)
       }, 10000);
-      
+
       if (response.status === 401 || response.status === 403) {
         runner.skip('Ticket creation (auth required, may need setup)');
       }
-      
+
       runner.assertResponseOk(response);
       const result = await response.json();
       createdTicketId = result.id || result.ticket_id;
       runner.assertNotNull(createdTicketId, 'Should return created ticket ID');
     });
-    
+
     await runner.it('should retrieve created ticket', async () => {
       if (!createdTicketId) {
         runner.skip('Retrieve ticket (creation failed)');
       }
-      
+
       const response = await fetchWithTimeout(
         `${SERVICES.ticketMasala}/api/tickets/${createdTicketId}`,
         {},
@@ -57,7 +57,7 @@ async function main() {
       runner.assertResponseOk(response);
     });
   });
-  
+
   await runner.describe('Gatekeeper Ingestion Flow', async () => {
     await runner.it('should accept valid ticket.created event', async () => {
       const event = {
@@ -72,17 +72,17 @@ async function main() {
         priority: 'high',
         created_at: new Date().toISOString()
       };
-      
+
       const response = await fetchWithTimeout(`${SERVICES.gatekeeper}/ingest`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(event)
       }, 10000);
-      
+
       // Should accept the event (may return 202 Accepted)
       runner.assert2xx(response, `Should accept event`);
     });
-    
+
     await runner.it('should reject invalid event (missing required fields)', async () => {
       const invalidEvent = {
         event_type: 'ticket.created',
@@ -90,13 +90,13 @@ async function main() {
         source: 'integration-tests'
         // Missing required fields: ticket_id, customer_email, etc.
       };
-      
+
       const response = await fetchWithTimeout(`${SERVICES.gatekeeper}/ingest`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(invalidEvent)
       }, 10000);
-      
+
       // Should reject invalid event (400 Bad Request)
       runner.assertTrue(
         response.status === 400 || response.status === 422,
@@ -104,7 +104,7 @@ async function main() {
       );
     });
   });
-  
+
   await runner.describe('Email Notification Flow', async () => {
     await runner.it('should queue email via mailing service', async () => {
       const emailEvent = generateEmailEvent({
@@ -125,7 +125,7 @@ async function main() {
 
       runner.assertTrue(response.status === 200 || response.status === 202, 'Should queue email');
     });
-    
+
     await runner.it('should capture sent email in Mailhog', async () => {
       // This test assumes emails are configured to route to Mailhog
       let messages;
@@ -138,7 +138,7 @@ async function main() {
       runner.assertNotNull(messages.items, 'Mailhog should return messages array');
     });
   });
-  
+
   await runner.describe('Event Chaining', async () => {
     await runner.it('ticket.resolved event should have valid structure for downstream services', async () => {
       const resolvedEvent = {
@@ -150,21 +150,21 @@ async function main() {
         resolution_notes: 'Issue resolved',
         resolved_at: new Date().toISOString()
       };
-      
+
       // Test that the event can be ingested
       const response = await fetchWithTimeout(`${SERVICES.gatekeeper}/ingest`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(resolvedEvent)
       }, 10000);
-      
+
       // Gatekeeper should accept the event
       runner.assertTrue(
         response.status < 500,
         'Gatekeeper should handle ticket.resolved event'
       );
     });
-    
+
     await runner.it('payment.received event should trigger invoice update flow', async () => {
       const paymentEvent = {
         event_type: 'payment.received',
@@ -176,20 +176,20 @@ async function main() {
         currency: 'USD',
         payment_method: 'credit_card'
       };
-      
+
       const response = await fetchWithTimeout(`${SERVICES.gatekeeper}/ingest`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(paymentEvent)
       }, 10000);
-      
+
       runner.assertTrue(
         response.status < 500,
         'Gatekeeper should handle payment.received event'
       );
     });
   });
-  
+
   await runner.describe('Additional Event Type Ingestion', async () => {
     await runner.it('should accept invoice.create_requested event', async () => {
       const event = generateInvoiceCreateRequestedEvent({
@@ -378,7 +378,7 @@ async function main() {
       );
     });
   });
-  
+
   // Print summary and exit
   runner.printSummary();
   runner.exit();
