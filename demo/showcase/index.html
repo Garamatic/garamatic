@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Garamatic Demo — Architecture Dashboard</title>
+  <title>Garamatic — Architecture Dashboard & Demo Guide</title>
   <style>
     :root {
       --bg: #0d1117;
@@ -17,6 +17,8 @@
       --accent-red: #f85149;
       --accent-yellow: #d29922;
       --accent-purple: #bc8cff;
+      --accent-indigo: #6366f1;
+      --accent-orange: #f97316;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -26,14 +28,21 @@
       line-height: 1.5;
     }
     header {
-      padding: 24px 32px;
+      padding: 20px 32px;
       border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
       justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
     }
     header h1 { font-size: 20px; font-weight: 600; }
     header .subtitle { color: var(--text-muted); font-size: 13px; }
+    .header-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
     .live-badge {
       display: inline-flex;
       align-items: center;
@@ -55,6 +64,20 @@
       0%, 100% { opacity: 1; }
       50% { opacity: 0.3; }
     }
+    .btn {
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--surface-hover);
+      color: var(--text);
+      transition: all 0.2s;
+    }
+    .btn:hover { background: var(--border); border-color: var(--accent); }
+    .btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
     .container {
       max-width: 1400px;
       margin: 0 auto;
@@ -80,6 +103,14 @@
       gap: 8px;
     }
     .card h2 .icon { font-size: 16px; }
+    .card h3 {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin: 16px 0 8px;
+    }
 
     .service {
       display: flex;
@@ -111,6 +142,50 @@
       color: var(--accent);
     }
     .service-status.down { background: rgba(248, 81, 73, 0.1); color: var(--accent-red); }
+    .service-status.starting { background: rgba(210, 153, 34, 0.1); color: var(--accent-yellow); }
+
+    .tenant-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    .tenant-card {
+      padding: 14px;
+      border-radius: 10px;
+      background: var(--surface-hover);
+      border: 1px solid var(--border);
+      transition: border-color 0.2s;
+    }
+    .tenant-card:hover { border-color: var(--accent-indigo); }
+    .tenant-card .tenant-name {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .tenant-card .tenant-domain {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+    .tenant-card .tenant-desc {
+      font-size: 12px;
+      color: var(--text);
+      line-height: 1.5;
+    }
+    .tenant-card .tenant-tag {
+      display: inline-block;
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      margin-top: 8px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .tag-gov { background: rgba(59, 130, 246, 0.15); color: var(--accent); }
+    .tag-tech { background: rgba(99, 102, 241, 0.15); color: var(--accent-indigo); }
+    .tag-infra { background: rgba(249, 115, 22, 0.15); color: var(--accent-orange); }
+    .tag-saas { background: rgba(188, 140, 255, 0.15); color: var(--accent-purple); }
 
     .flow {
       display: flex;
@@ -120,6 +195,7 @@
       padding: 12px;
       background: var(--surface-hover);
       border-radius: 8px;
+      margin-bottom: 10px;
     }
     .flow-node {
       padding: 6px 12px;
@@ -134,10 +210,18 @@
       font-size: 14px;
     }
     .flow-desc {
-      margin-top: 12px;
+      margin-top: 8px;
       font-size: 12px;
       color: var(--text-muted);
       line-height: 1.6;
+    }
+    .flow-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
     }
 
     .links-grid {
@@ -247,27 +331,522 @@
       margin-top: 4px;
     }
 
+    .table-wrap {
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    th, td {
+      padding: 8px 10px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    th {
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    td { color: var(--text); }
+    tr:hover td { background: var(--surface-hover); }
+    .code { font-family: 'SF Mono', Monaco, monospace; font-size: 11px; }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+    .badge-success { background: rgba(63, 185, 80, 0.15); color: var(--accent-green); }
+    .badge-warn { background: rgba(210, 153, 34, 0.15); color: var(--accent-yellow); }
+    .badge-info { background: rgba(88, 166, 255, 0.15); color: var(--accent); }
+
+    .step {
+      display: flex;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 8px;
+      background: var(--surface-hover);
+      margin-bottom: 8px;
+      border: 1px solid var(--border);
+      transition: border-color 0.2s;
+      cursor: pointer;
+    }
+    .step:hover { border-color: var(--accent-indigo); }
+    .step-num {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: var(--accent-indigo);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .step-content { flex: 1; }
+    .step-title { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+    .step-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+    .step-time { font-size: 11px; color: var(--accent-yellow); font-weight: 500; }
+    .step-actions { margin-top: 6px; display: flex; gap: 6px; }
+    .step-actions a {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: rgba(99, 102, 241, 0.15);
+      color: var(--accent-indigo);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .step-actions a:hover { background: rgba(99, 102, 241, 0.25); }
+
+    .repo-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+    .repo-link {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: var(--surface-hover);
+      color: var(--text);
+      text-decoration: none;
+      font-size: 12px;
+      transition: background 0.2s;
+      border: 1px solid transparent;
+    }
+    .repo-link:hover { background: var(--border); border-color: var(--accent); }
+    .repo-link .repo-name { font-weight: 600; font-size: 13px; }
+    .repo-link .repo-desc { color: var(--text-muted); font-size: 11px; }
+
     .footer {
       text-align: center;
       padding: 32px;
       color: var(--text-muted);
       font-size: 12px;
     }
+
+    .hidden { display: none !important; }
+
+    .tab-bar {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+    }
+    .tab {
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: all 0.2s;
+    }
+    .tab:hover { color: var(--text); background: var(--surface-hover); }
+    .tab.active { color: var(--accent); background: rgba(88, 166, 255, 0.1); }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
   </style>
 </head>
 <body>
   <header>
     <div>
-      <h1>🏛️ Garamatic Demo — Architecture Dashboard</h1>
-      <div class="subtitle">Live view of the microservices ecosystem</div>
+      <h1>🏛️ Garamatic — Architecture Dashboard & Demo Guide</h1>
+      <div class="subtitle">Multi-tenant workflow platform · 4 tenants · 267+ tests · Event-driven · AI-integrated</div>
     </div>
-    <div class="live-badge">Live polling</div>
+    <div class="header-actions">
+      <div class="live-badge">Live polling</div>
+      <button class="btn" id="btn-topology" onclick="switchView('topology')">Topology</button>
+      <button class="btn active" id="btn-demo" onclick="switchView('demo')">Demo Guide</button>
+    </div>
   </header>
 
   <div class="container">
-    <div class="grid">
-      <!-- Service Topology -->
+    <!-- DEMO GUIDE VIEW -->
+    <div id="view-demo" class="grid">
+      <!-- Demo Flow Steps -->
+      <div class="card" style="grid-column: 1 / -1;">
+        <h2><span class="icon">🎬</span> Demo Flow (~9 min)</h2>
+        <div class="step" onclick="window.open('http://localhost:8093','_blank')">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <div class="step-title">Multi-tenant Portal — Burger Melding <span class="step-time">0:30 — 2:00</span></div>
+            <div class="step-desc">Citizen submits a ticket via the Desgoffe portal. The form adapts to the tenant's branding and language. Behind the scenes, a <code>ticket.created</code> event is published via the Outbox Pattern.</div>
+            <div class="step-actions">
+              <a href="http://localhost:8093" target="_blank">Open Portal</a>
+              <a href="http://localhost:8085" target="_blank">Open Ticket Masala</a>
+              <a href="http://localhost:15672" target="_blank">RabbitMQ</a>
+            </div>
+          </div>
+        </div>
+        <div class="step" onclick="window.open('http://localhost:8085','_blank')">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <div class="step-title">Ticket Lifecycle + GERDA AI <span class="step-time">2:00 — 4:00</span></div>
+            <div class="step-desc">Login as manager. GERDA AI sidebar auto-analyses each ticket: complexity, priority, tags, and recommended agent. Assignment triggers a <code>ticket.assigned</code> event.</div>
+            <div class="step-actions">
+              <a href="http://localhost:8085" target="_blank">Ticket Masala</a>
+            </div>
+          </div>
+        </div>
+        <div class="step" onclick="window.open('http://localhost:8085','_blank')">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <div class="step-title">MCP AI Chat — The WOW Moment <span class="step-time">4:00 — 6:00</span></div>
+            <div class="step-desc">Open the AI chat inside any ticket. The agent already knows the ticket context. Ask it to create a €200 invoice — it uses MCP tools to call your business APIs directly. No ordinary chatbot.</div>
+            <div class="step-actions">
+              <a href="http://localhost:8085" target="_blank">Open Ticket Masala</a>
+              <a href="http://localhost:3001" target="_blank">Agentic Service</a>
+            </div>
+          </div>
+        </div>
+        <div class="step" onclick="window.open('http://localhost:8069','_blank')">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <div class="step-title">Invoicing + Odoo ERP <span class="step-time">6:00 — 8:00</span></div>
+            <div class="step-desc">Resolve a ticket with a billable amount. The Odoo Bridge receives <code>ticket.resolved</code>, creates a customer and invoice via JSON-RPC, and publishes <code>invoice.created</code>. Zero manual work.</div>
+            <div class="step-actions">
+              <a href="http://localhost:8069" target="_blank">Odoo ERP</a>
+              <a href="http://localhost:8089" target="_blank">Odoo Bridge</a>
+            </div>
+          </div>
+        </div>
+        <div class="step" onclick="window.open('http://localhost:15672','_blank')">
+          <div class="step-num">5</div>
+          <div class="step-content">
+            <div class="step-title">Event Bus & Email — Closing the Loop <span class="step-time">8:00 — 9:00</span></div>
+            <div class="step-desc">One event fans out to three queues. RabbitMQ shows the bindings. Mailhog captures every email: ticket created, assigned, resolved, invoice created. No service calls another directly.</div>
+            <div class="step-actions">
+              <a href="http://localhost:15672" target="_blank">RabbitMQ</a>
+              <a href="http://localhost:8025" target="_blank">Mailhog</a>
+            </div>
+          </div>
+        </div>
+        <div class="step" onclick="window.open('http://localhost:8092','_blank')">
+          <div class="step-num">6</div>
+          <div class="step-content">
+            <div class="step-title">Outro — Summary & Links <span class="step-time">9:00 — 9:30</span></div>
+            <div class="step-desc">Return to the dashboard. All services green. Multi-tenant. Event-driven. AI-integrated. Fully containerized. Open source.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tenants -->
       <div class="card">
+        <h2><span class="icon">🏘️</span> Tenant Personalities</h2>
+        <div class="tenant-grid">
+          <div class="tenant-card">
+            <div class="tenant-name">🏛️ Desgoffe</div>
+            <div class="tenant-domain">ville-desgoffe.local</div>
+            <div class="tenant-desc">Government bureau. Strict hierarchy, formal language, bureaucratic approval (Mayor's Stamp). Citizens file complaints only; no dashboard.</div>
+            <span class="tenant-tag tag-gov">Government</span>
+          </div>
+          <div class="tenant-card">
+            <div class="tenant-name">🌶️ Liberty</div>
+            <div class="tenant-domain">liberty-tech.local</div>
+            <div class="tenant-desc">SaaS / Tech startup. Agile workflows, git-style commits, CI/CD pipeline visibility. DevOps Lead vs Support Rep roles.</div>
+            <span class="tenant-tag tag-tech">SaaS / Tech</span>
+          </div>
+          <div class="tenant-card">
+            <div class="tenant-name">🚧 Whitman</div>
+            <div class="tenant-domain">whitman-infra.local</div>
+            <div class="tenant-desc">Infrastructure / Field. High-contrast UI, large controls, foreman-oriented view. Designed for field use and tough conditions.</div>
+            <span class="tenant-tag tag-infra">Infrastructure</span>
+          </div>
+          <div class="tenant-card">
+            <div class="tenant-name">🥃 Hennessey</div>
+            <div class="tenant-domain">hennessey.local</div>
+            <div class="tenant-desc">Premium spirits distribution. Custom approval chains, batch processing, compliance tracking for regulated goods.</div>
+            <span class="tenant-tag tag-saas">Distribution</span>
+          </div>
+        </div>
+        <div style="margin-top:12px; font-size:12px; color:var(--text-muted);">
+          All tenants run from a single deployable binary. Personality is injected via <code class="code">config/masala_domains.yaml</code> — no code changes required.
+        </div>
+      </div>
+
+      <!-- Demo Credentials -->
+      <div class="card">
+        <h2><span class="icon">🔑</span> Demo Credentials</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Service</th><th>URL</th><th>Username</th><th>Password</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Ticket Masala (Admin)</td><td class="code">localhost:8085</td><td class="code">admin</td><td class="code">Admin123!</td></tr>
+              <tr><td>Ticket Masala (Employee)</td><td class="code">localhost:8085</td><td class="code">employee</td><td class="code">Employee123!</td></tr>
+              <tr><td>Ticket Masala (Customer)</td><td class="code">localhost:8085</td><td class="code">jean.dupont@citoyen.be</td><td class="code">Customer123!</td></tr>
+              <tr><td>Gatekeeper API</td><td class="code">localhost:8086</td><td class="code">—</td><td class="code">demo-api-key</td></tr>
+              <tr><td>RabbitMQ</td><td class="code">localhost:15672</td><td class="code">guest</td><td class="code">guest</td></tr>
+              <tr><td>Odoo ERP</td><td class="code">localhost:8069</td><td class="code">admin</td><td class="code">admin</td></tr>
+              <tr><td>Grafana</td><td class="code">localhost:3000</td><td class="code">admin</td><td class="code">admin</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Event Flow -->
+      <div class="card">
+        <h2><span class="icon">⚡</span> Event Flow Architecture</h2>
+        <div class="flow-label">Citizen Portal Flow</div>
+        <div class="flow">
+          <div class="flow-node">Portal</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node">Gatekeeper</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node">RabbitMQ</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node">Ticket Masala</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node">Mailing</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node">Mailhog</div>
+        </div>
+        <div class="flow-desc">Portal submits ticket → Gatekeeper validates & publishes <code>ticket.created</code> → RabbitMQ fan-out → Ticket Masala stores + Outbox → Mailing sends confirmation → Mailhog captures.</div>
+
+        <div class="flow-label">AI + ERP Flow</div>
+        <div class="flow">
+          <div class="flow-node">MCP Chat</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node">Agentic</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node">Ticket Masala</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node">Odoo Bridge</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node">Odoo ERP</div>
+        </div>
+        <div class="flow-desc">User asks AI to create invoice → Agentic calls MCP tools → Ticket Masala updates → Odoo Bridge syncs via JSON-RPC → Invoice posted in Odoo.</div>
+
+        <div class="flow-label">RabbitMQ Exchange</div>
+        <div class="flow">
+          <div class="flow-node">event_exchange</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node">agentic.queue</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node">mailing.queue</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node">odoo-bridge</div>
+        </div>
+        <div class="flow-desc">One message, three consumers, zero coupling. Outbox Pattern guarantees atomic delivery.</div>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="card">
+        <h2><span class="icon">🔗</span> Quick Links</h2>
+        <div class="links-grid">
+          <a class="link-btn" href="http://localhost:8085" target="_blank"><span class="emoji">🎫</span> Ticket Masala</a>
+          <a class="link-btn" href="http://localhost:8086" target="_blank"><span class="emoji">🛡️</span> Gatekeeper</a>
+          <a class="link-btn" href="http://localhost:8087" target="_blank"><span class="emoji">📧</span> Mailing Service</a>
+          <a class="link-btn" href="http://localhost:3001" target="_blank"><span class="emoji">🤖</span> Agentic Service</a>
+          <a class="link-btn" href="http://localhost:8089" target="_blank"><span class="emoji">🌉</span> Odoo Bridge</a>
+          <a class="link-btn" href="http://localhost:8090" target="_blank"><span class="emoji">🏗️</span> Garamatic Web</a>
+          <a class="link-btn" href="http://localhost:8091" target="_blank"><span class="emoji">🌶️</span> Masala Web</a>
+          <a class="link-btn" href="http://localhost:8093" target="_blank"><span class="emoji">🏛️</span> Portal</a>
+          <a class="link-btn" href="http://localhost:15672" target="_blank"><span class="emoji">🐰</span> RabbitMQ</a>
+          <a class="link-btn" href="http://localhost:8025" target="_blank"><span class="emoji">📬</span> Mailhog</a>
+          <a class="link-btn" href="http://localhost:8069" target="_blank"><span class="emoji">📊</span> Odoo ERP</a>
+          <a class="link-btn" href="http://localhost:11434" target="_blank"><span class="emoji">🧠</span> Ollama LLM</a>
+        </div>
+        <h3>External</h3>
+        <div class="links-grid">
+          <a class="link-btn" href="https://ticket-masala.fly.dev" target="_blank"><span class="emoji">🌍</span> Live: Ticket Masala</a>
+          <a class="link-btn" href="https://ticket-masala.fly.dev/swagger" target="_blank"><span class="emoji">📘</span> Swagger API</a>
+          <a class="link-btn" href="https://masala-doc.fly.dev" target="_blank"><span class="emoji">📖</span> MkDocs</a>
+          <a class="link-btn" href="https://github.com/garamatic/garamatic" target="_blank"><span class="emoji">🐙</span> GitHub</a>
+        </div>
+      </div>
+
+      <!-- API Explorer -->
+      <div class="card">
+        <h2><span class="icon">🧭</span> API Explorer</h2>
+        <div class="endpoint">
+          <span class="method get">GET</span>
+          <span class="path">http://localhost:8085/health</span>
+          <span class="desc">Ticket Masala health check</span>
+        </div>
+        <div class="endpoint">
+          <span class="method get">GET</span>
+          <span class="path">http://localhost:8085/swagger</span>
+          <span class="desc">OpenAPI / Swagger UI</span>
+        </div>
+        <div class="endpoint">
+          <span class="method get">GET</span>
+          <span class="path">http://localhost:8086/health</span>
+          <span class="desc">Gatekeeper health check</span>
+        </div>
+        <div class="endpoint">
+          <span class="method get">GET</span>
+          <span class="path">http://localhost:8087/health</span>
+          <span class="desc">Mailing Service health check</span>
+        </div>
+        <div class="endpoint">
+          <span class="method get">GET</span>
+          <span class="path">http://localhost:8089/health</span>
+          <span class="desc">Odoo Bridge health check</span>
+        </div>
+        <div class="endpoint">
+          <span class="method get">GET</span>
+          <span class="path">http://localhost:3001/sse</span>
+          <span class="desc">Agentic Service SSE endpoint</span>
+        </div>
+        <div class="endpoint">
+          <span class="method get">GET</span>
+          <span class="path">http://localhost:15672/api/overview</span>
+          <span class="desc">RabbitMQ management API</span>
+        </div>
+        <div class="endpoint">
+          <span class="method post">POST</span>
+          <span class="path">http://localhost:8086/api/events/publish</span>
+          <span class="desc">Publish event to RabbitMQ via Gatekeeper</span>
+        </div>
+        <div class="endpoint">
+          <span class="method post">POST</span>
+          <span class="path">http://localhost:8087/api/mail/send</span>
+          <span class="desc">Send email via Mailing Service</span>
+        </div>
+        <div class="endpoint">
+          <span class="method post">POST</span>
+          <span class="path">http://localhost:8085/api/portal/submit</span>
+          <span class="desc">Portal ticket submission</span>
+        </div>
+      </div>
+
+      <!-- Project Metrics -->
+      <div class="card">
+        <h2><span class="icon">📈</span> Project Metrics</h2>
+        <div class="metrics">
+          <div class="metric">
+            <div class="metric-value">267+</div>
+            <div class="metric-label">Tests Passing</div>
+          </div>
+          <div class="metric">
+            <div class="metric-value">10</div>
+            <div class="metric-label">Services</div>
+          </div>
+          <div class="metric">
+            <div class="metric-value">4</div>
+            <div class="metric-label">Tenants</div>
+          </div>
+        </div>
+        <div style="margin-top:16px;">
+          <div style="font-size:12px; margin-bottom:8px; color:var(--text-muted);">Test Breakdown</div>
+          <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <span class="badge badge-success">~180 Unit</span>
+            <span class="badge badge-success">~50 Integration</span>
+            <span class="badge badge-success">~15 Architecture</span>
+            <span class="badge badge-success">~20 Domain</span>
+            <span class="badge badge-success">~20 Cross-service</span>
+          </div>
+        </div>
+        <div style="margin-top:16px;">
+          <div style="font-size:12px; margin-bottom:8px; color:var(--text-muted);">Tech Stack</div>
+          <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <span class="badge badge-info">.NET 10</span>
+            <span class="badge badge-info">ASP.NET Core MVC</span>
+            <span class="badge badge-info">HTMX</span>
+            <span class="badge badge-info">EF Core</span>
+            <span class="badge badge-info">SQLite WAL</span>
+            <span class="badge badge-info">RabbitMQ</span>
+            <span class="badge badge-info">Docker</span>
+            <span class="badge badge-info">Fly.io</span>
+            <span class="badge badge-info">GitHub Actions</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- GitHub Repos -->
+      <div class="card">
+        <h2><span class="icon">🐙</span> Repositories</h2>
+        <div class="repo-grid">
+          <a class="repo-link" href="https://github.com/garamatic/garamatic" target="_blank">
+            <span class="repo-name">garamatic</span>
+            <span class="repo-desc">Monorepo — main orchestration</span>
+          </a>
+          <a class="repo-link" href="https://github.com/garamatic/ticket-masala" target="_blank">
+            <span class="repo-name">ticket-masala</span>
+            <span class="repo-desc">Core engine — workflows, GERDA, tenants</span>
+          </a>
+          <a class="repo-link" href="https://github.com/garamatic/masala-web" target="_blank">
+            <span class="repo-name">masala-web</span>
+            <span class="repo-desc">Tenant marketing websites</span>
+          </a>
+          <a class="repo-link" href="https://github.com/garamatic/garamatic-web" target="_blank">
+            <span class="repo-name">garamatic-web</span>
+            <span class="repo-desc">Vendor landing page</span>
+          </a>
+          <a class="repo-link" href="https://github.com/garamatic/odoo-integration" target="_blank">
+            <span class="repo-name">odoo-integration</span>
+            <span class="repo-desc">ERP JSON-RPC bridge</span>
+          </a>
+          <a class="repo-link" href="https://github.com/garamatic/event-planner" target="_blank">
+            <span class="repo-name">event-planner</span>
+            <span class="repo-desc">Drupal CMS for events</span>
+          </a>
+          <a class="repo-link" href="https://github.com/garamatic/portal" target="_blank">
+            <span class="repo-name">portal</span>
+            <span class="repo-desc">Citizen portal (React + Vite)</span>
+          </a>
+          <a class="repo-link" href="https://github.com/garamatic/mailing-service" target="_blank">
+            <span class="repo-name">mailing-service</span>
+            <span class="repo-desc">SendGrid transactional emails</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Curl Quickies -->
+      <div class="card">
+        <h2><span class="icon">📋</span> Curl Quickies</h2>
+        <div class="curl-block">
+          <button class="copy" onclick="copy(this)">Copy</button>
+          <pre>curl http://localhost:8085/health</pre>
+        </div>
+        <div class="curl-block">
+          <button class="copy" onclick="copy(this)">Copy</button>
+          <pre>curl http://localhost:8086/health \
+  -H "X-Api-Key: demo-api-key"</pre>
+        </div>
+        <div class="curl-block">
+          <button class="copy" onclick="copy(this)">Copy</button>
+          <pre>curl http://localhost:15672/api/overview \
+  -u guest:guest</pre>
+        </div>
+        <div class="curl-block">
+          <button class="copy" onclick="copy(this)">Copy</button>
+          <pre>curl -X POST http://localhost:8086/api/events/publish \
+  -H "Content-Type: application/json" \
+  -H "X-Api-Key: demo-api-key" \
+  -d '{"type":"ticket.created","payload":{}}'</pre>
+        </div>
+        <div class="curl-block">
+          <button class="copy" onclick="copy(this)">Copy</button>
+          <pre>curl -X POST http://localhost:8085/api/portal/submit \
+  -F "CustomerName=Marie Curie" \
+  -F "CustomerEmail=marie.curie@science.be" \
+  -F "Description=Bouwhoerrie zonder vergunning" \
+  -F "WorkItemType=NUISANCE" \
+  -F "PriorityScore=10" \
+  -F "Tenant=desgoffe"</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOPOLOGY VIEW -->
+    <div id="view-topology" class="grid hidden">
+      <!-- Service Topology -->
+      <div class="card" style="grid-column: 1 / -1;">
         <h2><span class="icon">🗺️</span> Live Service Topology</h2>
         <div id="services">
           <div class="service" data-url="http://localhost:8085/health">
@@ -360,148 +939,49 @@
             </div>
             <div class="service-status" id="status-portal">checking...</div>
           </div>
-        </div>
-      </div>
-
-      <!-- Event Flow -->
-      <div class="card">
-        <h2><span class="icon">⚡</span> Event Flow Visualization</h2>
-        <div class="flow">
-          <div class="flow-node">Portal</div>
-          <span class="flow-arrow">→</span>
-          <div class="flow-node">Gatekeeper</div>
-          <span class="flow-arrow">→</span>
-          <div class="flow-node">RabbitMQ</div>
-          <span class="flow-arrow">→</span>
-          <div class="flow-node">Ticket Masala</div>
-          <span class="flow-arrow">→</span>
-          <div class="flow-node">Mailing</div>
-          <span class="flow-arrow">→</span>
-          <div class="flow-node">Mailhog</div>
-        </div>
-        <div class="flow-desc">
-          A citizen submits a ticket via the Portal → Gatekeeper validates & publishes a <code>ticket.created</code> event to RabbitMQ → Ticket Masala processes and stores it → Mailing Service sends confirmation → captured in Mailhog for inspection.
-        </div>
-        <div class="flow" style="margin-top: 12px;">
-          <div class="flow-node">Agentic</div>
-          <span class="flow-arrow">→</span>
-          <div class="flow-node">LLM (Ollama)</div>
-          <span class="flow-arrow">→</span>
-          <div class="flow-node">Ticket Masala</div>
-          <span class="flow-arrow">→</span>
-          <div class="flow-node">Odoo Bridge</div>
-          <span class="flow-arrow">→</span>
-          <div class="flow-node">Odoo ERP</div>
-        </div>
-        <div class="flow-desc">
-          The Agentic Service queries the local LLM for intelligent ticket routing → updates Ticket Masala → Odoo Bridge syncs invoice data to Odoo ERP.
-        </div>
-      </div>
-
-      <!-- Quick Links -->
-      <div class="card">
-        <h2><span class="icon">🔗</span> Quick Links</h2>
-        <div class="links-grid">
-          <a class="link-btn" href="http://localhost:8085" target="_blank"><span class="emoji">🎫</span> Ticket Masala</a>
-          <a class="link-btn" href="http://localhost:8086" target="_blank"><span class="emoji">🛡️</span> Gatekeeper</a>
-          <a class="link-btn" href="http://localhost:8087" target="_blank"><span class="emoji">📧</span> Mailing Service</a>
-          <a class="link-btn" href="http://localhost:3001/sse" target="_blank"><span class="emoji">🤖</span> Agentic Service</a>
-          <a class="link-btn" href="http://localhost:8089" target="_blank"><span class="emoji">🌉</span> Odoo Bridge</a>
-          <a class="link-btn" href="http://localhost:8090" target="_blank"><span class="emoji">🏗️</span> Garamatic Web</a>
-          <a class="link-btn" href="http://localhost:8091" target="_blank"><span class="emoji">🌶️</span> Masala Web</a>
-          <a class="link-btn" href="http://localhost:8093" target="_blank"><span class="emoji">🏛️</span> Portal</a>
-          <a class="link-btn" href="http://localhost:15672" target="_blank"><span class="emoji">🐰</span> RabbitMQ (guest/guest)</a>
-          <a class="link-btn" href="http://localhost:8025" target="_blank"><span class="emoji">📬</span> Mailhog</a>
-          <a class="link-btn" href="http://localhost:8069" target="_blank"><span class="emoji">📊</span> Odoo ERP (admin/admin)</a>
-          <a class="link-btn" href="http://localhost:11434" target="_blank"><span class="emoji">🧠</span> Ollama LLM</a>
-        </div>
-      </div>
-
-      <!-- API Explorer -->
-      <div class="card">
-        <h2><span class="icon">🧭</span> API Explorer</h2>
-        <div class="endpoint">
-          <span class="method get">GET</span>
-          <span class="path">http://localhost:8085/health</span>
-          <span class="desc">Ticket Masala health check</span>
-        </div>
-        <div class="endpoint">
-          <span class="method get">GET</span>
-          <span class="path">http://localhost:8086/health</span>
-          <span class="desc">Gatekeeper health check</span>
-        </div>
-        <div class="endpoint">
-          <span class="method get">GET</span>
-          <span class="path">http://localhost:8087/health</span>
-          <span class="desc">Mailing Service health check</span>
-        </div>
-        <div class="endpoint">
-          <span class="method get">GET</span>
-          <span class="path">http://localhost:8089/health</span>
-          <span class="desc">Odoo Bridge health check</span>
-        </div>
-        <div class="endpoint">
-          <span class="method get">GET</span>
-          <span class="path">http://localhost:15672/api/overview</span>
-          <span class="desc">RabbitMQ management API overview</span>
-        </div>
-        <div class="endpoint">
-          <span class="method get">GET</span>
-          <span class="path">http://localhost:3001/sse</span>
-          <span class="desc">Agentic Service SSE endpoint</span>
-        </div>
-        <div class="endpoint">
-          <span class="method post">POST</span>
-          <span class="path">http://localhost:8086/api/events/publish</span>
-          <span class="desc">Publish an event to RabbitMQ via Gatekeeper</span>
-        </div>
-        <div class="endpoint">
-          <span class="method post">POST</span>
-          <span class="path">http://localhost:8087/api/mail/send</span>
-          <span class="desc">Send an email via the Mailing Service</span>
-        </div>
-      </div>
-
-      <!-- Curl Quickies -->
-      <div class="card">
-        <h2><span class="icon">📋</span> Curl Quickies</h2>
-        <div class="curl-block">
-          <button class="copy" onclick="copy(this)">Copy</button>
-          <pre>curl http://localhost:8085/health</pre>
-        </div>
-        <div class="curl-block">
-          <button class="copy" onclick="copy(this)">Copy</button>
-          <pre>curl http://localhost:8086/health \
-  -H "X-Api-Key: demo-api-key"</pre>
-        </div>
-        <div class="curl-block">
-          <button class="copy" onclick="copy(this)">Copy</button>
-          <pre>curl http://localhost:15672/api/overview \
-  -u guest:guest</pre>
-        </div>
-        <div class="curl-block">
-          <button class="copy" onclick="copy(this)">Copy</button>
-          <pre>curl -X POST http://localhost:8086/api/events/publish \
-  -H "Content-Type: application/json" \
-  -H "X-Api-Key: demo-api-key" \
-  -d '{"type":"ticket.created","payload":{}}'</pre>
-        </div>
-        <div class="curl-block">
-          <button class="copy" onclick="copy(this)">Copy</button>
-          <pre>curl http://localhost:8089/health</pre>
+          <div class="service" data-url="http://localhost:8069">
+            <div class="service-info">
+              <div class="service-dot unknown" id="dot-odooerp"></div>
+              <div>
+                <div class="service-name">Odoo ERP</div>
+                <div class="service-url">localhost:8069</div>
+              </div>
+            </div>
+            <div class="service-status" id="status-odooerp">checking...</div>
+          </div>
+          <div class="service" data-url="http://localhost:11434">
+            <div class="service-info">
+              <div class="service-dot unknown" id="dot-ollama"></div>
+              <div>
+                <div class="service-name">Ollama LLM</div>
+                <div class="service-url">localhost:11434</div>
+              </div>
+            </div>
+            <div class="service-status" id="status-ollama">checking...</div>
+          </div>
+          <div class="service" data-url="http://localhost:8025">
+            <div class="service-info">
+              <div class="service-dot unknown" id="dot-mailhog"></div>
+              <div>
+                <div class="service-name">Mailhog</div>
+                <div class="service-url">localhost:8025</div>
+              </div>
+            </div>
+            <div class="service-status" id="status-mailhog">checking...</div>
+          </div>
         </div>
       </div>
 
       <!-- Live Metrics -->
       <div class="card">
-        <h2><span class="icon">📈</span> Live Metrics</h2>
+        <h2><span class="icon">📊</span> Live Metrics</h2>
         <div class="metrics">
           <div class="metric">
             <div class="metric-value" id="metric-up">—</div>
             <div class="metric-label">Services Up</div>
           </div>
           <div class="metric">
-            <div class="metric-value" id="metric-total">9</div>
+            <div class="metric-value" id="metric-total">12</div>
             <div class="metric-label">Total Services</div>
           </div>
           <div class="metric">
@@ -514,7 +994,7 @@
   </div>
 
   <div class="footer">
-    Garamatic Demo Environment — All services polled every 5 seconds via health endpoints
+    Garamatic Demo Environment — All services polled every 5 seconds · Built by Juan Benjumea, Wito De Schrijver, Maarten Görtz, Charlotte Schröer
   </div>
 
   <script>
@@ -528,13 +1008,24 @@
       { id: 'web', url: 'http://localhost:8090', name: 'Garamatic Web' },
       { id: 'masala', url: 'http://localhost:8091', name: 'Masala Web' },
       { id: 'portal', url: 'http://localhost:8093', name: 'Portal' },
+      { id: 'odooerp', url: 'http://localhost:8069', name: 'Odoo ERP' },
+      { id: 'ollama', url: 'http://localhost:11434', name: 'Ollama LLM' },
+      { id: 'mailhog', url: 'http://localhost:8025', name: 'Mailhog' },
     ];
+
+    function switchView(view) {
+      document.getElementById('view-demo').classList.toggle('hidden', view !== 'demo');
+      document.getElementById('view-topology').classList.toggle('hidden', view !== 'topology');
+      document.getElementById('btn-demo').classList.toggle('active', view === 'demo');
+      document.getElementById('btn-topology').classList.toggle('active', view === 'topology');
+    }
 
     async function checkHealth() {
       let up = 0;
       for (const svc of services) {
         const dot = document.getElementById('dot-' + svc.id);
         const status = document.getElementById('status-' + svc.id);
+        if (!dot || !status) continue;
         try {
           const controller = new AbortController();
           const timeout = setTimeout(() => controller.abort(), 3000);
@@ -571,8 +1062,10 @@
           }
         }
       }
-      document.getElementById('metric-up').textContent = up;
-      document.getElementById('metric-health').textContent = Math.round((up / services.length) * 100) + '%';
+      const metricUp = document.getElementById('metric-up');
+      const metricHealth = document.getElementById('metric-health');
+      if (metricUp) metricUp.textContent = up;
+      if (metricHealth) metricHealth.textContent = Math.round((up / services.length) * 100) + '%';
     }
 
     function copy(btn) {

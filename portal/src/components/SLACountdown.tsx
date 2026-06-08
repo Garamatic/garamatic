@@ -1,5 +1,5 @@
 import { Clock, Warning, CheckCircle } from '@phosphor-icons/react'
-import { addBusinessDays } from '../config/municipality'
+import { addBusinessDays, getBusinessDaysBetween } from '../config/municipality'
 
 interface SLACountdownProps {
   createdAt: string
@@ -21,17 +21,7 @@ export function SLACountdown({ createdAt, slaDays = 7, status }: SLACountdownPro
   const deadline = addBusinessDays(created, slaDays)
 
   const now = new Date()
-
-  // Count business days remaining
-  let businessDaysRemaining = 0
-  const current = new Date(now)
-  while (current < deadline) {
-    current.setDate(current.getDate() + 1)
-    const day = current.getDay()
-    if (day !== 0 && day !== 6) {
-      businessDaysRemaining++
-    }
-  }
+  const businessDaysRemaining = getBusinessDaysBetween(now, deadline)
 
   let color: string
   let bgColor: string
@@ -67,17 +57,8 @@ export function SLACountdown({ createdAt, slaDays = 7, status }: SLACountdownPro
 export function SLAInfo({ createdAt, slaDays = 7 }: { createdAt: string; slaDays?: number }) {
   const created = new Date(createdAt)
   const deadline = addBusinessDays(created, slaDays)
-
   const now = new Date()
-  let diffDays = 0
-  const current = new Date(now)
-  while (current < deadline) {
-    current.setDate(current.getDate() + 1)
-    const day = current.getDay()
-    if (day !== 0 && day !== 6) {
-      diffDays++
-    }
-  }
+  const diffDays = getBusinessDaysBetween(now, deadline)
 
   return (
     <div className="text-xs text-text-muted">

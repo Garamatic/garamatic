@@ -1,7 +1,7 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { PaperPlaneRight, FilePdf, X, Warning, User, FileText, Stamp, ArrowLeft, Clock, MapPin, ArrowClockwise } from '@phosphor-icons/react'
-import { useToast } from '../components/Toast'
+import { useToast } from '../components/useToast'
 import { SERVICE_TYPES, QUARTIERS, getServiceByValue } from '../config/municipality'
 
 interface FormData {
@@ -56,7 +56,7 @@ export function SubmitPage() {
   const preselectedType = searchParams.get('type') || ''
 
   const { addToast } = useToast()
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<FormData>(() => ({
     customerName: '',
     customerEmail: '',
     customerPhone: '',
@@ -69,18 +69,12 @@ export function SubmitPage() {
     description: '',
     attachment: null,
     declaration: false,
-  })
+  }))
   const [errors, setErrors] = useState<FormErrors>({})
   const [submitting, setSubmitting] = useState(false)
   const [dragOver, setDragOver] = useState(false)
 
   const selectedService = getServiceByValue(formData.requestType)
-
-  useEffect(() => {
-    if (preselectedType) {
-      setFormData((prev) => ({ ...prev, requestType: preselectedType }))
-    }
-  }, [preselectedType])
 
   const updateField = useCallback(<K extends keyof FormData>(field: K, value: FormData[K]) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
@@ -130,6 +124,9 @@ export function SubmitPage() {
       newErrors.surface = 'La surface est requise.'
     }
 
+    // Clear previous submit error on re-validation
+    delete newErrors.submit
+
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -159,6 +156,7 @@ export function SubmitPage() {
         description: sanitize(formData.description),
         priority: selectedService?.isUrgent ? '10' : '5',
         source: 'desgoffe-portal',
+        hasAttachment: !!formData.attachment,
         tags,
       }
 
@@ -614,7 +612,7 @@ export function SubmitPage() {
                     customerName: '',
                     customerEmail: '',
                     customerPhone: '',
-                    requestType: '',
+                    requestType: preselectedType,
                     quartier: '',
                     localisation: '',
                     typeProbleme: '',

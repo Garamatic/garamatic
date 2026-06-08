@@ -10,6 +10,9 @@ const routeLabels: Record<string, string> = {
   '/privacy': 'Politique de Confidentialité',
   '/terms': 'Conditions d\'Utilisation',
   '/accessibility': 'Accessibilité',
+  '/etat-civil': 'État Civil',
+  '/cpas': 'CPAS',
+  '/plan-du-site': 'Plan du Site',
 }
 
 export function Breadcrumb() {

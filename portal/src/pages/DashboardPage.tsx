@@ -10,7 +10,7 @@ import { StatusBadge, type StatusKey } from '../components/StatusBadge'
 import { StatusTimeline } from '../components/StatusTimeline'
 import { TicketCardSkeleton, StatCardSkeleton, DetailSkeleton } from '../components/Skeleton'
 import { SLACountdown } from '../components/SLACountdown'
-import { useToast } from '../components/Toast'
+import { useToast } from '../components/useToast'
 import { MUNICIPALITY, typeLabels, getServiceByValue } from '../config/municipality'
 
 // ── Message Thread ──────────────────────────────────────────────────
@@ -27,7 +27,7 @@ function buildConversationThread(req: TicketViewModel): Message[] {
 
   // Initial submission
   messages.push({
-    id: 'msg-1',
+    id: `${req.id}-msg-1`,
     from: 'citoyen',
     author: 'Vous',
     date: req.date,
@@ -42,7 +42,7 @@ function buildConversationThread(req: TicketViewModel): Message[] {
   const service = getServiceByValue(req.type)
   const dept = service?.department || 'Service Municipal'
   messages.push({
-    id: 'msg-2',
+    id: `${req.id}-msg-2`,
     from: 'service',
     author: dept,
     date: req.date,
@@ -53,9 +53,9 @@ function buildConversationThread(req: TicketViewModel): Message[] {
     return messages
   }
 
-  if (req.status === 'in_progress') {
+  if (req.status === 'inprogress' || req.status === 'assigned') {
     messages.push({
-      id: 'msg-3',
+      id: `${req.id}-msg-3`,
       from: 'service',
       author: dept,
       date: req.updatedAt,
@@ -66,7 +66,7 @@ function buildConversationThread(req: TicketViewModel): Message[] {
 
   if (req.status === 'resolved') {
     messages.push({
-      id: 'msg-3',
+      id: `${req.id}-msg-3`,
       from: 'service',
       author: dept,
       date: req.updatedAt,
@@ -77,7 +77,7 @@ function buildConversationThread(req: TicketViewModel): Message[] {
 
   if (req.status === 'rejected') {
     messages.push({
-      id: 'msg-3',
+      id: `${req.id}-msg-3`,
       from: 'service',
       author: dept,
       date: req.updatedAt,
@@ -186,6 +186,8 @@ export function DashboardPage() {
   useEffect(() => {
     if (!email) return
 
+    const controller = new AbortController()
+
     const fetchTickets = async () => {
       setLoading(true)
       setApiError(null)
@@ -193,7 +195,8 @@ export function DashboardPage() {
         const response = await fetch(
           `${API_BASE}/api/portal/tickets?email=${encodeURIComponent(email)}`,
           {
-            headers: PORTAL_SECRET ? { 'X-Portal-Secret': PORTAL_SECRET } : undefined
+            headers: PORTAL_SECRET ? { 'X-Portal-Secret': PORTAL_SECRET } : undefined,
+            signal: controller.signal,
           }
         )
         if (!response.ok) {
@@ -203,6 +206,7 @@ export function DashboardPage() {
         const mapped = data.map(mapApiTicket)
         setTickets(mapped)
       } catch (err) {
+        if (err instanceof Error && err.name === 'AbortError') return
         console.error('Failed to fetch tickets:', err)
         addToast('Impossible de charger les demandes depuis le serveur. Veuillez réessayer plus tard.', 'error')
         setApiError('Le service est temporairement indisponible. Veuillez réessayer plus tard ou contacter le guichet au ' + MUNICIPALITY.phone)
@@ -213,7 +217,8 @@ export function DashboardPage() {
     }
 
     fetchTickets()
-  }, [email])
+    return () => controller.abort()
+  }, [email, addToast])
 
   const filtered = useMemo(() => {
     let list = [...tickets]
@@ -255,7 +260,7 @@ export function DashboardPage() {
       { status: 'submitted' as StatusKey, label: 'Soumise', description: 'Votre demande a été enregistrée.', date: req.date, active: false, completed: true },
       { status: 'received' as StatusKey, label: 'Reçue', description: 'Le service a pris connaissance de votre demande.', date: req.date, active: false, completed: true },
     ]
-    if (req.status === 'in_progress') {
+    if (req.status === 'inprogress' || req.status === 'assigned' || req.status === 'pending') {
       steps.push({ status: 'in_progress' as StatusKey, label: 'En cours', description: 'Votre demande est en cours de traitement.', date: req.updatedAt, active: true, completed: false })
     } else if (req.status === 'resolved') {
       steps.push({ status: 'in_progress' as StatusKey, label: 'En cours', description: 'Votre demande a été traitée.', date: req.updatedAt, active: false, completed: true })
@@ -396,17 +401,21 @@ export function DashboardPage() {
                 filtered.map((req) => (
                   <div
                     key={req.id}
+                    role="button"
+                    tabIndex={0}
                     onClick={() => handleSelect(req.id)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSelect(req.id)}
                     className={`card p-5 cursor-pointer card-lift ${
                       selectedId === req.id ? 'ring-2 ring-primary ring-offset-2' : ''
                     }`}
+                    aria-label={`Demande ${req.id}, ${typeLabels[req.type] || req.type}`}
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-grow min-w-0">
                         <div className="flex items-center gap-2 mb-2 flex-wrap">
                           <StatusBadge status={req.status} />
-                          <span className={`text-xs font-medium ${priorityColors[req.priority]}`}>
-                            {priorityLabels[req.priority]}
+                          <span className={`text-xs font-medium ${priorityColors[req.priority] || 'text-muted'}`}>
+                            {priorityLabels[req.priority] || 'Standard'}
                           </span>
                         </div>
                         <h3 className="font-medium text-text-primary mb-1 truncate">
@@ -466,14 +475,21 @@ export function DashboardPage() {
 
           {/* Mobile Detail Modal */}
           {mobileDetailOpen && selected && (
-            <div className="fixed inset-0 z-50 lg:hidden">
+            <div
+              className="fixed inset-0 z-50 lg:hidden"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="mobile-detail-title"
+              onKeyDown={(e) => e.key === 'Escape' && setMobileDetailOpen(false)}
+            >
               <div className="absolute inset-0 bg-black/40" onClick={() => setMobileDetailOpen(false)} />
               <div className="absolute bottom-0 left-0 right-0 bg-surface rounded-t-2xl max-h-[85vh] overflow-y-auto">
                 <div className="p-4 border-b border-border flex items-center justify-between">
-                  <h2 className="font-semibold text-text-primary">Détails</h2>
+                  <h2 id="mobile-detail-title" className="font-semibold text-text-primary">Détails</h2>
                   <button
                     onClick={() => setMobileDetailOpen(false)}
                     className="p-2 rounded-md hover:bg-surface-hover"
+                    aria-label="Fermer"
                   >
                     <X size={20} />
                   </button>
@@ -584,8 +600,8 @@ function DetailContent({ req, timeline }: { req: TicketViewModel; timeline: Para
       <div>
         <div className="flex items-center gap-2 mb-3">
           <StatusBadge status={req.status} size="md" />
-          <span className={`text-sm font-medium ${priorityColors[req.priority]}`}>
-            {priorityLabels[req.priority]}
+          <span className={`text-sm font-medium ${priorityColors[req.priority] || 'text-muted'}`}>
+            {priorityLabels[req.priority] || 'Standard'}
           </span>
         </div>
         <h2 className="text-lg font-semibold text-text-primary mb-1">

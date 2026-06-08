@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { CheckCircle, Copy, ArrowLeft, List, ArrowClockwise, Clock, Phone, Printer, Envelope } from '@phosphor-icons/react'
 import { MUNICIPALITY, typeLabels, getServiceByValue } from '../config/municipality'
@@ -15,31 +15,28 @@ interface SubmissionResult {
 export function SuccessPage() {
   const { ticketId: urlTicketId } = useParams()
   const navigate = useNavigate()
-  const [result, setResult] = useState<SubmissionResult | null>(null)
-  const [copied, setCopied] = useState(false)
-
-  useEffect(() => {
+  const result: SubmissionResult = (() => {
     const raw = sessionStorage.getItem('submissionResult')
     if (raw) {
       try {
         const parsed = JSON.parse(raw) as SubmissionResult
-        setResult(parsed)
         sessionStorage.removeItem('submissionResult')
+        return parsed
       } catch {
-        setResult({
+        return {
           success: true,
           ticketId: urlTicketId,
           queue: 'Services Municipaux',
-        })
+        }
       }
-    } else {
-      setResult({
-        success: true,
-        ticketId: urlTicketId,
-        queue: 'Services Municipaux',
-      })
     }
-  }, [urlTicketId])
+    return {
+      success: true,
+      ticketId: urlTicketId,
+      queue: 'Services Municipaux',
+    }
+  })()
+  const [copied, setCopied] = useState(false)
 
   const displayTicketId = result?.ticketId || '---'
   const serviceType = result?.serviceType || 'DEMANDE'

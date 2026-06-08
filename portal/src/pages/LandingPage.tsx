@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import {
   SpeakerHigh, House, RoadHorizon, Trash, Tree, FileText,
   ArrowRight, Clock, MapPin, Phone, Envelope, Calendar,
-  MagnifyingGlass, Heart, Certificate
+  MagnifyingGlass, Heart, Certificate, Blueprint
 } from '@phosphor-icons/react'
 import { MUNICIPALITY, SERVICE_TYPES, DIRECT_SERVICES, ACTUALITES } from '../config/municipality'
 
@@ -16,6 +16,7 @@ const serviceIcons: Record<string, React.ElementType> = {
   FileText,
   Certificate,
   Heart,
+  Blueprint,
 }
 
 const steps = [
@@ -188,10 +189,10 @@ export function LandingPage() {
           {SERVICE_TYPES.map((service) => {
             const Icon = serviceIcons[service.icon] || FileText
             return (
-              <button
+              <Link
                 key={service.value}
+                to={`/submit?type=${service.value}`}
                 className="card card-lift p-6 text-left group"
-                onClick={() => navigate(`/submit?type=${service.value}`)}
               >
                 <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-4 group-hover:bg-primary group-hover:text-white transition-colors duration-150">
                   <Icon size={20} weight="bold" />
@@ -210,7 +211,7 @@ export function LandingPage() {
                   <Phone size={12} />
                   <span>{service.departmentPhone}</span>
                 </div>
-              </button>
+              </Link>
             )
           })}
         </div>
@@ -229,10 +230,10 @@ export function LandingPage() {
             {DIRECT_SERVICES.map((service) => {
               const Icon = serviceIcons[service.icon] || FileText
               return (
-                <button
+                <Link
                   key={service.value}
+                  to={service.page}
                   className="card card-lift p-6 text-left group"
-                  onClick={() => navigate(service.page)}
                 >
                   <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-4 group-hover:bg-primary group-hover:text-white transition-colors duration-150">
                     <Icon size={20} weight="bold" />
@@ -247,7 +248,7 @@ export function LandingPage() {
                     <Phone size={12} />
                     <span>{service.departmentPhone}</span>
                   </div>
-                </button>
+                </Link>
               )
             })}
           </div>

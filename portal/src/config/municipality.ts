@@ -327,9 +327,13 @@ export function addBusinessDays(start: Date, days: number): Date {
   return result
 }
 
-export function getBusinessDaysRemaining(start: Date, deadline: Date): number {
+export function getBusinessDaysBetween(start: Date, end: Date): number {
   let count = 0
-  const current = new Date(start)
+  const startTime = start.getTime()
+  const endTime = end.getTime()
+  const current = new Date(Math.min(startTime, endTime))
+  const deadline = new Date(Math.max(startTime, endTime))
+
   while (current < deadline) {
     current.setDate(current.getDate() + 1)
     const day = current.getDay()
@@ -337,5 +341,10 @@ export function getBusinessDaysRemaining(start: Date, deadline: Date): number {
       count++
     }
   }
-  return count
+
+  return startTime <= endTime ? count : -count
+}
+
+export function getBusinessDaysRemaining(start: Date, deadline: Date): number {
+  return getBusinessDaysBetween(start, deadline)
 }

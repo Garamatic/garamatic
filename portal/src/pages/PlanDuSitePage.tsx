@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { TreeStructure, ArrowRight } from '@phosphor-icons/react'
 
 const sections = [
@@ -30,8 +30,6 @@ const sections = [
 ]
 
 export function PlanDuSitePage() {
-  const navigate = useNavigate()
-
   return (
     <div className="container-page py-8 md:py-12">
       <div className="mb-8 pb-4 border-b border-border">
@@ -52,13 +50,13 @@ export function PlanDuSitePage() {
             <ul className="space-y-2">
               {section.links.map((link) => (
                 <li key={link.path}>
-                  <button
-                    onClick={() => navigate(link.path)}
+                  <Link
+                    to={link.path}
                     className="text-sm text-text-secondary hover:text-primary transition-colors flex items-center gap-2"
                   >
                     <ArrowRight size={12} />
                     {link.label}
-                  </button>
+                  </Link>
                 </li>
               ))}
             </ul>
