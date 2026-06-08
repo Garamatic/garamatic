@@ -142,6 +142,8 @@ services:
       - LLM_MODEL=qwen3.5:2b
       - LLM_BASE_URL=http://ollama:11434
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+    volumes:
+      - agentic_demo_data:/app/data
     networks:
       - garamatic_demo_net
     depends_on:
@@ -353,4 +355,5 @@ volumes:
   odoo_demo_app_data:
   odoo_demo_db_data:
   ollama_demo_data:
+  agentic_demo_data:
 
