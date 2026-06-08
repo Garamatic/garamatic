@@ -4,7 +4,7 @@
  * Reusable HTTP client with retry logic for all Garamatic services.
  */
 
-const DEFAULT_TIMEOUT = 10000;
+const DEFAULT_TIMEOUT = 30000;
 const MAX_RETRIES = 3;
 
 class ApiClient {
