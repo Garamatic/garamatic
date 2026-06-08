@@ -1,21 +1,18 @@
 #!/usr/bin/env node
 /**
- * Seed Ticket Masala via Gatekeeper API
+ * Seed Ticket Masala via Gatekeeper API (Single Source of Truth)
  *
- * Creates tickets with full Desgoffe flavor including
- * work_item_type, quartier, and proper tags.
+ * Creates tickets with deterministic IDs from data-desgoffe/tickets.json.
+ * The Gatekeeper publishes RabbitMQ events that all downstream services consume.
  */
 
 const { createGatekeeperClient } = require('../lib/api-client');
 
 const GATEKEEPER_URL = process.env.GATEKEEPER_URL || 'http://gatekeeper-api:8080';
-const TICKET_MASALA_URL = process.env.TICKET_MASALA_URL || 'http://ticket-masala:8080';
 const GATEKEEPER_API_KEY = process.env.GATEKEEPER_API_KEY || 'demo-api-key';
-const TENANT = process.env.TENANT || 'default';
+const TENANT = process.env.TENANT || 'desgoffe';
 
 const gatekeeper = createGatekeeperClient(GATEKEEPER_URL, GATEKEEPER_API_KEY);
-const { createTicketMasalaClient } = require('../lib/api-client');
-const ticketMasala = createTicketMasalaClient(TICKET_MASALA_URL);
 
 const COLORS = {
   reset: '\x1b[0m',
@@ -34,27 +31,24 @@ function log(status, message) {
   console.log(`  ${color}${status === 'pass' ? '✓' : status === 'fail' ? '✗' : '⊘'}${COLORS.reset} ${message}`);
 }
 
-function generateTicketId() {
-  return crypto.randomUUID().slice(0, 8).toUpperCase();
-}
-
 async function seed() {
-  console.log(`${COLORS.blue}Seeding ticket-masala via gatekeeper...${COLORS.reset}`);
+  console.log(`${COLORS.blue}Seeding ticket-masala via Gatekeeper (single source of truth)...${COLORS.reset}`);
   console.log(`  Tenant: ${TENANT}`);
   console.log(`  Gatekeeper: ${GATEKEEPER_URL}`);
   console.log('');
 
   try {
-    // Load demo data based on tenant
     const dataDir = TENANT === 'desgoffe' ? '../data-desgoffe' : '../data';
     const tickets = require(`${dataDir}/tickets.json`);
-    console.log(`  Loaded ${tickets.length} tickets from ${dataDir}`);
+    const customers = require(`${dataDir}/customers.json`);
+
+    console.log(`  Loaded ${tickets.length} tickets and ${customers.length} customers from ${dataDir}`);
     console.log('');
 
-    // Create tickets via Gatekeeper API (same as portal does)
+    // Phase 1: Create tickets via Gatekeeper (publishes RabbitMQ events)
     for (const ticket of tickets) {
-      const ticketId = generateTicketId();
-      
+      const ticketId = ticket.ticket_id; // Use deterministic ID from data file
+
       try {
         const response = await gatekeeper.post('/api/ingest', {
           event_type: 'ticket.created',
@@ -62,7 +56,7 @@ async function seed() {
           customer_email: ticket.customer_email,
           customer_name: ticket.customer_name,
           description: ticket.description,
-          priority: ticket.priority,
+          priority: mapPriority(ticket.priority),
           source: 'demo-seeder',
           tags: `Quartier:${ticket.quartier},Type:${ticket.work_item_type}`,
           metadata: {
@@ -73,7 +67,7 @@ async function seed() {
         });
 
         if (response.status === 200 || response.status === 201 || response.status === 202) {
-          log('pass', `Created ticket: ${ticket.title}`);
+          log('pass', `Created ticket: ${ticket.title} (${ticketId})`);
           createdTickets.push({ ticketId, ticket });
           passed++;
         } else {
@@ -86,21 +80,20 @@ async function seed() {
         log('fail', `Error creating ticket: ${ticket.title} - ${error.message}`);
         failed++;
       }
-      
-      // Small delay between requests
+
+      // Small delay between requests to prevent RabbitMQ backpressure
       await new Promise(r => setTimeout(r, 100));
     }
 
     console.log('');
-    console.log(`${COLORS.blue}Resolving tickets with status "resolved"...${COLORS.reset}`);
+    console.log(`${COLORS.blue}Resolving tickets with status \"resolved\"...${COLORS.reset}`);
     console.log('');
 
-    // Resolve tickets that should be resolved
+    // Phase 2: Resolve tickets that should be resolved
     const resolvedTickets = createdTickets.filter(({ ticket }) => ticket.status === 'resolved');
-    
+
     for (const { ticketId, ticket } of resolvedTickets) {
       try {
-        // Resolve via gatekeeper by publishing ticket.resolved event
         const response = await gatekeeper.post('/ingest', {
           event_type: 'ticket.resolved',
           ticket_id: ticketId,
@@ -111,14 +104,14 @@ async function seed() {
         });
 
         if (response.status === 200 || response.status === 202 || response.status === 204) {
-          log('pass', `Resolved ticket: ${ticket.title}`);
+          log('pass', `Resolved ticket: ${ticket.title} (${ticketId})`);
           passed++;
         } else {
-          log('pass', `Ticket created but not resolved: ${ticket.title} (will be processed async)`);
+          log('pass', `Ticket created but resolution queued: ${ticket.title} (${ticketId})`);
           passed++;
         }
       } catch (error) {
-        log('pass', `Ticket created but not resolved: ${ticket.title} (async processing)`);
+        log('pass', `Ticket created but resolution queued: ${ticket.title} (${ticketId})`);
         passed++;
       }
     }
@@ -131,6 +124,15 @@ async function seed() {
     console.error(`Fatal error: ${error.message}`);
     process.exit(1);
   }
+}
+
+function mapPriority(priority) {
+  const p = parseInt(priority, 10);
+  if (isNaN(p)) return priority;
+  if (p >= 15) return 'urgent';
+  if (p >= 10) return 'high';
+  if (p >= 5) return 'medium';
+  return 'low';
 }
 
 seed();

@@ -52,7 +52,14 @@ services:
       - OpenAI__Provider=ollama
       - TENANT=${TENANT:-desgoffe}
     volumes:
-      - ${TENANT_CONFIG:-../ticket-masala/config}:/app/config:ro
+      # Demo tenant config (single source of truth for demo)
+      - ./tenants/desgoffe/config:/app/config:ro
+      # Tenant theme and logo mounted into wwwroot (overrides baked-in assets)
+      - ./tenants/desgoffe/theme/style.css:/app/wwwroot/tenants/desgoffe/style.css:ro
+      - ./tenants/desgoffe/logo.png:/app/wwwroot/tenants/desgoffe/logo.png:ro
+      # Fallback tenant-theme path for _Layout.cshtml
+      - ./tenants/desgoffe/theme/style.css:/app/wwwroot/tenant-theme/style.css:ro
+      - ./tenants/desgoffe/logo.png:/app/wwwroot/tenant-theme/logo.png:ro
       - ticket_masala_demo_data:/app/data
     networks:
       - garamatic_demo_net
@@ -334,7 +341,8 @@ services:
       - SEED_COUNT=1
       - TENANT=${TENANT:-desgoffe}
     volumes:
-      - ${TENANT_CONFIG:-../ticket-masala/config}:/seed-data/ticket-masala:ro
+      # Demo tenant config for seeding
+      - ./tenants/desgoffe/config:/seed-data/ticket-masala:ro
       - odoo_demo_data:/seed-data/odoo
     networks:
       - garamatic_demo_net

@@ -1,5 +1,6 @@
 [
   {
+    "ticket_id": "T-DGF-2024-001",
     "title": "Nuisance sonore — Chantier rue de la Loi",
     "description": "Bruit excessif venant du chantier de construction rue de la Loi, tous les jours de 6h à 22h. Les Riverains ne peuvent plus dormir. Le permis de travaux n'autorise que les heures entre 8h et 18h.",
     "work_item_type": "NUISANCE",
@@ -12,6 +13,7 @@
     "billable_amount": 0
   },
   {
+    "ticket_id": "T-DGF-2024-002",
     "title": "Demande de permis — Extension terrasse",
     "description": "Demande de permis pour une extension de terrasse de 15m² sur l'arrière de la maison. Les plans sont joints en pièce jointe. Conformité au plan d'urbanisme vérifiée.",
     "work_item_type": "PERMIS",
@@ -24,6 +26,7 @@
     "billable_amount": 150.00
   },
   {
+    "ticket_id": "T-DGF-2024-003",
     "title": "Plainte — Odeurs nauséabondes usine recyclage",
     "description": "Odeurs nauséabondes provenant de l'usine de recyclage de la Zone Industrielle. Les habitants du quartier Est se plaignent de nausee depuis plusieurs semaines. Inspection urgente requise.",
     "work_item_type": "PLAINTE",
@@ -36,6 +39,7 @@
     "billable_amount": 0
   },
   {
+    "ticket_id": "T-DGF-2024-004",
     "title": "Demande générale — Réparation lampadaire",
     "description": "Lampadaire défectueux au coin de la rue des Fleurs et de la rue de la Paix. Le feu clignote depuis une semaine et éclaire par intermittence.",
     "work_item_type": "DEMANDE",
@@ -48,6 +52,7 @@
     "billable_amount": 0
   },
   {
+    "ticket_id": "T-DGF-2024-005",
     "title": "Nuisance sonore — Fête de quartier excessive",
     "description": "La fête de quartier du Faubourg Nord continue jusqu'à 4h du matin avec une musique assourdissante. Troisième complainte ce mois-ci pour le même organisateur.",
     "work_item_type": "NUISANCE",
@@ -57,9 +62,10 @@
     "customer_email": "antoine.moreau@retraite.be",
     "customer_name": "Antoine Moreau",
     "resolution_notes": "",
-    "billable_amount": null
+    "billable_amount": 0
   },
   {
+    "ticket_id": "T-DGF-2024-006",
     "title": "Demande de permis — Installation panneaux solaires",
     "description": "Installation de 12 panneaux solaires sur le toit de la Maison des Associations. Certificat de conformité électrique fourni. Visibilité du Boulevard impactée ?",
     "work_item_type": "PERMIS",
@@ -69,9 +75,10 @@
     "customer_email": "emma.roux@associations.be",
     "customer_name": "Emma Roux",
     "resolution_notes": "",
-    "billable_amount": null
+    "billable_amount": 0
   },
   {
+    "ticket_id": "T-DGF-2024-007",
     "title": "Plainte — Parking illégal devant la pharmacie",
     "description": "Des véhicules se garent illégalement devant la pharmacie du Centre-Ville, gênant l'accès aux personnes à mobilité réduite. Cela dure depuis des mois.",
     "work_item_type": "PLAINTE",
@@ -81,9 +88,10 @@
     "customer_email": "camille.dubois@medecin.be",
     "customer_name": "Camille Dubois",
     "resolution_notes": "",
-    "billable_amount": null
+    "billable_amount": 0
   },
   {
+    "ticket_id": "T-DGF-2024-008",
     "title": "Nuisance sonore — Chien aboie toute la nuit",
     "description": "Le chien du voisin du 42 rue des Acacias aboie chaque nuit depuis 3 semaines. Les propriétaires semblent absents le week-end.",
     "work_item_type": "NUISANCE",
@@ -96,6 +104,7 @@
     "billable_amount": 50.00
   },
   {
+    "ticket_id": "T-DGF-2024-009",
     "title": "Demande générale — Inscription crèche municipale",
     "description": "Demande d'inscription pour ma fille de 2 ans à la crèche 'Les Petits Explorateurs' pour la rentrée de septembre. Documents fournis : certificat de résidence, carnet de vaccination.",
     "work_item_type": "DEMANDE",
@@ -105,9 +114,10 @@
     "customer_email": "thomas.leroy@avocat.be",
     "customer_name": "Thomas Leroy",
     "resolution_notes": "Inscription confirmée. Place attribuée pour le 1er septembre. Un email de confirmation a été envoyé.",
-    "billable_amount": null
+    "billable_amount": 0
   },
   {
+    "ticket_id": "T-DGF-2024-010",
     "title": "Plainte — Travaux non déclarés immeuble voisin",
     "description": "Des travaux de rénovation importants sont réalisés dans l'immeuble voisin sans permis. Poussière et bruit depuis 2 semaines. Voisinage très affecté.",
     "work_item_type": "PLAINTE",
@@ -117,6 +127,6 @@
     "customer_email": "emma.roux@associations.be",
     "customer_name": "Emma Roux",
     "resolution_notes": "Enquête en cours. L'archiviste municipal recherche les permis de la parcelle.",
-    "billable_amount": null
+    "billable_amount": 0
   }
 ]

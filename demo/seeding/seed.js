@@ -127,17 +127,17 @@ async function main() {
 
   const results = [];
 
-  // 2.1: Seed Ticket Masala (tickets via Gatekeeper)
+  // 2.1: Seed Ticket Masala (single source of truth — creates tickets via Gatekeeper)
   results.push(await runSeedingScript('ticket-masala', './scripts/seed-ticket-masala.js'));
   // Note: seed-ticket-masala.js uses GATEKEEPER_URL and TENANT env vars
 
-  // 2.2: Seed Gatekeeper (events)
+  // 2.2: Seed Gatekeeper follow-up events (resolutions, invoices, payments)
   results.push(await runSeedingScript('gatekeeper', './scripts/seed-gatekeeper.js'));
 
-  // 2.3: Seed Agentic Service (tickets, invoices, emails)
+  // 2.3: Seed Agentic Service (emails & customer context only — no tickets)
   results.push(await runSeedingScript('agentic-service', './scripts/seed-agentic-service.js'));
 
-  // 2.4: Seed Odoo Integration (LiteDB state)
+  // 2.4: Seed Odoo Integration (LiteDB state verification)
   results.push(await runShellScript('odoo-integration', './scripts/seed-odoo-integration.sh'));
 
   // 2.5: Wait for async processing (RabbitMQ events)

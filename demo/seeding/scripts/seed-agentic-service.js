@@ -1,6 +1,9 @@
 #!/usr/bin/env node
 /**
- * Seed Agentic Service via REST API
+ * Seed Agentic Service with non-ticket data only
+ *
+ * Seeds emails and customer context. Does NOT create tickets —
+ * tickets are created via Gatekeeper and propagate through RabbitMQ.
  */
 
 const { createAgenticClient } = require('../lib/api-client');
@@ -17,80 +20,27 @@ let failed = 0;
 
 function log(status, message) {
   const color = COLORS[status === 'pass' ? 'green' : status === 'fail' ? 'red' : 'yellow'];
-  console.log(`  ${color}${status === 'pass' ? '✓' : '✗'}${COLORS.reset} ${message}`);
+  console.log(`  ${color}${status === 'pass' ? '✓' : status === 'fail' ? '✗' : '⊘'}${COLORS.reset} ${message}`);
 }
 
 const TENANT = process.env.TENANT || 'default';
 
 async function seed() {
-  console.log('Seeding agentic service...');
+  console.log('Seeding agentic service (emails & customer context only)...');
   console.log(`  Tenant: ${TENANT}`);
 
   const dataDir = TENANT === 'desgoffe' ? '../data-desgoffe' : '../data';
-  const tickets = require(`${dataDir}/tickets.json`);
   const customers = require(`${dataDir}/customers.json`);
-  console.log(`  Loaded ${tickets.length} tickets and ${customers.length} customers from ${dataDir}`);
+  console.log(`  Loaded ${customers.length} customers from ${dataDir}`);
 
-  // Map numeric priority scores to agentic API priority strings
-  function mapPriority(priority) {
-    const p = parseInt(priority, 10);
-    if (isNaN(p)) return priority; // already a string like 'low', 'medium', 'high', 'urgent'
-    if (p >= 15) return 'urgent';
-    if (p >= 10) return 'high';
-    if (p >= 5) return 'medium';
-    return 'low';
-  }
-
-  // Create tickets via agentic API
-  for (const ticket of tickets.slice(0, 8)) {
-    try {
-      const response = await client.post('/tickets', {
-        title: ticket.title,
-        description: ticket.description,
-        customer_email: ticket.customer_email,
-        customer_name: ticket.customer_name,
-        priority: mapPriority(ticket.priority)
-      });
-
-      if (response.status === 200 || response.status === 201) {
-        const data = await response.json();
-        log('pass', `Created ticket: ${data.ticket_id || 'OK'}`);
-        passed++;
-
-        // If resolved, try to resolve
-        if (ticket.status === 'resolved') {
-          try {
-            const resolveResponse = await client.post(`/tickets/${data.ticket_id}/resolve`, {
-              resolution_notes: ticket.resolution_notes || 'Résolu par le système de démo.',
-              billable_amount: ticket.billable_amount || 0
-            });
-            if (resolveResponse.status === 200) {
-              log('pass', `Resolved ticket: ${data.ticket_id}`);
-              passed++;
-            }
-          } catch (e) {
-            log('fail', `Resolve failed: ${e.message}`);
-            failed++;
-          }
-        }
-      } else {
-        log('fail', `Create ticket failed: ${ticket.title} (HTTP ${response.status})`);
-        failed++;
-      }
-    } catch (error) {
-      log('fail', `Error: ${ticket.title} - ${error.message}`);
-      failed++;
-    }
-  }
-
-  // Send demo emails
+  // Phase 1: Send demo emails
   for (const customer of customers.slice(0, 4)) {
     try {
       const response = await client.post('/emails', {
         to_email: customer.email,
-        subject: `Welcome to Garamatic, ${customer.name}!`,
-        body: `<p>Welcome to Garamatic! Your account is now active.</p>`,
-        from_name: 'Garamatic Demo'
+        subject: `Bienvenue sur le Guichet Citoyen, ${customer.name}`,
+        body: `<p>Bonjour ${customer.name},</p><p>Bienvenue sur le Guichet Citoyen de la Ville de Desgoffe. Votre compte est maintenant actif.</p><p>Cordialement,<br>Mairie de Desgoffe</p>`,
+        from_name: 'Mairie de Desgoffe'
       });
 
       if (response.status === 200 || response.status === 201) {
@@ -106,7 +56,7 @@ async function seed() {
     }
   }
 
-  // Check customer context
+  // Phase 2: Check customer context
   try {
     const response = await client.get(`/customers/${encodeURIComponent(customers[0].email)}/context`);
     if (response.status === 200) {
