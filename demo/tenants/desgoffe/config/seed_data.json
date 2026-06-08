@@ -379,6 +379,192 @@
                     "GerdaTags": "Numérique, Information, Technologie"
                 }
             ]
+        },
+        {
+            "Name": "Réfection Voirie — Zone Industrielle",
+            "Description": "Réfection complète de la chaussée principale de la Zone Industrielle : remplacement de l'asphalte, réparation des trottoirs, et mise à jour de la signalisation routière.",
+            "Status": "InProgress",
+            "CustomerEmail": "pierre.martin@entreprise.be",
+            "ProjectManagerEmail": "rene@desgoffe.gov",
+            "CompletionTargetMonths": 6,
+            "WorkItems": [
+                {
+                    "Description": "Réparation de la chaussée principale — remplacement de l'asphalte",
+                    "Status": "InProgress",
+                    "WorkItemTypeCode": "DEMANDE",
+                    "ResponsibleEmail": "rene@desgoffe.gov",
+                    "CompletionTargetDays": 45,
+                    "EstimatedEffortPoints": 21,
+                    "PriorityScore": 35,
+                    "GerdaTags": "Voirie, Chaussée, Réfection, Zone Industrielle"
+                },
+                {
+                    "Description": "Réparation des trottoirs et des bordures",
+                    "Status": "Pending",
+                    "WorkItemTypeCode": "DEMANDE",
+                    "ResponsibleEmail": "rene@desgoffe.gov",
+                    "CompletionTargetDays": 30,
+                    "EstimatedEffortPoints": 13,
+                    "PriorityScore": 25,
+                    "GerdaTags": "Trottoirs, Bordures, Accessibilité"
+                },
+                {
+                    "Description": "Mise à jour de la signalisation routière et panneaux de direction",
+                    "Status": "Pending",
+                    "WorkItemTypeCode": "PERMIS",
+                    "ResponsibleEmail": "alex.leroy@desgoffe.gov",
+                    "CompletionTargetDays": 21,
+                    "EstimatedEffortPoints": 8,
+                    "PriorityScore": 20,
+                    "GerdaTags": "Signalisation, Voirie, Sécurité"
+                }
+            ]
+        },
+        {
+            "Name": "Éclairage Public — Quartier Est",
+            "Description": "Modernisation de l'éclairage public du Quartier Est : remplacement des lampadaires par des LED, installation de l'éclairage dans les passages piétons, et maintenance du système existant.",
+            "Status": "InProgress",
+            "CustomerEmail": "lucas.garcia@artisan.be",
+            "ProjectManagerEmail": "alex.leroy@desgoffe.gov",
+            "CompletionTargetMonths": 4,
+            "WorkItems": [
+                {
+                    "Description": "Remplacement des lampadaires par des LED à basse consommation",
+                    "Status": "Completed",
+                    "WorkItemTypeCode": "DEMANDE",
+                    "ResponsibleEmail": "alex.leroy@desgoffe.gov",
+                    "CompletionTargetDays": 30,
+                    "EstimatedEffortPoints": 13,
+                    "PriorityScore": 28,
+                    "GerdaTags": "Éclairage, LED, Énergie, Quartier Est",
+                    "Comments": [
+                        {
+                            "Body": "Installation terminée sur la rue des Acacias. Les lampes fonctionnent correctement et les résidents sont satisfaits.",
+                            "AuthorEmail": "alex.leroy@desgoffe.gov",
+                            "CreatedDaysAgo": 5
+                        }
+                    ]
+                },
+                {
+                    "Description": "Installation de l'éclairage dans les passages piétons non éclairés",
+                    "Status": "InProgress",
+                    "WorkItemTypeCode": "DEMANDE",
+                    "ResponsibleEmail": "alex.leroy@desgoffe.gov",
+                    "CompletionTargetDays": 21,
+                    "EstimatedEffortPoints": 8,
+                    "PriorityScore": 32,
+                    "GerdaTags": "Éclairage, Piétons, Sécurité, Passages"
+                },
+                {
+                    "Description": "Maintenance préventive du système d'éclairage existant",
+                    "Status": "Pending",
+                    "WorkItemTypeCode": "DEMANDE",
+                    "ResponsibleEmail": "james.roux@desgoffe.gov",
+                    "CompletionTargetDays": 14,
+                    "EstimatedEffortPoints": 5,
+                    "PriorityScore": 15,
+                    "GerdaTags": "Maintenance, Éclairage, Préventif"
+                }
+            ]
+        },
+        {
+            "Name": "Jardins Partagés — Faubourg Nord",
+            "Description": "Création de jardins partagés dans le Faubourg Nord : aménagement de 20 parcelles, installation d'un système d'irrigation collectif, et formation des jardiniers volontaires.",
+            "Status": "InProgress",
+            "CustomerEmail": "emma.roux@associations.be",
+            "ProjectManagerEmail": "mike.martin@desgoffe.gov",
+            "CompletionTargetMonths": 5,
+            "WorkItems": [
+                {
+                    "Description": "Aménagement des 20 parcelles de jardinage",
+                    "Status": "InProgress",
+                    "WorkItemTypeCode": "PERMIS",
+                    "ResponsibleEmail": "maria.garcia@desgoffe.gov",
+                    "CompletionTargetDays": 30,
+                    "EstimatedEffortPoints": 13,
+                    "PriorityScore": 22,
+                    "GerdaTags": "Jardins, Aménagement, Faubourg Nord, Parcelles",
+                    "Comments": [
+                        {
+                            "Body": "Les parcelles sont délimitées. Nous attendons la livraison du terreau enrichi pour la semaine prochaine.",
+                            "AuthorEmail": "maria.garcia@desgoffe.gov",
+                            "CreatedDaysAgo": 3
+                        }
+                    ]
+                },
+                {
+                    "Description": "Installation du système d'irrigation collectif",
+                    "Status": "Pending",
+                    "WorkItemTypeCode": "DEMANDE",
+                    "ResponsibleEmail": "james.roux@desgoffe.gov",
+                    "CompletionTargetDays": 21,
+                    "EstimatedEffortPoints": 8,
+                    "PriorityScore": 18,
+                    "GerdaTags": "Irrigation, Eau, Jardins, Installation"
+                },
+                {
+                    "Description": "Formation des jardiniers volontaires aux bonnes pratiques",
+                    "Status": "Pending",
+                    "WorkItemTypeCode": "DEMANDE",
+                    "ResponsibleEmail": "lisa.petit@desgoffe.gov",
+                    "CompletionTargetDays": 14,
+                    "EstimatedEffortPoints": 5,
+                    "PriorityScore": 12,
+                    "GerdaTags": "Formation, Jardins, Bénévoles, Agriculture"
+                }
+            ]
+        },
+        {
+            "Name": "Dépollution Site Ancienne Usine",
+            "Description": "Dépollution du site de l'ancienne usine de textile abandonnée : analyse des sols contaminés, mise en place de barrières de confinement, et monitoring continu de la qualité de l'air et des eaux souterraines.",
+            "Status": "InProgress",
+            "CustomerEmail": "sophie.bernard@ecole.be",
+            "ProjectManagerEmail": "mike.martin@desgoffe.gov",
+            "CompletionTargetMonths": 12,
+            "WorkItems": [
+                {
+                    "Description": "Analyse approfondie des sols contaminés et cartographie des zones à risque",
+                    "Status": "InProgress",
+                    "WorkItemTypeCode": "PLAINTE",
+                    "ResponsibleEmail": "mike.martin@desgoffe.gov",
+                    "CompletionTargetDays": 60,
+                    "EstimatedEffortPoints": 21,
+                    "PriorityScore": 45,
+                    "GerdaTags": "Dépollution, Sols, Analyse, Environnement, Critique",
+                    "Comments": [
+                        {
+                            "Body": "Les premiers résultats d'analyse sont alarmants. Concentration de métaux lourds 8 fois supérieure à la norme. Nous devons établir un périmètre de sécurité immédiatement.",
+                            "AuthorEmail": "mike.martin@desgoffe.gov",
+                            "CreatedDaysAgo": 2
+                        },
+                        {
+                            "Body": "🤖 **Analyse GERDA** : Alerte environnementale critique (Confiance : 96%). Impact : Santé publique. Recommandation : Périmètre de sécurité + communication aux résidents sous 24h.",
+                            "AuthorEmail": "gerda@desgoffe.gov",
+                            "CreatedDaysAgo": 2
+                        }
+                    ]
+                },
+                {
+                    "Description": "Mise en place de barrières de confinement et signalisation de sécurité",
+                    "Status": "Pending",
+                    "WorkItemTypeCode": "PERMIS",
+                    "ResponsibleEmail": "rene@desgoffe.gov",
+                    "CompletionTargetDays": 14,
+                    "EstimatedEffortPoints": 13,
+                    "PriorityScore": 40,
+                    "GerdaTags": "Sécurité, Barrières, Confinement, Dépollution"
+                },
+                {
+                    "Description": "Monitoring continu de la qualité de l'air et des eaux souterraines",
+                    "Status": "Pending",
+                    "WorkItemTypeCode": "DEMANDE",
+                    "ResponsibleEmail": "mike.martin@desgoffe.gov",
+                    "CompletionTargetDays": 90,
+                    "EstimatedEffortPoints": 8,
+                    "PriorityScore": 35,
+                    "GerdaTags": "Monitoring, Air, Eau, Qualité, Environnement"
+                }
+            ]
         }
     ],
     "UnassignedWorkItems": [],
@@ -405,11 +591,11 @@
             "CreatedDaysAgo": 60
         },
         {
-            "Title": "Authentification API — Guide du développeur",
-            "Content": "Guide complet pour s'authentifier avec l'API de la Ville de Desgoffe :\n\n**Méthodes d'authentification :**\n1. **Clés API** — Pour la communication serveur-à-serveur\n2. **OAuth 2.0** — Pour l'accès délégué par l'utilisateur\n3. **JWT Tokens** — Pour l'authentification par session\n\n**Obtenir votre clé API :**\n1. Allez dans Paramètres > Clés API\n2. Cliquez sur 'Générer une nouvelle clé'\n3. Copiez et stockez sécurisément votre clé\n4. Ajoutez aux en-têtes de requête : `Authorization: Bearer VOTRE_CLE`\n\n**Limites de débit :**\n* Gratuit : 100 requêtes/minute\n* Professionnel : 500 requêtes/minute\n* Entreprise : Limites personnalisées\n\n**Bonnes pratiques :**\n* Ne jamais commiter les clés API dans le contrôle de version\n* Faire tourner les clés tous les 90 jours\n* Utiliser des variables d'environnement pour le stockage\n* Implémenter un backoff exponentiel pour les retries",
-            "Tags": "API, Authentification, Sécurité, Développeur",
-            "AuthorEmail": "alex.leroy@desgoffe.gov",
-            "CreatedDaysAgo": 45
+            "Title": "Inscription à la crèche municipale — Modalités et délais",
+            "Content": "Guide pour inscrire votre enfant à la crèche municipale 'Les Petits Explorateurs' de la Ville de Desgoffe :\n\n**Conditions d'admission :**\n* Enfant âgé de 3 mois à 3 ans\n* Au moins un parent résidant à Desgoffe\n* Inscription avant le 31 mars pour la rentrée de septembre\n\n**Documents requis :**\n1. Certificat de résidence\n2. Carnet de vaccination à jour\n3. Attestation de revenus des deux parents\n4. Formulaire d'inscription signé\n\n**Délais de traitement :**\n* Inscription avant le 31 mars : réponse avant le 15 juin\n* Inscription tardive : traitement selon places disponibles\n\n**Tarifs :**\n* Quotient familial < 500 : 5€/jour\n* Quotient familial 500-1500 : 15€/jour\n* Quotient familial > 1500 : 25€/jour\n\n**Contact :**\n* Service Petite Enfance : petite.enfance@desgoffe.gov\n* Téléphone : +32 2 555 03 00",
+            "Tags": "Crèche, Inscription, Petite Enfance, Citoyen",
+            "AuthorEmail": "lisa.petit@desgoffe.gov",
+            "CreatedDaysAgo": 20
         },
         {
             "Title": "Procédure de recours — Taxe foncière",
@@ -417,6 +603,27 @@
             "Tags": "Recours, Taxe foncière, Finances, Citoyen",
             "AuthorEmail": "rachel.dubois@desgoffe.gov",
             "CreatedDaysAgo": 20
+        },
+        {
+            "Title": "Collecte des déchets et recyclage — Calendrier et consignes",
+            "Content": "Informations sur la collecte des déchets et le recyclage à la Ville de Desgoffe :\n\n**Calendrier de collecte :**\n* **Poubelles noires** (déchets non recyclables) : mardi et vendredi\n* **Poubelles bleues** (papiers et cartons) : mercredi\n* **Poubelles vertes** (déchets organiques) : lundi et jeudi\n* **Poubelles jaunes** (plastiques, métaux, verre) : samedi\n\n**Grande collecte (encombrants) :**\n* 1er samedi du mois : Zone Industrielle et Centre-Ville\n* 3ème samedi du mois : Faubourg Nord et Quartier Est\n\n**Déchèterie :**\n* Ouverte du lundi au samedi, 8h-18h\n* Adresse : Rue de la Recyclerie 42, Zone Industrielle\n* Gratuit pour les résidents sur présentation de carte d'identité\n\n**Consignes de tri :**\n* Les emballages doivent être vides et propres\n* Le verre cassé ne va pas dans la poubelle jaune (déchèterie uniquement)\n* Les déchets dangereux (piles, peinture) sont interdits dans les poubelles\n\n**Contact :**\n* Service Environnement : environnement@desgoffe.gov\n* Téléphone : +32 2 555 04 00",
+            "Tags": "Déchets, Recyclage, Environnement, Citoyen",
+            "AuthorEmail": "mike.martin@desgoffe.gov",
+            "CreatedDaysAgo": 15
+        },
+        {
+            "Title": "Stationnement et permis de stationnement — Règles et procédures",
+            "Content": "Règles de stationnement et procédure de demande de permis à la Ville de Desgoffe :\n\n**Zones de stationnement :**\n* **Zone bleue** : Stationnement gratuit limité à 2h (disque obligatoire)\n* **Zone résidentielle** : Stationnement réservé aux résidents (vignette obligatoire)\n* **Zone payante** : Stationnement payant du lundi au samedi, 9h-19h\n* **Zone livraison** : Réservée aux véhicules de livraison, 7h-11h\n\n**Permis de stationnement résidentiel :**\n1. Remplissez le formulaire en ligne\n2. Joignez le certificat d'immatriculation et la carte d'identité\n3. Payez les frais de dossier (25€/an)\n4. Recevez la vignette sous 10 jours ouvrables\n\n**Stationnement pour personnes à mobilité réduite :**\n* Places réservées dans toutes les zones\n* Carte de stationnement PMR obligatoire\n* Gratuit dans toutes les zones\n\n**Amendes :**\n* Stationnement non payant : 25€\n* Stationnement en zone interdite : 50€\n* Stationnement sur passage piéton : 75€\n* Non-respect zone PMR : 150€\n\n**Contact :**\n* Service Voirie : voirie@desgoffe.gov\n* Téléphone : +32 2 555 05 00",
+            "Tags": "Stationnement, Permis, Voirie, Citoyen",
+            "AuthorEmail": "rene@desgoffe.gov",
+            "CreatedDaysAgo": 25
+        },
+        {
+            "Title": "Plainte pour nuisances de voisinage — Comment procéder",
+            "Content": "Guide pour déposer une plainte pour nuisance de voisinage à la Ville de Desgoffe :\n\n**Types de nuisances traitées :**\n* Bruit excessif (musique, chantier, animaux)\n* Odeurs nauséabondes\n* Déversement illégal de déchets\n* Obstruction de vue ou de passage\n* Nuisances lumineuses\n\n**Étapes :**\n1. Tentez d'abord une médiation amiable avec le voisin\n2. Si échec, déposez une plainte sur le portail citoyen\n3. Décrivez la nuisance avec précision (dates, horaires, fréquence)\n4. Ajoutez des photos, vidéos ou enregistrements sonores si possible\n5. Témoins : indiquez les noms et coordonnées des voisins concernés\n\n**Délais de traitement :**\n* Nuisance récurrente : inspection sous 48h\n* Nuisance ponctuelle : enquête sous 5 jours ouvrables\n* Mise en demeure : envoyée sous 10 jours après constatation\n\n**Médiation :**\n* Un médiateur communal peut être désigné\n* Gratuit et confidentiel\n* Délai de médiation : 30 jours maximum\n\n**Contact :**\n* Service Nuisances : nuisances@desgoffe.gov\n* Téléphone : +32 2 555 06 00",
+            "Tags": "Nuisance, Voisinage, Plainte, Citoyen",
+            "AuthorEmail": "mike.martin@desgoffe.gov",
+            "CreatedDaysAgo": 10
         },
         {
             "Title": "Optimisation des services municipaux — Bonnes pratiques",
@@ -431,27 +638,6 @@
             "Tags": "SLA, Priorité, Support, Processus",
             "AuthorEmail": "jean.dupont@desgoffe.gov",
             "CreatedDaysAgo": 25
-        },
-        {
-            "Title": "Installation de l'application mobile — Portail Citoyen",
-            "Content": "Guide complet pour installer l'application mobile du Portail Citoyen de la Ville de Desgoffe :\n\n**Installation iOS :**\n1. Ouvrez l'App Store sur votre iPhone/iPad\n2. Recherchez 'Portail Citoyen Desgoffe'\n3. Appuyez sur 'Obtenir' pour télécharger\n4. Ouvrez l'application après l'installation\n5. Connectez-vous avec vos identifiants\n\n**Installation Android :**\n1. Ouvrez le Google Play Store\n2. Recherchez 'Portail Citoyen Desgoffe'\n3. Appuyez sur 'Installer'\n4. Ouvrez l'application après l'installation\n5. Connectez-vous avec vos identifiants\n\n**Configuration initiale :**\n* Activez les notifications pour les mises à jour de demandes\n* Configurez les préférences de notification\n* Activez l'authentification biométrique (optionnel)\n* Téléchargez les données hors ligne (optionnel)\n\n**Fonctionnalités :**\n* Créer et gérer des demandes en déplacement\n* Notifications en temps réel\n* Mode hors ligne\n* Connexion biométrique\n* Mode sombre\n\n**Dépannage :**\n* L'application ne s'ouvre pas : Réinstallez depuis le store\n* Problèmes de connexion : Réinitialisez le mot de passe sur le web\n* Notifications non reçues : Vérifiez les paramètres de l'appareil\n* Problèmes de synchronisation : Tirez vers le bas pour rafraîchir",
-            "Tags": "Mobile, Installation, iOS, Android, Configuration",
-            "AuthorEmail": "maria.garcia@desgoffe.gov",
-            "CreatedDaysAgo": 35
-        },
-        {
-            "Title": "Export de données et rapports — Guide des agents",
-            "Content": "Comment exporter des données et générer des rapports pour les agents municipaux :\n\n**Formats d'export :**\n* CSV — Pour l'analyse dans les tableurs\n* Excel — Pour les rapports formatés\n* JSON — Pour l'intégration API\n* PDF — Pour les présentations\n\n**Exporter les demandes :**\n1. Allez sur la page des demandes\n2. Appliquez les filtres souhaités\n3. Cliquez sur 'Exporter'\n4. Sélectionnez le format\n5. Téléchargez le fichier\n\n**Générer des rapports :**\n\n**Rapports standards :**\n* Volume de demandes par statut\n* Temps moyen de résolution\n* Performance des agents\n* Scores de satisfaction des citoyens\n* Conformité aux SLA\n\n**Rapports personnalisés :**\n1. Allez dans Rapports > Rapports personnalisés\n2. Sélectionnez les métriques et dimensions\n3. Appliquez la plage de dates et les filtres\n4. Prévisualisez le rapport\n5. Exportez ou planifiez la livraison\n\n**Rapports planifiés :**\n* Configurez la livraison quotidienne/hebdomadaire/mensuelle\n* Envoyez par email aux parties prenantes\n* Exportez automatiquement vers le stockage cloud\n\n**Accès API :**\n* Utilisez le endpoint `/api/reports`\n* Authentifiez-vous avec la clé API\n* Spécifiez les paramètres dans la requête\n* Recevez la réponse JSON",
-            "Tags": "Rapports, Export, Analytique, Données",
-            "AuthorEmail": "sarah.bernard@desgoffe.gov",
-            "CreatedDaysAgo": 18
-        },
-        {
-            "Title": "Bonnes pratiques de sécurité pour les administrateurs",
-            "Content": "Lignes directrices de sécurité essentielles pour les administrateurs municipaux :\n\n**Contrôle d'accès :**\n* Implémenter le principe du moindre privilège\n* Utiliser le contrôle d'accès basé sur les rôles (RBAC)\n* Auditer régulièrement les permissions des utilisateurs\n* Supprimer les comptes inactifs\n* Appliquer des politiques de mots de passe forts\n\n**Authentification :**\n* Activer l'authentification multi-facteurs (MFA)\n* Configurer le SSO quand possible\n* Définir des politiques de timeout de session\n* Surveiller les tentatives de connexion échouées\n* Implémenter des politiques de verrouillage de compte\n\n**Protection des données :**\n* Activer le chiffrement au repos\n* Utiliser TLS pour les données en transit\n* Planifier des sauvegardes régulières\n* Tester la restauration des sauvegardes\n* Implémenter des politiques de rétention des données\n\n**Surveillance :**\n* Activer la journalisation d'audit\n* Surveiller les activités suspectes\n* Configurer des alertes de sécurité\n* Réviser les journaux régulièrement\n* Suivre les patterns d'utilisation de l'API\n\n**Conformité :**\n* Checklist de conformité RGPD\n* Exigences SOC 2\n* Lignes directrices HIPAA (si applicable)\n* Audits de sécurité réguliers\n* Planning de tests de pénétration\n\n**Réponse aux incidents :**\n* Avoir un plan de réponse aux incidents\n* Définir les procédures d'escalade\n* Maintenir une liste de contacts de sécurité\n* Documenter les incidents de sécurité\n* Conduire des revues post-incident",
-            "Tags": "Sécurité, Bonnes pratiques, Admin, Conformité",
-            "AuthorEmail": "rachel.dubois@desgoffe.gov",
-            "CreatedDaysAgo": 12
         },
         {
             "Title": "Utilisation du tableau de bord GERDA AI",

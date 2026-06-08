@@ -71,6 +71,11 @@ dev:
 	@echo "🚀 Starting Garamatic demo stack (attached, tenant: $(TENANT))..."
 	TENANT=$(TENANT) TENANT_CONFIG=$(TENANT_CONFIG) docker compose -f $(COMPOSE_FILE) up --build
 
+rebuild:
+	@echo "🔨 Rebuilding ticket-masala image (no cache)..."
+	TENANT=$(TENANT) TENANT_CONFIG=$(TENANT_CONFIG) docker compose -f $(COMPOSE_FILE) build --no-cache ticket-masala
+	@echo "✅ Rebuild complete. Run 'make up' to start."
+
 logs:
 	docker compose -f $(COMPOSE_FILE) logs -f
 
