@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="140 100 232 295" role="img" aria-labelledby="desgoffe-title desgoffe-desc">
+  <title id="desgoffe-title">Ville de Desgoffe Logo (Improved)</title>
+  <desc id="desgoffe-desc">A refined, modern heraldic seal for Desgoffe-sur-Semois featuring a chateau, pines, and a wavy river.</desc>
+
+  <defs>
+    <!-- Original classic shield shape -->
+    <path id="shield" d="M256 116C226 135 195 143 158 149V232C158 292 196 342 256 379C316 342 354 292 354 232V149C317 143 286 135 256 116Z" />
+
+    <clipPath id="shield-clip">
+      <use href="#shield" />
+    </clipPath>
+
+    <!-- Reusable Stylized Pine Tree -->
+    <g id="pine-tree">
+      <path d="M 0 -83 L -12 -53 L -4 -53 L -16 -28 L -6 -28 L -20 0 L 20 0 L 6 -28 L 16 -28 L 4 -53 L 12 -53 Z" fill="#E6A822" />
+      <rect x="-3" y="0" width="6" height="10" fill="#5D4037" />
+    </g>
+  </defs>
+
+  <!-- INNER SHIELD CONTENT -->
+  <g clip-path="url(#shield-clip)">
+    
+    <!-- Top Field (Forest Green) -->
+    <rect x="140" y="100" width="232" height="165" fill="#1B5E20" />
+
+    <!-- Bottom Field (Heraldic Gold) -->
+    <rect x="140" y="265" width="232" height="130" fill="#E6A822" />
+
+    <!-- River Semois (Wavy) -->
+    <path d="M 140 265 Q 198 235, 256 265 T 372 265" fill="none" stroke="#1976D2" stroke-width="36" />
+    <!-- River Current Highlights -->
+    <path d="M 140 255 Q 198 225, 256 255 T 372 255" fill="none" stroke="#82B1FF" stroke-width="2" opacity="0.6" />
+    <path d="M 140 275 Q 198 245, 256 275 T 372 275" fill="none" stroke="#82B1FF" stroke-width="2" opacity="0.6" />
+
+    <!-- TREES -->
+    <use href="#pine-tree" x="190" y="242" />
+    <use href="#pine-tree" x="322" y="242" />
+
+    <!-- CASTLE -->
+    <g id="castle">
+      <!-- Left Crenellated Tower -->
+      <path d="M 216 242 L 216 175 L 221 175 L 221 182 L 226 182 L 226 175 L 231 175 L 231 182 L 236 182 L 236 175 L 241 175 L 241 242 Z" fill="#F8F9FA" />
+      
+      <!-- Right Crenellated Tower -->
+      <path d="M 271 242 L 271 175 L 276 175 L 276 182 L 281 182 L 281 175 L 286 175 L 286 182 L 291 182 L 291 175 L 296 175 L 296 242 Z" fill="#F8F9FA" />
+      
+      <!-- Central Keep (Main Block) -->
+      <rect x="241" y="155" width="30" height="87" fill="#F8F9FA" />
+      
+      <!-- Keep Pointed Roof -->
+      <path d="M 236 155 L 256 112 L 276 155 Z" fill="#D32F2F" />
+
+      <!-- Architectural Dark Accents -->
+      <!-- Keep Archway Door -->
+      <path d="M 248 242 L 248 220 A 8 8 0 0 1 264 220 L 264 242 Z" fill="#263238" />
+      <!-- Keep Arch Window -->
+      <path d="M 252 195 L 252 175 A 4 4 0 0 1 260 175 L 260 195 Z" fill="#263238" />
+      <!-- Left Tower Window slit -->
+      <path d="M 226 210 L 226 198 A 2.5 2.5 0 0 1 231 198 L 231 210 Z" fill="#263238" />
+      <!-- Right Tower Window slit -->
+      <path d="M 281 210 L 281 198 A 2.5 2.5 0 0 1 286 198 L 286 210 Z" fill="#263238" />
+    </g>
+
+    <!-- Volumetric Flat Shading (Darkens the entire right half of the composition) -->
+    <rect x="256" y="100" width="120" height="300" fill="#000000" opacity="0.15" />
+    
+  </g>
+
+  <!-- BORDERS (Triple Line Effect) -->
+  <!-- Thick Slate Outer Border -->
+  <use href="#shield" fill="none" stroke="#263238" stroke-width="12" />
+  <!-- Crisp Inner White Accent -->
+  <use href="#shield" fill="none" stroke="#F8F9FA" stroke-width="4" />
+
+</svg>
