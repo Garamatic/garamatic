@@ -5,13 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Garamatic — Architecture Dashboard & Demo Guide</title>
   <style>
+    /* ================================================================
+       TOKENS
+       ================================================================ */
     :root {
+      /* Colors */
       --bg: #0d1117;
+      --bg-elevated: #111820;
       --surface: #161b22;
       --surface-hover: #1f242c;
+      --surface-raised: #252a33;
       --border: #30363d;
+      --border-subtle: #21262d;
+      --border-strong: #484f58;
       --text: #c9d1d9;
+      --text-secondary: #b0b8c4;
       --text-muted: #8b949e;
+      --text-faint: #758da0;
+      --text-inverse: #ffffff;
+
       --accent: #58a6ff;
       --accent-green: #3fb950;
       --accent-red: #f85149;
@@ -19,983 +31,1584 @@
       --accent-purple: #bc8cff;
       --accent-indigo: #6366f1;
       --accent-orange: #f97316;
+
+      /* Alpha tints (semantic backgrounds) */
+      --accent-a10: rgba(88, 166, 255, 0.10);
+      --accent-a15: rgba(88, 166, 255, 0.15);
+      --accent-a20: rgba(88, 166, 255, 0.20);
+      --green-a10: rgba(63, 185, 80, 0.10);
+      --green-a15: rgba(63, 185, 80, 0.15);
+      --green-a20: rgba(63, 185, 80, 0.20);
+      --red-a10: rgba(248, 81, 73, 0.10);
+      --red-a15: rgba(248, 81, 73, 0.15);
+      --red-a20: rgba(248, 81, 73, 0.20);
+      --yellow-a10: rgba(210, 153, 34, 0.10);
+      --yellow-a15: rgba(210, 153, 34, 0.15);
+      --yellow-a20: rgba(210, 153, 34, 0.20);
+      --purple-a15: rgba(188, 140, 255, 0.15);
+      --indigo-a15: rgba(99, 102, 241, 0.15);
+      --indigo-a25: rgba(99, 102, 241, 0.25);
+      --orange-a15: rgba(249, 115, 22, 0.15);
+
+      /* Spacing (4pt base) */
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-5: 20px;
+      --space-6: 24px;
+      --space-8: 32px;
+      --space-10: 40px;
+      --space-12: 48px;
+      --space-16: 64px;
+
+      /* Typography */
+      --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      --font-mono: 'SF Mono', ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;
+
+      --text-xs: 11px;
+      --text-sm: 12px;
+      --text-base: 13px;
+      --text-md: 14px;
+      --text-lg: 16px;
+      --text-xl: 20px;
+      --text-2xl: 24px;
+      --text-3xl: 28px;
+
+      --leading-none: 1;
+      --leading-tight: 1.25;
+      --leading-snug: 1.35;
+      --leading-normal: 1.5;
+      --leading-relaxed: 1.65;
+
+      --weight-medium: 500;
+      --weight-semibold: 600;
+      --weight-bold: 700;
+
+      /* Radius */
+      --radius-sm: 4px;
+      --radius-md: 6px;
+      --radius-lg: 8px;
+      --radius-xl: 10px;
+      --radius-2xl: 12px;
+      --radius-full: 9999px;
+
+      /* Motion */
+      --duration-fast: 120ms;
+      --duration-base: 200ms;
+      --duration-slow: 300ms;
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+      /* Shadows */
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.25);
+      --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.30);
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ================================================================
+       RESET & BASE
+       ================================================================ */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: var(--font-sans);
       background: var(--bg);
       color: var(--text);
-      line-height: 1.5;
+      line-height: var(--leading-normal);
+      font-size: var(--text-base);
     }
-    header {
-      padding: 20px 32px;
+
+    /* ================================================================
+       REDUCED MOTION
+       ================================================================ */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+      html {
+        scroll-behavior: auto;
+      }
+    }
+
+    /* ================================================================
+       FOCUS
+       ================================================================ */
+    *:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+      border-radius: var(--radius-md);
+    }
+
+    /* ================================================================
+       HEADER
+       ================================================================ */
+    .site-header {
+      padding: var(--space-4) var(--space-6);
       border-bottom: 1px solid var(--border);
+      background: var(--bg-elevated);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-inner {
+      max-width: 1400px;
+      margin: 0 auto;
       display: flex;
       align-items: center;
       justify-content: space-between;
       flex-wrap: wrap;
-      gap: 12px;
+      gap: var(--space-3);
     }
-    header h1 { font-size: 20px; font-weight: 600; }
-    header .subtitle { color: var(--text-muted); font-size: 13px; }
+
+    .header-title {
+      font-size: var(--text-lg);
+      font-weight: var(--weight-semibold);
+      line-height: var(--leading-tight);
+      color: var(--text-inverse);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+
+
+    .header-subtitle {
+      color: var(--text-muted);
+      font-size: var(--text-sm);
+      line-height: var(--leading-normal);
+      margin-top: var(--space-1);
+    }
+
     .header-actions {
       display: flex;
-      gap: 10px;
+      gap: var(--space-2);
       align-items: center;
     }
+
+    /* ================================================================
+       LIVE BADGE
+       ================================================================ */
     .live-badge {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      font-size: 12px;
+      gap: var(--space-2);
+      font-size: var(--text-xs);
       color: var(--accent-green);
-      background: rgba(63, 185, 80, 0.1);
-      padding: 4px 10px;
-      border-radius: 12px;
+      background: var(--green-a10);
+      padding: var(--space-1) var(--space-3);
+      border-radius: var(--radius-full);
+      font-weight: var(--weight-medium);
+      white-space: nowrap;
     }
-    .live-badge::before {
-      content: '';
-      width: 6px; height: 6px;
-      border-radius: 50%;
+
+    .live-badge .pulse-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: var(--radius-full);
       background: var(--accent-green);
-      animation: pulse 2s infinite;
+      animation: pulse 2s ease-in-out infinite;
+      flex-shrink: 0;
     }
+
     @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.3; transform: scale(0.85); }
     }
+
+    @media (prefers-reduced-motion: reduce) {
+      .live-badge .pulse-dot {
+        animation: none;
+        opacity: 1;
+      }
+    }
+
+    /* ================================================================
+       BUTTONS & TABS
+       ================================================================ */
     .btn {
-      padding: 6px 14px;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 500;
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--radius-lg);
+      font-size: var(--text-sm);
+      font-weight: var(--weight-medium);
       cursor: pointer;
       border: 1px solid var(--border);
       background: var(--surface-hover);
       color: var(--text);
-      transition: all 0.2s;
+      transition: background var(--duration-base) var(--ease-out),
+                  border-color var(--duration-base) var(--ease-out),
+                  color var(--duration-base) var(--ease-out);
+      min-height: 36px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: var(--leading-none);
     }
-    .btn:hover { background: var(--border); border-color: var(--accent); }
-    .btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
+    .btn:hover {
+      background: var(--surface-raised);
+      border-color: var(--border-strong);
+      color: var(--text-inverse);
+    }
+
+    .btn:active {
+      background: var(--surface);
+      transform: translateY(1px);
+    }
+
+    .btn.active {
+      background: var(--accent);
+      color: var(--text-inverse);
+      border-color: var(--accent);
+    }
+
+    .btn.active:hover {
+      background: #6cb4ff;
+      border-color: #6cb4ff;
+    }
+
+    .btn-tab {
+      background: transparent;
+      border-color: transparent;
+      color: var(--text-muted);
+    }
+
+    .btn-tab:hover {
+      background: var(--surface-hover);
+      color: var(--text);
+    }
+
+    .btn-tab.active {
+      background: var(--accent-a10);
+      color: var(--accent);
+      border-color: var(--border);
+    }
+
+    /* ================================================================
+       CONTAINER & GRID
+       ================================================================ */
     .container {
       max-width: 1400px;
       margin: 0 auto;
-      padding: 24px;
+      padding: var(--space-6);
     }
-    .grid {
+
+    .dashboard-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 20px;
+      gap: var(--space-5);
     }
+
+    .dashboard-grid .span-full {
+      grid-column: 1 / -1;
+    }
+
+    .dashboard-grid .span-2 {
+      grid-column: span 2;
+    }
+
+    @media (max-width: 720px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+      .dashboard-grid .span-2 {
+        grid-column: 1 / -1;
+      }
+      .container {
+        padding: var(--space-4);
+      }
+    }
+
+    /* ================================================================
+       CARDS
+       ================================================================ */
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 20px;
-    }
-    .card h2 {
-      font-size: 14px;
-      font-weight: 600;
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .card h2 .icon { font-size: 16px; }
-    .card h3 {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin: 16px 0 8px;
+      border-radius: var(--radius-2xl);
+      padding: var(--space-5);
+      transition: border-color var(--duration-base) var(--ease-out);
     }
 
-    .service {
+    .card:hover {
+      border-color: var(--border-strong);
+    }
+
+    .card-title {
+      font-size: var(--text-md);
+      font-weight: var(--weight-semibold);
+      margin-bottom: var(--space-4);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      color: var(--text-inverse);
+      line-height: var(--leading-tight);
+    }
+
+
+
+    .card-section {
+      margin-top: var(--space-4);
+    }
+
+    .card-section-label {
+      font-size: var(--text-xs);
+      font-weight: var(--weight-semibold);
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: var(--space-2);
+    }
+
+    /* ================================================================
+       SERVICE ROWS
+       ================================================================ */
+    .service-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 10px 12px;
-      border-radius: 8px;
-      margin-bottom: 6px;
+      padding: var(--space-3);
+      border-radius: var(--radius-lg);
+      margin-bottom: var(--space-1);
       background: var(--surface-hover);
-      transition: background 0.2s;
+      transition: background var(--duration-base) var(--ease-out);
+      cursor: default;
+      min-height: 44px;
     }
-    .service:hover { background: var(--border); }
-    .service-info { display: flex; align-items: center; gap: 10px; }
+
+    .service-row:hover {
+      background: var(--surface-raised);
+    }
+
+    .service-info {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      min-width: 0;
+    }
+
     .service-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
+      width: 8px;
+      height: 8px;
+      border-radius: var(--radius-full);
       flex-shrink: 0;
+      position: relative;
     }
+
+    .service-dot::after {
+      content: attr(data-label);
+      position: absolute;
+      left: calc(100% + var(--space-2));
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: var(--text-xs);
+      color: var(--text-muted);
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity var(--duration-base) var(--ease-out);
+      pointer-events: none;
+    }
+
     .service-dot.healthy { background: var(--accent-green); }
     .service-dot.unhealthy { background: var(--accent-red); }
     .service-dot.unknown { background: var(--accent-yellow); }
-    .service-name { font-size: 13px; font-weight: 500; }
-    .service-url { font-size: 11px; color: var(--text-muted); }
-    .service-status {
-      font-size: 11px;
-      padding: 2px 8px;
-      border-radius: 10px;
-      background: rgba(88, 166, 255, 0.1);
-      color: var(--accent);
-    }
-    .service-status.down { background: rgba(248, 81, 73, 0.1); color: var(--accent-red); }
-    .service-status.starting { background: rgba(210, 153, 34, 0.1); color: var(--accent-yellow); }
 
+    .service-name {
+      font-size: var(--text-base);
+      font-weight: var(--weight-medium);
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .service-url {
+      font-size: var(--text-xs);
+      color: var(--text-faint);
+      font-family: var(--font-mono);
+      line-height: var(--leading-tight);
+    }
+
+    .service-status {
+      font-size: var(--text-xs);
+      padding: var(--space-1) var(--space-2);
+      border-radius: var(--radius-full);
+      background: var(--accent-a10);
+      color: var(--accent);
+      font-weight: var(--weight-medium);
+      flex-shrink: 0;
+      min-width: 40px;
+      text-align: center;
+    }
+
+    .service-status.down {
+      background: var(--red-a10);
+      color: var(--accent-red);
+    }
+
+    .service-status.starting {
+      background: var(--yellow-a10);
+      color: var(--accent-yellow);
+    }
+
+    /* ================================================================
+       TENANT CARDS
+       ================================================================ */
     .tenant-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
+      gap: var(--space-3);
     }
+
+    @media (max-width: 720px) {
+      .tenant-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
     .tenant-card {
-      padding: 14px;
-      border-radius: 10px;
+      padding: var(--space-4);
+      border-radius: var(--radius-xl);
       background: var(--surface-hover);
       border: 1px solid var(--border);
-      transition: border-color 0.2s;
+      transition: border-color var(--duration-base) var(--ease-out);
     }
-    .tenant-card:hover { border-color: var(--accent-indigo); }
+
+    .tenant-card:hover {
+      border-color: var(--accent-indigo);
+    }
+
     .tenant-card .tenant-name {
-      font-size: 14px;
-      font-weight: 600;
-      margin-bottom: 4px;
+      font-size: var(--text-md);
+      font-weight: var(--weight-semibold);
+      margin-bottom: var(--space-1);
+      color: var(--text-inverse);
     }
+
     .tenant-card .tenant-domain {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-bottom: 8px;
+      font-size: var(--text-xs);
+      color: var(--text-faint);
+      font-family: var(--font-mono);
+      margin-bottom: var(--space-2);
     }
+
     .tenant-card .tenant-desc {
-      font-size: 12px;
-      color: var(--text);
-      line-height: 1.5;
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+      line-height: var(--leading-relaxed);
     }
-    .tenant-card .tenant-tag {
+
+    .tenant-tag {
       display: inline-block;
-      font-size: 10px;
-      padding: 2px 8px;
-      border-radius: 10px;
-      margin-top: 8px;
-      font-weight: 500;
+      font-size: var(--text-xs);
+      padding: var(--space-1) var(--space-2);
+      border-radius: var(--radius-full);
+      margin-top: var(--space-2);
+      font-weight: var(--weight-medium);
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.05em;
     }
-    .tag-gov { background: rgba(59, 130, 246, 0.15); color: var(--accent); }
-    .tag-tech { background: rgba(99, 102, 241, 0.15); color: var(--accent-indigo); }
-    .tag-infra { background: rgba(249, 115, 22, 0.15); color: var(--accent-orange); }
-    .tag-saas { background: rgba(188, 140, 255, 0.15); color: var(--accent-purple); }
+
+    .tag-gov { background: var(--accent-a15); color: var(--accent); }
+    .tag-tech { background: var(--indigo-a15); color: var(--accent-indigo); }
+    .tag-infra { background: var(--orange-a15); color: var(--accent-orange); }
+    .tag-saas { background: var(--purple-a15); color: var(--accent-purple); }
+
+    /* ================================================================
+       FLOW DIAGRAMS
+       ================================================================ */
+    .flow-block {
+      margin-bottom: var(--space-4);
+    }
+
+    .flow-block:last-child {
+      margin-bottom: 0;
+    }
+
+    .flow-label {
+      font-size: var(--text-xs);
+      font-weight: var(--weight-semibold);
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: var(--space-2);
+    }
 
     .flow {
       display: flex;
       align-items: center;
       flex-wrap: wrap;
-      gap: 8px;
-      padding: 12px;
+      gap: var(--space-2);
+      padding: var(--space-3);
       background: var(--surface-hover);
-      border-radius: 8px;
-      margin-bottom: 10px;
-    }
-    .flow-node {
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 500;
-      background: rgba(88, 166, 255, 0.15);
-      color: var(--accent);
-    }
-    .flow-arrow {
-      color: var(--text-muted);
-      font-size: 14px;
-    }
-    .flow-desc {
-      margin-top: 8px;
-      font-size: 12px;
-      color: var(--text-muted);
-      line-height: 1.6;
-    }
-    .flow-label {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 6px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-subtle);
     }
 
+    .flow-node {
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--radius-md);
+      font-size: var(--text-sm);
+      font-weight: var(--weight-medium);
+      background: var(--accent-a15);
+      color: var(--accent);
+      white-space: nowrap;
+    }
+
+    .flow-arrow {
+      color: var(--text-faint);
+      font-size: var(--text-md);
+      flex-shrink: 0;
+    }
+
+    .flow-desc {
+      margin-top: var(--space-2);
+      font-size: var(--text-sm);
+      color: var(--text-muted);
+      line-height: var(--leading-relaxed);
+    }
+
+    .flow-desc code {
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      background: var(--surface-raised);
+      padding: 1px var(--space-1);
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+    }
+
+    /* ================================================================
+       LINKS
+       ================================================================ */
     .links-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
+      gap: var(--space-2);
     }
+
+    @media (max-width: 480px) {
+      .links-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
     .link-btn {
       display: flex;
       align-items: center;
-      gap: 8px;
-      padding: 10px 12px;
-      border-radius: 8px;
+      gap: var(--space-2);
+      padding: var(--space-3);
+      border-radius: var(--radius-lg);
       background: var(--surface-hover);
       color: var(--text);
       text-decoration: none;
-      font-size: 13px;
-      transition: background 0.2s;
+      font-size: var(--text-base);
+      transition: background var(--duration-base) var(--ease-out),
+                  border-color var(--duration-base) var(--ease-out);
       border: 1px solid transparent;
+      min-height: 44px;
     }
+
     .link-btn:hover {
-      background: var(--border);
+      background: var(--surface-raised);
       border-color: var(--accent);
+      color: var(--text-inverse);
     }
-    .link-btn .emoji { font-size: 14px; }
+
+    .link-btn:active {
+      transform: translateY(1px);
+    }
+
+
+
+    .link-btn .link-text {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* ================================================================
+       ENDPOINTS
+       ================================================================ */
+    .endpoint-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-1);
+    }
 
     .endpoint {
-      padding: 10px 12px;
-      border-radius: 6px;
+      padding: var(--space-3);
+      border-radius: var(--radius-md);
       background: var(--surface-hover);
-      margin-bottom: 6px;
-      font-family: 'SF Mono', Monaco, monospace;
-      font-size: 12px;
+      font-family: var(--font-mono);
+      font-size: var(--text-sm);
+      border: 1px solid var(--border-subtle);
+      transition: border-color var(--duration-base) var(--ease-out);
     }
+
+    .endpoint:hover {
+      border-color: var(--border);
+    }
+
     .endpoint .method {
       display: inline-block;
-      padding: 1px 6px;
-      border-radius: 4px;
-      font-size: 10px;
-      font-weight: 600;
-      margin-right: 6px;
+      padding: 1px var(--space-2);
+      border-radius: var(--radius-sm);
+      font-size: var(--text-xs);
+      font-weight: var(--weight-semibold);
+      margin-right: var(--space-2);
+      line-height: var(--leading-normal);
     }
-    .method.get { background: rgba(88, 166, 255, 0.2); color: var(--accent); }
-    .method.post { background: rgba(63, 185, 80, 0.2); color: var(--accent-green); }
-    .method.put { background: rgba(210, 153, 34, 0.2); color: var(--accent-yellow); }
-    .method.delete { background: rgba(248, 81, 73, 0.2); color: var(--accent-red); }
-    .endpoint .path { color: var(--text); }
+
+    .method.get { background: var(--accent-a20); color: var(--accent); }
+    .method.post { background: var(--green-a20); color: var(--accent-green); }
+    .method.put { background: var(--yellow-a20); color: var(--accent-yellow); }
+    .method.delete { background: var(--red-a20); color: var(--accent-red); }
+
+    .endpoint .path {
+      color: var(--text);
+      word-break: break-all;
+    }
+
     .endpoint .desc {
       display: block;
       color: var(--text-muted);
-      font-family: inherit;
-      font-size: 11px;
-      margin-top: 4px;
-      margin-left: 40px;
+      font-family: var(--font-sans);
+      font-size: var(--text-xs);
+      margin-top: var(--space-1);
+      margin-left: 0;
+      line-height: var(--leading-relaxed);
     }
 
+    /* ================================================================
+       CURL BLOCKS
+       ================================================================ */
     .curl-block {
       position: relative;
-      background: #0d1117;
+      background: var(--bg);
       border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 8px;
-      font-family: 'SF Mono', Monaco, monospace;
-      font-size: 12px;
+      border-radius: var(--radius-lg);
+      padding: var(--space-3);
+      margin-bottom: var(--space-2);
+      font-family: var(--font-mono);
+      font-size: var(--text-sm);
       overflow-x: auto;
     }
+
     .curl-block pre {
       color: var(--text);
       white-space: pre-wrap;
       word-break: break-all;
+      padding-right: var(--space-8);
+      line-height: var(--leading-relaxed);
     }
-    .curl-block .copy {
+
+    .curl-block .copy-btn {
       position: absolute;
-      top: 8px; right: 8px;
-      padding: 4px 10px;
-      border-radius: 4px;
+      top: var(--space-2);
+      right: var(--space-2);
+      padding: var(--space-1) var(--space-2);
+      border-radius: var(--radius-sm);
       background: var(--surface-hover);
       border: 1px solid var(--border);
       color: var(--text-muted);
-      font-size: 11px;
+      font-size: var(--text-xs);
       cursor: pointer;
-      font-family: inherit;
+      font-family: var(--font-sans);
+      font-weight: var(--weight-medium);
+      transition: color var(--duration-base) var(--ease-out),
+                  background var(--duration-base) var(--ease-out);
+      min-height: 28px;
+      line-height: var(--leading-none);
     }
-    .copy:hover { color: var(--text); }
-    .copy.copied { color: var(--accent-green); }
 
-    .metrics {
+    .copy-btn:hover {
+      color: var(--text);
+      background: var(--surface-raised);
+    }
+
+    .copy-btn.copied {
+      color: var(--accent-green);
+      background: var(--green-a10);
+    }
+
+    /* ================================================================
+       METRICS
+       ================================================================ */
+    .metrics-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-    }
-    .metric {
-      text-align: center;
-      padding: 16px;
-      background: var(--surface-hover);
-      border-radius: 8px;
-    }
-    .metric-value {
-      font-size: 24px;
-      font-weight: 700;
-      color: var(--accent);
-    }
-    .metric-label {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-top: 4px;
+      gap: var(--space-3);
     }
 
+    @media (max-width: 480px) {
+      .metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .metric {
+      text-align: center;
+      padding: var(--space-4);
+      background: var(--surface-hover);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-subtle);
+      transition: border-color var(--duration-base) var(--ease-out);
+    }
+
+    .metric:hover {
+      border-color: var(--border);
+    }
+
+    .metric-value {
+      font-size: var(--text-2xl);
+      font-weight: var(--weight-bold);
+      color: var(--accent);
+      line-height: var(--leading-tight);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .metric-label {
+      font-size: var(--text-xs);
+      color: var(--text-muted);
+      margin-top: var(--space-1);
+      font-weight: var(--weight-medium);
+    }
+
+    /* ================================================================
+       TABLES
+       ================================================================ */
     .table-wrap {
       overflow-x: auto;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      margin: 0 calc(var(--space-5) * -1);
+      margin-top: var(--space-3);
+      width: calc(100% + var(--space-5) * 2);
     }
-    table {
+
+    .table-wrap table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 12px;
+      font-size: var(--text-sm);
     }
-    th, td {
-      padding: 8px 10px;
+
+    .table-wrap th,
+    .table-wrap td {
+      padding: var(--space-2) var(--space-3);
       text-align: left;
       border-bottom: 1px solid var(--border);
+      white-space: nowrap;
     }
-    th {
+
+    .table-wrap th {
       color: var(--text-muted);
-      font-weight: 600;
-      font-size: 11px;
+      font-weight: var(--weight-semibold);
+      font-size: var(--text-xs);
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.05em;
+      background: var(--surface-hover);
     }
-    td { color: var(--text); }
-    tr:hover td { background: var(--surface-hover); }
-    .code { font-family: 'SF Mono', Monaco, monospace; font-size: 11px; }
+
+    .table-wrap td {
+      color: var(--text);
+    }
+
+    .table-wrap tr:hover td {
+      background: var(--surface-hover);
+    }
+
+    .table-wrap tr:last-child td {
+      border-bottom: none;
+    }
+
+    .table-wrap .code {
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      color: var(--text-secondary);
+    }
+
+    /* ================================================================
+       BADGES
+       ================================================================ */
     .badge {
       display: inline-block;
-      padding: 2px 8px;
-      border-radius: 10px;
-      font-size: 11px;
-      font-weight: 500;
+      padding: var(--space-1) var(--space-2);
+      border-radius: var(--radius-full);
+      font-size: var(--text-xs);
+      font-weight: var(--weight-medium);
+      line-height: var(--leading-normal);
     }
-    .badge-success { background: rgba(63, 185, 80, 0.15); color: var(--accent-green); }
-    .badge-warn { background: rgba(210, 153, 34, 0.15); color: var(--accent-yellow); }
-    .badge-info { background: rgba(88, 166, 255, 0.15); color: var(--accent); }
+
+    .badge-success { background: var(--green-a15); color: var(--accent-green); }
+    .badge-warn { background: var(--yellow-a15); color: var(--accent-yellow); }
+    .badge-info { background: var(--accent-a15); color: var(--accent); }
+    .badge-danger { background: var(--red-a15); color: var(--accent-red); }
+
+    .badge-group {
+      display: flex;
+      gap: var(--space-1);
+      flex-wrap: wrap;
+    }
+
+    /* ================================================================
+       STEPS / DEMO FLOW
+       ================================================================ */
+    .steps-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
 
     .step {
       display: flex;
-      gap: 12px;
-      padding: 12px;
-      border-radius: 8px;
+      gap: var(--space-3);
+      padding: var(--space-3);
+      border-radius: var(--radius-lg);
       background: var(--surface-hover);
-      margin-bottom: 8px;
       border: 1px solid var(--border);
-      transition: border-color 0.2s;
+      transition: border-color var(--duration-base) var(--ease-out),
+                  background var(--duration-base) var(--ease-out);
       cursor: pointer;
     }
-    .step:hover { border-color: var(--accent-indigo); }
+
+    .step:hover {
+      border-color: var(--accent-indigo);
+      background: var(--surface-raised);
+    }
+
+    .step:active {
+      transform: translateY(1px);
+    }
+
     .step-num {
-      width: 28px; height: 28px;
-      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      border-radius: var(--radius-full);
       background: var(--accent-indigo);
-      color: #fff;
+      color: var(--text-inverse);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 12px;
-      font-weight: 700;
+      font-size: var(--text-xs);
+      font-weight: var(--weight-bold);
       flex-shrink: 0;
+      line-height: var(--leading-none);
     }
-    .step-content { flex: 1; }
-    .step-title { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
-    .step-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
-    .step-time { font-size: 11px; color: var(--accent-yellow); font-weight: 500; }
-    .step-actions { margin-top: 6px; display: flex; gap: 6px; }
+
+    .step-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .step-title {
+      font-size: var(--text-base);
+      font-weight: var(--weight-semibold);
+      margin-bottom: var(--space-1);
+      color: var(--text-inverse);
+      line-height: var(--leading-tight);
+    }
+
+    .step-title .step-time {
+      font-size: var(--text-xs);
+      color: var(--accent-yellow);
+      font-weight: var(--weight-medium);
+      margin-left: var(--space-2);
+      white-space: nowrap;
+    }
+
+    .step-desc {
+      font-size: var(--text-sm);
+      color: var(--text-muted);
+      line-height: var(--leading-relaxed);
+    }
+
+    .step-desc code {
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      background: var(--surface-raised);
+      padding: 1px var(--space-1);
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+    }
+
+    .step-actions {
+      margin-top: var(--space-2);
+      display: flex;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+    }
+
     .step-actions a {
-      font-size: 11px;
-      padding: 3px 8px;
-      border-radius: 4px;
-      background: rgba(99, 102, 241, 0.15);
+      font-size: var(--text-xs);
+      padding: var(--space-1) var(--space-2);
+      border-radius: var(--radius-sm);
+      background: var(--indigo-a15);
       color: var(--accent-indigo);
       text-decoration: none;
-      font-weight: 500;
+      font-weight: var(--weight-medium);
+      transition: background var(--duration-base) var(--ease-out);
+      min-height: 28px;
+      display: inline-flex;
+      align-items: center;
     }
-    .step-actions a:hover { background: rgba(99, 102, 241, 0.25); }
 
+    .step-actions a:hover {
+      background: var(--indigo-a25);
+      color: var(--text-inverse);
+    }
+
+    .step-actions a:active {
+      transform: translateY(1px);
+    }
+
+    /* ================================================================
+       REPOSITORIES
+       ================================================================ */
     .repo-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
+      gap: var(--space-2);
     }
+
+    @media (max-width: 480px) {
+      .repo-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
     .repo-link {
       display: flex;
       flex-direction: column;
-      gap: 2px;
-      padding: 10px 12px;
-      border-radius: 8px;
+      gap: var(--space-1);
+      padding: var(--space-3);
+      border-radius: var(--radius-lg);
       background: var(--surface-hover);
       color: var(--text);
       text-decoration: none;
-      font-size: 12px;
-      transition: background 0.2s;
+      font-size: var(--text-sm);
+      transition: background var(--duration-base) var(--ease-out),
+                  border-color var(--duration-base) var(--ease-out);
       border: 1px solid transparent;
+      min-height: 44px;
     }
-    .repo-link:hover { background: var(--border); border-color: var(--accent); }
-    .repo-link .repo-name { font-weight: 600; font-size: 13px; }
-    .repo-link .repo-desc { color: var(--text-muted); font-size: 11px; }
 
-    .footer {
+    .repo-link:hover {
+      background: var(--surface-raised);
+      border-color: var(--accent);
+      color: var(--text-inverse);
+    }
+
+    .repo-link .repo-name {
+      font-weight: var(--weight-semibold);
+      font-size: var(--text-base);
+    }
+
+    .repo-link .repo-desc {
+      color: var(--text-muted);
+      font-size: var(--text-xs);
+      line-height: var(--leading-relaxed);
+    }
+
+    /* ================================================================
+       FOOTER
+       ================================================================ */
+    .site-footer {
       text-align: center;
-      padding: 32px;
-      color: var(--text-muted);
-      font-size: 12px;
+      padding: var(--space-8) var(--space-6);
+      color: var(--text-faint);
+      font-size: var(--text-xs);
+      border-top: 1px solid var(--border);
+      margin-top: var(--space-8);
     }
 
-    .hidden { display: none !important; }
-
-    .tab-bar {
-      display: flex;
-      gap: 4px;
-      margin-bottom: 16px;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 8px;
+    /* ================================================================
+       VIEW SWITCHING
+       ================================================================ */
+    .view {
+      display: none;
     }
-    .tab {
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 500;
-      cursor: pointer;
-      color: var(--text-muted);
-      transition: all 0.2s;
-    }
-    .tab:hover { color: var(--text); background: var(--surface-hover); }
-    .tab.active { color: var(--accent); background: rgba(88, 166, 255, 0.1); }
 
-    .tab-panel { display: none; }
-    .tab-panel.active { display: block; }
+    .view.active {
+      display: block;
+    }
+
+    /* ================================================================
+       HELPERS
+       ================================================================ */
+    .text-muted { color: var(--text-muted); }
+    .text-secondary { color: var(--text-secondary); }
+    .text-faint { color: var(--text-faint); }
+    .text-xs { font-size: var(--text-xs); }
+    .text-sm { font-size: var(--text-sm); }
+    .mt-2 { margin-top: var(--space-2); }
+    .mt-3 { margin-top: var(--space-3); }
+    .mt-4 { margin-top: var(--space-4); }
   </style>
 </head>
 <body>
-  <header>
-    <div>
-      <h1>🏛️ Garamatic — Architecture Dashboard & Demo Guide</h1>
-      <div class="subtitle">Multi-tenant workflow platform · 4 tenants · 267+ tests · Event-driven · AI-integrated</div>
-    </div>
-    <div class="header-actions">
-      <div class="live-badge">Live polling</div>
-      <button class="btn" id="btn-topology" onclick="switchView('topology')">Topology</button>
-      <button class="btn active" id="btn-demo" onclick="switchView('demo')">Demo Guide</button>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div>
+        <h1 class="header-title">Garamatic</h1>
+        <p class="header-subtitle">Architecture Dashboard & Demo Guide</p>
+      </div>
+      <div class="header-actions">
+        <div class="live-badge" aria-label="Live polling active">
+          <span class="pulse-dot" aria-hidden="true"></span>
+          <span>Live polling</span>
+        </div>
+        <button class="btn btn-tab" id="btn-topology" onclick="switchView('topology')" aria-pressed="false">Topology</button>
+        <button class="btn btn-tab active" id="btn-demo" onclick="switchView('demo')" aria-pressed="true">Demo Guide</button>
+      </div>
     </div>
   </header>
 
-  <div class="container">
-    <!-- DEMO GUIDE VIEW -->
-    <div id="view-demo" class="grid">
-      <!-- Demo Flow Steps -->
-      <div class="card" style="grid-column: 1 / -1;">
-        <h2><span class="icon">🎬</span> Demo Flow (~9 min)</h2>
-        <div class="step" onclick="window.open('http://localhost:8093','_blank')">
-          <div class="step-num">1</div>
-          <div class="step-content">
-            <div class="step-title">Multi-tenant Portal — Burger Melding <span class="step-time">0:30 — 2:00</span></div>
-            <div class="step-desc">Citizen submits a ticket via the Desgoffe portal. The form adapts to the tenant's branding and language. Behind the scenes, a <code>ticket.created</code> event is published via the Outbox Pattern.</div>
-            <div class="step-actions">
-              <a href="http://localhost:8093" target="_blank">Open Portal</a>
-              <a href="http://localhost:8085" target="_blank">Open Ticket Masala</a>
-              <a href="http://localhost:15672" target="_blank">RabbitMQ</a>
+  <!-- DEMO GUIDE VIEW -->
+  <div id="view-demo" class="view active">
+    <div class="container">
+      <div class="dashboard-grid">
+
+        <!-- Demo Flow Steps -->
+        <div class="card span-full">
+          <h2 class="card-title">Demo Flow (~9 min)</h2>
+          <div class="steps-list">
+            <div class="step" role="button" tabindex="0" onclick="window.open('http://localhost:8093','_blank')" onkeydown="if(event.key==='Enter'||event.key===' ')window.open('http://localhost:8093','_blank')">
+              <div class="step-num">1</div>
+              <div class="step-content">
+                <div class="step-title">Multi-tenant Portal — Burger Melding <span class="step-time">0:30 — 2:00</span></div>
+                <div class="step-desc">Citizen submits a ticket via the Desgoffe portal. The form adapts to the tenant's branding and language. Behind the scenes, a <code>ticket.created</code> event is published via the Outbox Pattern.</div>
+                <div class="step-actions">
+                  <a href="http://localhost:8093" target="_blank" rel="noopener" onclick="event.stopPropagation()">Open Portal</a>
+                  <a href="http://localhost:8085" target="_blank" rel="noopener" onclick="event.stopPropagation()">Open Ticket Masala</a>
+                  <a href="http://localhost:15672" target="_blank" rel="noopener" onclick="event.stopPropagation()">RabbitMQ</a>
+                </div>
+              </div>
+            </div>
+            <div class="step" role="button" tabindex="0" onclick="window.open('http://localhost:8085','_blank')" onkeydown="if(event.key==='Enter'||event.key===' ')window.open('http://localhost:8085','_blank')">
+              <div class="step-num">2</div>
+              <div class="step-content">
+                <div class="step-title">Ticket Lifecycle + GERDA AI <span class="step-time">2:00 — 4:00</span></div>
+                <div class="step-desc">Login as manager. GERDA AI sidebar auto-analyses each ticket: complexity, priority, tags, and recommended agent. Assignment triggers a <code>ticket.assigned</code> event.</div>
+                <div class="step-actions">
+                  <a href="http://localhost:8085" target="_blank" rel="noopener" onclick="event.stopPropagation()">Ticket Masala</a>
+                </div>
+              </div>
+            </div>
+            <div class="step" role="button" tabindex="0" onclick="window.open('http://localhost:8085','_blank')" onkeydown="if(event.key==='Enter'||event.key===' ')window.open('http://localhost:8085','_blank')">
+              <div class="step-num">3</div>
+              <div class="step-content">
+                <div class="step-title">MCP AI Chat — Tool-Calling Agent <span class="step-time">4:00 — 6:00</span></div>
+                <div class="step-desc">Open the AI chat inside any ticket. The agent already knows the ticket context. Ask it to create a €200 invoice and it will call your business APIs directly through MCP tools — no wrapper, no abstraction layer.</div>
+                <div class="step-actions">
+                  <a href="http://localhost:8085" target="_blank" rel="noopener" onclick="event.stopPropagation()">Open Ticket Masala</a>
+                  <a href="http://localhost:3001" target="_blank" rel="noopener" onclick="event.stopPropagation()">Agentic Service</a>
+                </div>
+              </div>
+            </div>
+            <div class="step" role="button" tabindex="0" onclick="window.open('http://localhost:8069','_blank')" onkeydown="if(event.key==='Enter'||event.key===' ')window.open('http://localhost:8069','_blank')">
+              <div class="step-num">4</div>
+              <div class="step-content">
+                <div class="step-title">Invoicing + Odoo ERP <span class="step-time">6:00 — 8:00</span></div>
+                <div class="step-desc">Resolve a ticket with a billable amount. The Odoo Bridge receives <code>ticket.resolved</code>, creates a customer and invoice via JSON-RPC, and publishes <code>invoice.created</code>. Zero manual work.</div>
+                <div class="step-actions">
+                  <a href="http://localhost:8069" target="_blank" rel="noopener" onclick="event.stopPropagation()">Odoo ERP</a>
+                  <a href="http://localhost:8089" target="_blank" rel="noopener" onclick="event.stopPropagation()">Odoo Bridge</a>
+                </div>
+              </div>
+            </div>
+            <div class="step" role="button" tabindex="0" onclick="window.open('http://localhost:15672','_blank')" onkeydown="if(event.key==='Enter'||event.key===' ')window.open('http://localhost:15672','_blank')">
+              <div class="step-num">5</div>
+              <div class="step-content">
+                <div class="step-title">Event Bus & Email — Closing the Loop <span class="step-time">8:00 — 9:00</span></div>
+                <div class="step-desc">One event fans out to three queues. RabbitMQ shows the bindings. Mailhog captures every email: ticket created, assigned, resolved, invoice created. No service calls another directly.</div>
+                <div class="step-actions">
+                  <a href="http://localhost:15672" target="_blank" rel="noopener" onclick="event.stopPropagation()">RabbitMQ</a>
+                  <a href="http://localhost:8025" target="_blank" rel="noopener" onclick="event.stopPropagation()">Mailhog</a>
+                </div>
+              </div>
+            </div>
+            <div class="step" role="button" tabindex="0" onclick="window.open('http://localhost:8092','_blank')" onkeydown="if(event.key==='Enter'||event.key===' ')window.open('http://localhost:8092','_blank')">
+              <div class="step-num">6</div>
+              <div class="step-content">
+                <div class="step-title">Outro — Summary & Links <span class="step-time">9:00 — 9:30</span></div>
+                <div class="step-desc">Return to the dashboard. All services running. One binary serves four tenants. Services communicate through events, not direct calls. The AI agent has real access to your APIs. Everything ships in a container. The code is open source.</div>
+              </div>
             </div>
           </div>
         </div>
-        <div class="step" onclick="window.open('http://localhost:8085','_blank')">
-          <div class="step-num">2</div>
-          <div class="step-content">
-            <div class="step-title">Ticket Lifecycle + GERDA AI <span class="step-time">2:00 — 4:00</span></div>
-            <div class="step-desc">Login as manager. GERDA AI sidebar auto-analyses each ticket: complexity, priority, tags, and recommended agent. Assignment triggers a <code>ticket.assigned</code> event.</div>
-            <div class="step-actions">
-              <a href="http://localhost:8085" target="_blank">Ticket Masala</a>
+
+        <!-- Tenants -->
+        <div class="card">
+          <h2 class="card-title">Tenant Personalities</h2>
+          <div class="tenant-grid">
+            <div class="tenant-card">
+              <div class="tenant-name">Desgoffe</div>
+              <div class="tenant-domain">ville-desgoffe.local</div>
+              <div class="tenant-desc">Government bureau. Strict hierarchy, formal language, bureaucratic approval (Mayor's Stamp). Citizens file complaints only; no dashboard.</div>
+              <span class="tenant-tag tag-gov">Government</span>
+            </div>
+            <div class="tenant-card">
+              <div class="tenant-name">Liberty</div>
+              <div class="tenant-domain">liberty-tech.local</div>
+              <div class="tenant-desc">SaaS / Tech startup. Agile workflows, git-style commits, CI/CD pipeline visibility. DevOps Lead vs Support Rep roles.</div>
+              <span class="tenant-tag tag-tech">SaaS / Tech</span>
+            </div>
+            <div class="tenant-card">
+              <div class="tenant-name">Whitman</div>
+              <div class="tenant-domain">whitman-infra.local</div>
+              <div class="tenant-desc">Infrastructure / Field. High-contrast UI, large controls, foreman-oriented view. Designed for field use and tough conditions.</div>
+              <span class="tenant-tag tag-infra">Infrastructure</span>
+            </div>
+            <div class="tenant-card">
+              <div class="tenant-name">Hennessey</div>
+              <div class="tenant-domain">hennessey.local</div>
+              <div class="tenant-desc">Premium spirits distribution. Custom approval chains, batch processing, compliance tracking for regulated goods.</div>
+              <span class="tenant-tag tag-saas">Distribution</span>
+            </div>
+          </div>
+          <p class="text-sm text-muted mt-3">All tenants run from a single deployable binary. Personality is injected via <code class="code">config/masala_domains.yaml</code> — no code changes required.</p>
+        </div>
+
+        <!-- Demo Credentials -->
+        <div class="card">
+          <h2 class="card-title">Demo Credentials</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Service</th><th>URL</th><th>Username</th><th>Password</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Ticket Masala (Admin)</td><td class="code">localhost:8085</td><td class="code">admin</td><td class="code">Admin123!</td></tr>
+                <tr><td>Ticket Masala (Employee)</td><td class="code">localhost:8085</td><td class="code">employee</td><td class="code">Employee123!</td></tr>
+                <tr><td>Ticket Masala (Customer)</td><td class="code">localhost:8085</td><td class="code">jean.dupont@citoyen.be</td><td class="code">Customer123!</td></tr>
+                <tr><td>Gatekeeper API</td><td class="code">localhost:8086</td><td class="code">—</td><td class="code">demo-api-key</td></tr>
+                <tr><td>RabbitMQ</td><td class="code">localhost:15672</td><td class="code">guest</td><td class="code">guest</td></tr>
+                <tr><td>Odoo ERP</td><td class="code">localhost:8069</td><td class="code">admin</td><td class="code">admin</td></tr>
+                <tr><td>Grafana</td><td class="code">localhost:3000</td><td class="code">admin</td><td class="code">admin</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Event Flow -->
+        <div class="card">
+          <h2 class="card-title">Event Flow Architecture</h2>
+
+          <div class="flow-block">
+            <div class="flow-label">Citizen Portal Flow</div>
+            <div class="flow">
+              <span class="flow-node">Portal</span>
+              <span class="flow-arrow" aria-hidden="true">→</span>
+              <span class="flow-node">Gatekeeper</span>
+              <span class="flow-arrow" aria-hidden="true">→</span>
+              <span class="flow-node">RabbitMQ</span>
+              <span class="flow-arrow" aria-hidden="true">→</span>
+              <span class="flow-node">Ticket Masala</span>
+              <span class="flow-arrow" aria-hidden="true">→</span>
+              <span class="flow-node">Mailing</span>
+              <span class="flow-arrow" aria-hidden="true">→</span>
+              <span class="flow-node">Mailhog</span>
+            </div>
+            <div class="flow-desc">Portal submits ticket → Gatekeeper validates & publishes <code>ticket.created</code> → RabbitMQ fan-out → Ticket Masala stores + Outbox → Mailing sends confirmation → Mailhog captures.</div>
+          </div>
+
+          <div class="flow-block">
+            <div class="flow-label">AI + ERP Flow</div>
+            <div class="flow">
+              <span class="flow-node">MCP Chat</span>
+              <span class="flow-arrow" aria-hidden="true">→</span>
+              <span class="flow-node">Agentic</span>
+              <span class="flow-arrow" aria-hidden="true">→</span>
+              <span class="flow-node">Ticket Masala</span>
+              <span class="flow-arrow" aria-hidden="true">→</span>
+              <span class="flow-node">Odoo Bridge</span>
+              <span class="flow-arrow" aria-hidden="true">→</span>
+              <span class="flow-node">Odoo ERP</span>
+            </div>
+            <div class="flow-desc">User asks AI to create invoice → Agentic calls MCP tools → Ticket Masala updates → Odoo Bridge syncs via JSON-RPC → Invoice posted in Odoo.</div>
+          </div>
+
+          <div class="flow-block">
+            <div class="flow-label">RabbitMQ Exchange</div>
+            <div class="flow">
+              <span class="flow-node">event_exchange</span>
+              <span class="flow-arrow" aria-hidden="true">→</span>
+              <span class="flow-node">agentic.queue</span>
+              <span class="flow-arrow" aria-hidden="true">→</span>
+              <span class="flow-node">mailing.queue</span>
+              <span class="flow-arrow" aria-hidden="true">→</span>
+              <span class="flow-node">odoo-bridge</span>
+            </div>
+            <div class="flow-desc">One message, three consumers, zero coupling. Outbox Pattern guarantees atomic delivery.</div>
+          </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="card">
+          <h2 class="card-title">Quick Links</h2>
+          <div class="links-grid">
+            <a class="link-btn" href="http://localhost:8085" target="_blank" rel="noopener"><span class="link-text">Ticket Masala</span></a>
+            <a class="link-btn" href="http://localhost:8086" target="_blank" rel="noopener"><span class="link-text">Gatekeeper</span></a>
+            <a class="link-btn" href="http://localhost:8087" target="_blank" rel="noopener"><span class="link-text">Mailing Service</span></a>
+            <a class="link-btn" href="http://localhost:3001" target="_blank" rel="noopener"><span class="link-text">Agentic Service</span></a>
+            <a class="link-btn" href="http://localhost:8089" target="_blank" rel="noopener"><span class="link-text">Odoo Bridge</span></a>
+            <a class="link-btn" href="http://localhost:8090" target="_blank" rel="noopener"><span class="link-text">Garamatic Web</span></a>
+            <a class="link-btn" href="http://localhost:8091" target="_blank" rel="noopener"><span class="link-text">Masala Web</span></a>
+            <a class="link-btn" href="http://localhost:8093" target="_blank" rel="noopener"><span class="link-text">Portal</span></a>
+            <a class="link-btn" href="http://localhost:15672" target="_blank" rel="noopener"><span class="link-text">RabbitMQ</span></a>
+            <a class="link-btn" href="http://localhost:8025" target="_blank" rel="noopener"><span class="link-text">Mailhog</span></a>
+            <a class="link-btn" href="http://localhost:8069" target="_blank" rel="noopener"><span class="link-text">Odoo ERP</span></a>
+            <a class="link-btn" href="http://localhost:11434" target="_blank" rel="noopener"><span class="link-text">Ollama LLM</span></a>
+          </div>
+          <div class="card-section">
+            <div class="card-section-label">External</div>
+            <div class="links-grid">
+              <a class="link-btn" href="https://ticket-masala.fly.dev" target="_blank" rel="noopener"><span class="link-text">Live: Ticket Masala</span></a>
+              <a class="link-btn" href="https://ticket-masala.fly.dev/swagger" target="_blank" rel="noopener"><span class="link-text">Swagger API</span></a>
+              <a class="link-btn" href="https://masala-doc.fly.dev" target="_blank" rel="noopener"><span class="link-text">MkDocs</span></a>
+              <a class="link-btn" href="https://github.com/garamatic/garamatic" target="_blank" rel="noopener"><span class="link-text">GitHub</span></a>
             </div>
           </div>
         </div>
-        <div class="step" onclick="window.open('http://localhost:8085','_blank')">
-          <div class="step-num">3</div>
-          <div class="step-content">
-            <div class="step-title">MCP AI Chat — The WOW Moment <span class="step-time">4:00 — 6:00</span></div>
-            <div class="step-desc">Open the AI chat inside any ticket. The agent already knows the ticket context. Ask it to create a €200 invoice — it uses MCP tools to call your business APIs directly. No ordinary chatbot.</div>
-            <div class="step-actions">
-              <a href="http://localhost:8085" target="_blank">Open Ticket Masala</a>
-              <a href="http://localhost:3001" target="_blank">Agentic Service</a>
+
+        <!-- API Explorer -->
+        <div class="card">
+          <h2 class="card-title">API Explorer</h2>
+          <div class="endpoint-list">
+            <div class="endpoint">
+              <span class="method get">GET</span>
+              <span class="path">http://localhost:8085/health</span>
+              <span class="desc">Ticket Masala health check</span>
+            </div>
+            <div class="endpoint">
+              <span class="method get">GET</span>
+              <span class="path">http://localhost:8085/swagger</span>
+              <span class="desc">OpenAPI / Swagger UI</span>
+            </div>
+            <div class="endpoint">
+              <span class="method get">GET</span>
+              <span class="path">http://localhost:8086/health</span>
+              <span class="desc">Gatekeeper health check</span>
+            </div>
+            <div class="endpoint">
+              <span class="method get">GET</span>
+              <span class="path">http://localhost:8087/health</span>
+              <span class="desc">Mailing Service health check</span>
+            </div>
+            <div class="endpoint">
+              <span class="method get">GET</span>
+              <span class="path">http://localhost:8089/health</span>
+              <span class="desc">Odoo Bridge health check</span>
+            </div>
+            <div class="endpoint">
+              <span class="method get">GET</span>
+              <span class="path">http://localhost:3001/sse</span>
+              <span class="desc">Agentic Service SSE endpoint</span>
+            </div>
+            <div class="endpoint">
+              <span class="method get">GET</span>
+              <span class="path">http://localhost:15672/api/overview</span>
+              <span class="desc">RabbitMQ management API</span>
+            </div>
+            <div class="endpoint">
+              <span class="method post">POST</span>
+              <span class="path">http://localhost:8086/api/events/publish</span>
+              <span class="desc">Publish event to RabbitMQ via Gatekeeper</span>
+            </div>
+            <div class="endpoint">
+              <span class="method post">POST</span>
+              <span class="path">http://localhost:8087/api/mail/send</span>
+              <span class="desc">Send email via Mailing Service</span>
+            </div>
+            <div class="endpoint">
+              <span class="method post">POST</span>
+              <span class="path">http://localhost:8085/api/portal/submit</span>
+              <span class="desc">Portal ticket submission</span>
             </div>
           </div>
         </div>
-        <div class="step" onclick="window.open('http://localhost:8069','_blank')">
-          <div class="step-num">4</div>
-          <div class="step-content">
-            <div class="step-title">Invoicing + Odoo ERP <span class="step-time">6:00 — 8:00</span></div>
-            <div class="step-desc">Resolve a ticket with a billable amount. The Odoo Bridge receives <code>ticket.resolved</code>, creates a customer and invoice via JSON-RPC, and publishes <code>invoice.created</code>. Zero manual work.</div>
-            <div class="step-actions">
-              <a href="http://localhost:8069" target="_blank">Odoo ERP</a>
-              <a href="http://localhost:8089" target="_blank">Odoo Bridge</a>
+
+        <!-- Project Metrics -->
+        <div class="card">
+          <h2 class="card-title">Project Metrics</h2>
+          <div class="metrics-grid">
+            <div class="metric">
+              <div class="metric-value">267+</div>
+              <div class="metric-label">Tests Passing</div>
+            </div>
+            <div class="metric">
+              <div class="metric-value">10</div>
+              <div class="metric-label">Services</div>
+            </div>
+            <div class="metric">
+              <div class="metric-value">4</div>
+              <div class="metric-label">Tenants</div>
+            </div>
+          </div>
+          <div class="card-section">
+            <div class="card-section-label">Test Breakdown</div>
+            <div class="badge-group">
+              <span class="badge badge-success">~180 Unit</span>
+              <span class="badge badge-success">~50 Integration</span>
+              <span class="badge badge-success">~15 Architecture</span>
+              <span class="badge badge-success">~20 Domain</span>
+              <span class="badge badge-success">~20 Cross-service</span>
+            </div>
+          </div>
+          <div class="card-section">
+            <div class="card-section-label">Tech Stack</div>
+            <div class="badge-group">
+              <span class="badge badge-info">.NET 10</span>
+              <span class="badge badge-info">ASP.NET Core MVC</span>
+              <span class="badge badge-info">HTMX</span>
+              <span class="badge badge-info">EF Core</span>
+              <span class="badge badge-info">SQLite WAL</span>
+              <span class="badge badge-info">RabbitMQ</span>
+              <span class="badge badge-info">Docker</span>
+              <span class="badge badge-info">Fly.io</span>
+              <span class="badge badge-info">GitHub Actions</span>
             </div>
           </div>
         </div>
-        <div class="step" onclick="window.open('http://localhost:15672','_blank')">
-          <div class="step-num">5</div>
-          <div class="step-content">
-            <div class="step-title">Event Bus & Email — Closing the Loop <span class="step-time">8:00 — 9:00</span></div>
-            <div class="step-desc">One event fans out to three queues. RabbitMQ shows the bindings. Mailhog captures every email: ticket created, assigned, resolved, invoice created. No service calls another directly.</div>
-            <div class="step-actions">
-              <a href="http://localhost:15672" target="_blank">RabbitMQ</a>
-              <a href="http://localhost:8025" target="_blank">Mailhog</a>
-            </div>
-          </div>
-        </div>
-        <div class="step" onclick="window.open('http://localhost:8092','_blank')">
-          <div class="step-num">6</div>
-          <div class="step-content">
-            <div class="step-title">Outro — Summary & Links <span class="step-time">9:00 — 9:30</span></div>
-            <div class="step-desc">Return to the dashboard. All services green. Multi-tenant. Event-driven. AI-integrated. Fully containerized. Open source.</div>
-          </div>
-        </div>
-      </div>
 
-      <!-- Tenants -->
-      <div class="card">
-        <h2><span class="icon">🏘️</span> Tenant Personalities</h2>
-        <div class="tenant-grid">
-          <div class="tenant-card">
-            <div class="tenant-name">🏛️ Desgoffe</div>
-            <div class="tenant-domain">ville-desgoffe.local</div>
-            <div class="tenant-desc">Government bureau. Strict hierarchy, formal language, bureaucratic approval (Mayor's Stamp). Citizens file complaints only; no dashboard.</div>
-            <span class="tenant-tag tag-gov">Government</span>
-          </div>
-          <div class="tenant-card">
-            <div class="tenant-name">🌶️ Liberty</div>
-            <div class="tenant-domain">liberty-tech.local</div>
-            <div class="tenant-desc">SaaS / Tech startup. Agile workflows, git-style commits, CI/CD pipeline visibility. DevOps Lead vs Support Rep roles.</div>
-            <span class="tenant-tag tag-tech">SaaS / Tech</span>
-          </div>
-          <div class="tenant-card">
-            <div class="tenant-name">🚧 Whitman</div>
-            <div class="tenant-domain">whitman-infra.local</div>
-            <div class="tenant-desc">Infrastructure / Field. High-contrast UI, large controls, foreman-oriented view. Designed for field use and tough conditions.</div>
-            <span class="tenant-tag tag-infra">Infrastructure</span>
-          </div>
-          <div class="tenant-card">
-            <div class="tenant-name">🥃 Hennessey</div>
-            <div class="tenant-domain">hennessey.local</div>
-            <div class="tenant-desc">Premium spirits distribution. Custom approval chains, batch processing, compliance tracking for regulated goods.</div>
-            <span class="tenant-tag tag-saas">Distribution</span>
-          </div>
-        </div>
-        <div style="margin-top:12px; font-size:12px; color:var(--text-muted);">
-          All tenants run from a single deployable binary. Personality is injected via <code class="code">config/masala_domains.yaml</code> — no code changes required.
-        </div>
-      </div>
-
-      <!-- Demo Credentials -->
-      <div class="card">
-        <h2><span class="icon">🔑</span> Demo Credentials</h2>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr><th>Service</th><th>URL</th><th>Username</th><th>Password</th></tr>
-            </thead>
-            <tbody>
-              <tr><td>Ticket Masala (Admin)</td><td class="code">localhost:8085</td><td class="code">admin</td><td class="code">Admin123!</td></tr>
-              <tr><td>Ticket Masala (Employee)</td><td class="code">localhost:8085</td><td class="code">employee</td><td class="code">Employee123!</td></tr>
-              <tr><td>Ticket Masala (Customer)</td><td class="code">localhost:8085</td><td class="code">jean.dupont@citoyen.be</td><td class="code">Customer123!</td></tr>
-              <tr><td>Gatekeeper API</td><td class="code">localhost:8086</td><td class="code">—</td><td class="code">demo-api-key</td></tr>
-              <tr><td>RabbitMQ</td><td class="code">localhost:15672</td><td class="code">guest</td><td class="code">guest</td></tr>
-              <tr><td>Odoo ERP</td><td class="code">localhost:8069</td><td class="code">admin</td><td class="code">admin</td></tr>
-              <tr><td>Grafana</td><td class="code">localhost:3000</td><td class="code">admin</td><td class="code">admin</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- Event Flow -->
-      <div class="card">
-        <h2><span class="icon">⚡</span> Event Flow Architecture</h2>
-        <div class="flow-label">Citizen Portal Flow</div>
-        <div class="flow">
-          <div class="flow-node">Portal</div>
-          <span class="flow-arrow">→</span>
-          <div class="flow-node">Gatekeeper</div>
-          <span class="flow-arrow">→</span>
-          <div class="flow-node">RabbitMQ</div>
-          <span class="flow-arrow">→</span>
-          <div class="flow-node">Ticket Masala</div>
-          <span class="flow-arrow">→</span>
-          <div class="flow-node">Mailing</div>
-          <span class="flow-arrow">→</span>
-          <div class="flow-node">Mailhog</div>
-        </div>
-        <div class="flow-desc">Portal submits ticket → Gatekeeper validates & publishes <code>ticket.created</code> → RabbitMQ fan-out → Ticket Masala stores + Outbox → Mailing sends confirmation → Mailhog captures.</div>
-
-        <div class="flow-label">AI + ERP Flow</div>
-        <div class="flow">
-          <div class="flow-node">MCP Chat</div>
-          <span class="flow-arrow">→</span>
-          <div class="flow-node">Agentic</div>
-          <span class="flow-arrow">→</span>
-          <div class="flow-node">Ticket Masala</div>
-          <span class="flow-arrow">→</span>
-          <div class="flow-node">Odoo Bridge</div>
-          <span class="flow-arrow">→</span>
-          <div class="flow-node">Odoo ERP</div>
-        </div>
-        <div class="flow-desc">User asks AI to create invoice → Agentic calls MCP tools → Ticket Masala updates → Odoo Bridge syncs via JSON-RPC → Invoice posted in Odoo.</div>
-
-        <div class="flow-label">RabbitMQ Exchange</div>
-        <div class="flow">
-          <div class="flow-node">event_exchange</div>
-          <span class="flow-arrow">→</span>
-          <div class="flow-node">agentic.queue</div>
-          <span class="flow-arrow">→</span>
-          <div class="flow-node">mailing.queue</div>
-          <span class="flow-arrow">→</span>
-          <div class="flow-node">odoo-bridge</div>
-        </div>
-        <div class="flow-desc">One message, three consumers, zero coupling. Outbox Pattern guarantees atomic delivery.</div>
-      </div>
-
-      <!-- Quick Links -->
-      <div class="card">
-        <h2><span class="icon">🔗</span> Quick Links</h2>
-        <div class="links-grid">
-          <a class="link-btn" href="http://localhost:8085" target="_blank"><span class="emoji">🎫</span> Ticket Masala</a>
-          <a class="link-btn" href="http://localhost:8086" target="_blank"><span class="emoji">🛡️</span> Gatekeeper</a>
-          <a class="link-btn" href="http://localhost:8087" target="_blank"><span class="emoji">📧</span> Mailing Service</a>
-          <a class="link-btn" href="http://localhost:3001" target="_blank"><span class="emoji">🤖</span> Agentic Service</a>
-          <a class="link-btn" href="http://localhost:8089" target="_blank"><span class="emoji">🌉</span> Odoo Bridge</a>
-          <a class="link-btn" href="http://localhost:8090" target="_blank"><span class="emoji">🏗️</span> Garamatic Web</a>
-          <a class="link-btn" href="http://localhost:8091" target="_blank"><span class="emoji">🌶️</span> Masala Web</a>
-          <a class="link-btn" href="http://localhost:8093" target="_blank"><span class="emoji">🏛️</span> Portal</a>
-          <a class="link-btn" href="http://localhost:15672" target="_blank"><span class="emoji">🐰</span> RabbitMQ</a>
-          <a class="link-btn" href="http://localhost:8025" target="_blank"><span class="emoji">📬</span> Mailhog</a>
-          <a class="link-btn" href="http://localhost:8069" target="_blank"><span class="emoji">📊</span> Odoo ERP</a>
-          <a class="link-btn" href="http://localhost:11434" target="_blank"><span class="emoji">🧠</span> Ollama LLM</a>
-        </div>
-        <h3>External</h3>
-        <div class="links-grid">
-          <a class="link-btn" href="https://ticket-masala.fly.dev" target="_blank"><span class="emoji">🌍</span> Live: Ticket Masala</a>
-          <a class="link-btn" href="https://ticket-masala.fly.dev/swagger" target="_blank"><span class="emoji">📘</span> Swagger API</a>
-          <a class="link-btn" href="https://masala-doc.fly.dev" target="_blank"><span class="emoji">📖</span> MkDocs</a>
-          <a class="link-btn" href="https://github.com/garamatic/garamatic" target="_blank"><span class="emoji">🐙</span> GitHub</a>
-        </div>
-      </div>
-
-      <!-- API Explorer -->
-      <div class="card">
-        <h2><span class="icon">🧭</span> API Explorer</h2>
-        <div class="endpoint">
-          <span class="method get">GET</span>
-          <span class="path">http://localhost:8085/health</span>
-          <span class="desc">Ticket Masala health check</span>
-        </div>
-        <div class="endpoint">
-          <span class="method get">GET</span>
-          <span class="path">http://localhost:8085/swagger</span>
-          <span class="desc">OpenAPI / Swagger UI</span>
-        </div>
-        <div class="endpoint">
-          <span class="method get">GET</span>
-          <span class="path">http://localhost:8086/health</span>
-          <span class="desc">Gatekeeper health check</span>
-        </div>
-        <div class="endpoint">
-          <span class="method get">GET</span>
-          <span class="path">http://localhost:8087/health</span>
-          <span class="desc">Mailing Service health check</span>
-        </div>
-        <div class="endpoint">
-          <span class="method get">GET</span>
-          <span class="path">http://localhost:8089/health</span>
-          <span class="desc">Odoo Bridge health check</span>
-        </div>
-        <div class="endpoint">
-          <span class="method get">GET</span>
-          <span class="path">http://localhost:3001/sse</span>
-          <span class="desc">Agentic Service SSE endpoint</span>
-        </div>
-        <div class="endpoint">
-          <span class="method get">GET</span>
-          <span class="path">http://localhost:15672/api/overview</span>
-          <span class="desc">RabbitMQ management API</span>
-        </div>
-        <div class="endpoint">
-          <span class="method post">POST</span>
-          <span class="path">http://localhost:8086/api/events/publish</span>
-          <span class="desc">Publish event to RabbitMQ via Gatekeeper</span>
-        </div>
-        <div class="endpoint">
-          <span class="method post">POST</span>
-          <span class="path">http://localhost:8087/api/mail/send</span>
-          <span class="desc">Send email via Mailing Service</span>
-        </div>
-        <div class="endpoint">
-          <span class="method post">POST</span>
-          <span class="path">http://localhost:8085/api/portal/submit</span>
-          <span class="desc">Portal ticket submission</span>
-        </div>
-      </div>
-
-      <!-- Project Metrics -->
-      <div class="card">
-        <h2><span class="icon">📈</span> Project Metrics</h2>
-        <div class="metrics">
-          <div class="metric">
-            <div class="metric-value">267+</div>
-            <div class="metric-label">Tests Passing</div>
-          </div>
-          <div class="metric">
-            <div class="metric-value">10</div>
-            <div class="metric-label">Services</div>
-          </div>
-          <div class="metric">
-            <div class="metric-value">4</div>
-            <div class="metric-label">Tenants</div>
+        <!-- GitHub Repos -->
+        <div class="card">
+          <h2 class="card-title">Repositories</h2>
+          <div class="repo-grid">
+            <a class="repo-link" href="https://github.com/garamatic/garamatic" target="_blank" rel="noopener">
+              <span class="repo-name">garamatic</span>
+              <span class="repo-desc">Monorepo — main orchestration</span>
+            </a>
+            <a class="repo-link" href="https://github.com/garamatic/ticket-masala" target="_blank" rel="noopener">
+              <span class="repo-name">ticket-masala</span>
+              <span class="repo-desc">Core engine — workflows, GERDA, tenants</span>
+            </a>
+            <a class="repo-link" href="https://github.com/garamatic/masala-web" target="_blank" rel="noopener">
+              <span class="repo-name">masala-web</span>
+              <span class="repo-desc">Tenant marketing websites</span>
+            </a>
+            <a class="repo-link" href="https://github.com/garamatic/garamatic-web" target="_blank" rel="noopener">
+              <span class="repo-name">garamatic-web</span>
+              <span class="repo-desc">Vendor landing page</span>
+            </a>
+            <a class="repo-link" href="https://github.com/garamatic/odoo-integration" target="_blank" rel="noopener">
+              <span class="repo-name">odoo-integration</span>
+              <span class="repo-desc">ERP JSON-RPC bridge</span>
+            </a>
+            <a class="repo-link" href="https://github.com/garamatic/event-planner" target="_blank" rel="noopener">
+              <span class="repo-name">event-planner</span>
+              <span class="repo-desc">Drupal CMS for events</span>
+            </a>
+            <a class="repo-link" href="https://github.com/garamatic/portal" target="_blank" rel="noopener">
+              <span class="repo-name">portal</span>
+              <span class="repo-desc">Citizen portal (React + Vite)</span>
+            </a>
+            <a class="repo-link" href="https://github.com/garamatic/mailing-service" target="_blank" rel="noopener">
+              <span class="repo-name">mailing-service</span>
+              <span class="repo-desc">SendGrid transactional emails</span>
+            </a>
           </div>
         </div>
-        <div style="margin-top:16px;">
-          <div style="font-size:12px; margin-bottom:8px; color:var(--text-muted);">Test Breakdown</div>
-          <div style="display:flex; gap:6px; flex-wrap:wrap;">
-            <span class="badge badge-success">~180 Unit</span>
-            <span class="badge badge-success">~50 Integration</span>
-            <span class="badge badge-success">~15 Architecture</span>
-            <span class="badge badge-success">~20 Domain</span>
-            <span class="badge badge-success">~20 Cross-service</span>
-          </div>
-        </div>
-        <div style="margin-top:16px;">
-          <div style="font-size:12px; margin-bottom:8px; color:var(--text-muted);">Tech Stack</div>
-          <div style="display:flex; gap:6px; flex-wrap:wrap;">
-            <span class="badge badge-info">.NET 10</span>
-            <span class="badge badge-info">ASP.NET Core MVC</span>
-            <span class="badge badge-info">HTMX</span>
-            <span class="badge badge-info">EF Core</span>
-            <span class="badge badge-info">SQLite WAL</span>
-            <span class="badge badge-info">RabbitMQ</span>
-            <span class="badge badge-info">Docker</span>
-            <span class="badge badge-info">Fly.io</span>
-            <span class="badge badge-info">GitHub Actions</span>
-          </div>
-        </div>
-      </div>
 
-      <!-- GitHub Repos -->
-      <div class="card">
-        <h2><span class="icon">🐙</span> Repositories</h2>
-        <div class="repo-grid">
-          <a class="repo-link" href="https://github.com/garamatic/garamatic" target="_blank">
-            <span class="repo-name">garamatic</span>
-            <span class="repo-desc">Monorepo — main orchestration</span>
-          </a>
-          <a class="repo-link" href="https://github.com/garamatic/ticket-masala" target="_blank">
-            <span class="repo-name">ticket-masala</span>
-            <span class="repo-desc">Core engine — workflows, GERDA, tenants</span>
-          </a>
-          <a class="repo-link" href="https://github.com/garamatic/masala-web" target="_blank">
-            <span class="repo-name">masala-web</span>
-            <span class="repo-desc">Tenant marketing websites</span>
-          </a>
-          <a class="repo-link" href="https://github.com/garamatic/garamatic-web" target="_blank">
-            <span class="repo-name">garamatic-web</span>
-            <span class="repo-desc">Vendor landing page</span>
-          </a>
-          <a class="repo-link" href="https://github.com/garamatic/odoo-integration" target="_blank">
-            <span class="repo-name">odoo-integration</span>
-            <span class="repo-desc">ERP JSON-RPC bridge</span>
-          </a>
-          <a class="repo-link" href="https://github.com/garamatic/event-planner" target="_blank">
-            <span class="repo-name">event-planner</span>
-            <span class="repo-desc">Drupal CMS for events</span>
-          </a>
-          <a class="repo-link" href="https://github.com/garamatic/portal" target="_blank">
-            <span class="repo-name">portal</span>
-            <span class="repo-desc">Citizen portal (React + Vite)</span>
-          </a>
-          <a class="repo-link" href="https://github.com/garamatic/mailing-service" target="_blank">
-            <span class="repo-name">mailing-service</span>
-            <span class="repo-desc">SendGrid transactional emails</span>
-          </a>
-        </div>
-      </div>
-
-      <!-- Curl Quickies -->
-      <div class="card">
-        <h2><span class="icon">📋</span> Curl Quickies</h2>
-        <div class="curl-block">
-          <button class="copy" onclick="copy(this)">Copy</button>
-          <pre>curl http://localhost:8085/health</pre>
-        </div>
-        <div class="curl-block">
-          <button class="copy" onclick="copy(this)">Copy</button>
-          <pre>curl http://localhost:8086/health \
+        <!-- Curl Quickies -->
+        <div class="card">
+          <h2 class="card-title">Curl Quickies</h2>
+          <div class="curl-block">
+            <button class="copy-btn" onclick="copy(this)" aria-label="Copy curl command">Copy</button>
+            <pre>curl http://localhost:8085/health</pre>
+          </div>
+          <div class="curl-block">
+            <button class="copy-btn" onclick="copy(this)" aria-label="Copy curl command">Copy</button>
+            <pre>curl http://localhost:8086/health \
   -H "X-Api-Key: demo-api-key"</pre>
-        </div>
-        <div class="curl-block">
-          <button class="copy" onclick="copy(this)">Copy</button>
-          <pre>curl http://localhost:15672/api/overview \
+          </div>
+          <div class="curl-block">
+            <button class="copy-btn" onclick="copy(this)" aria-label="Copy curl command">Copy</button>
+            <pre>curl http://localhost:15672/api/overview \
   -u guest:guest</pre>
-        </div>
-        <div class="curl-block">
-          <button class="copy" onclick="copy(this)">Copy</button>
-          <pre>curl -X POST http://localhost:8086/api/events/publish \
+          </div>
+          <div class="curl-block">
+            <button class="copy-btn" onclick="copy(this)" aria-label="Copy curl command">Copy</button>
+            <pre>curl -X POST http://localhost:8086/api/events/publish \
   -H "Content-Type: application/json" \
   -H "X-Api-Key: demo-api-key" \
   -d '{"type":"ticket.created","payload":{}}'</pre>
-        </div>
-        <div class="curl-block">
-          <button class="copy" onclick="copy(this)">Copy</button>
-          <pre>curl -X POST http://localhost:8085/api/portal/submit \
+          </div>
+          <div class="curl-block">
+            <button class="copy-btn" onclick="copy(this)" aria-label="Copy curl command">Copy</button>
+            <pre>curl -X POST http://localhost:8085/api/portal/submit \
   -F "CustomerName=Marie Curie" \
   -F "CustomerEmail=marie.curie@science.be" \
   -F "Description=Bouwhoerrie zonder vergunning" \
   -F "WorkItemType=NUISANCE" \
   -F "PriorityScore=10" \
   -F "Tenant=desgoffe"</pre>
-        </div>
-      </div>
-    </div>
-
-    <!-- TOPOLOGY VIEW -->
-    <div id="view-topology" class="grid hidden">
-      <!-- Service Topology -->
-      <div class="card" style="grid-column: 1 / -1;">
-        <h2><span class="icon">🗺️</span> Live Service Topology</h2>
-        <div id="services">
-          <div class="service" data-url="http://localhost:8085/health">
-            <div class="service-info">
-              <div class="service-dot unknown" id="dot-ticket"></div>
-              <div>
-                <div class="service-name">Ticket Masala</div>
-                <div class="service-url">localhost:8085</div>
-              </div>
-            </div>
-            <div class="service-status" id="status-ticket">checking...</div>
-          </div>
-          <div class="service" data-url="http://localhost:8086/health">
-            <div class="service-info">
-              <div class="service-dot unknown" id="dot-gatekeeper"></div>
-              <div>
-                <div class="service-name">Gatekeeper API</div>
-                <div class="service-url">localhost:8086</div>
-              </div>
-            </div>
-            <div class="service-status" id="status-gatekeeper">checking...</div>
-          </div>
-          <div class="service" data-url="http://localhost:8087/health">
-            <div class="service-info">
-              <div class="service-dot unknown" id="dot-mailing"></div>
-              <div>
-                <div class="service-name">Mailing Service</div>
-                <div class="service-url">localhost:8087</div>
-              </div>
-            </div>
-            <div class="service-status" id="status-mailing">checking...</div>
-          </div>
-          <div class="service" data-url="http://localhost:3001/sse">
-            <div class="service-info">
-              <div class="service-dot unknown" id="dot-agentic"></div>
-              <div>
-                <div class="service-name">Agentic Service</div>
-                <div class="service-url">localhost:3001</div>
-              </div>
-            </div>
-            <div class="service-status" id="status-agentic">checking...</div>
-          </div>
-          <div class="service" data-url="http://localhost:8089/health">
-            <div class="service-info">
-              <div class="service-dot unknown" id="dot-odoo"></div>
-              <div>
-                <div class="service-name">Odoo Bridge</div>
-                <div class="service-url">localhost:8089</div>
-              </div>
-            </div>
-            <div class="service-status" id="status-odoo">checking...</div>
-          </div>
-          <div class="service" data-url="http://localhost:15672">
-            <div class="service-info">
-              <div class="service-dot unknown" id="dot-rabbit"></div>
-              <div>
-                <div class="service-name">RabbitMQ</div>
-                <div class="service-url">localhost:15672</div>
-              </div>
-            </div>
-            <div class="service-status" id="status-rabbit">checking...</div>
-          </div>
-          <div class="service" data-url="http://localhost:8090">
-            <div class="service-info">
-              <div class="service-dot unknown" id="dot-web"></div>
-              <div>
-                <div class="service-name">Garamatic Web</div>
-                <div class="service-url">localhost:8090</div>
-              </div>
-            </div>
-            <div class="service-status" id="status-web">checking...</div>
-          </div>
-          <div class="service" data-url="http://localhost:8091">
-            <div class="service-info">
-              <div class="service-dot unknown" id="dot-masala"></div>
-              <div>
-                <div class="service-name">Masala Web</div>
-                <div class="service-url">localhost:8091</div>
-              </div>
-            </div>
-            <div class="service-status" id="status-masala">checking...</div>
-          </div>
-          <div class="service" data-url="http://localhost:8093">
-            <div class="service-info">
-              <div class="service-dot unknown" id="dot-portal"></div>
-              <div>
-                <div class="service-name">Portal (Desgoffe)</div>
-                <div class="service-url">localhost:8093</div>
-              </div>
-            </div>
-            <div class="service-status" id="status-portal">checking...</div>
-          </div>
-          <div class="service" data-url="http://localhost:8069">
-            <div class="service-info">
-              <div class="service-dot unknown" id="dot-odooerp"></div>
-              <div>
-                <div class="service-name">Odoo ERP</div>
-                <div class="service-url">localhost:8069</div>
-              </div>
-            </div>
-            <div class="service-status" id="status-odooerp">checking...</div>
-          </div>
-          <div class="service" data-url="http://localhost:11434">
-            <div class="service-info">
-              <div class="service-dot unknown" id="dot-ollama"></div>
-              <div>
-                <div class="service-name">Ollama LLM</div>
-                <div class="service-url">localhost:11434</div>
-              </div>
-            </div>
-            <div class="service-status" id="status-ollama">checking...</div>
-          </div>
-          <div class="service" data-url="http://localhost:8025">
-            <div class="service-info">
-              <div class="service-dot unknown" id="dot-mailhog"></div>
-              <div>
-                <div class="service-name">Mailhog</div>
-                <div class="service-url">localhost:8025</div>
-              </div>
-            </div>
-            <div class="service-status" id="status-mailhog">checking...</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Live Metrics -->
-      <div class="card">
-        <h2><span class="icon">📊</span> Live Metrics</h2>
-        <div class="metrics">
-          <div class="metric">
-            <div class="metric-value" id="metric-up">—</div>
-            <div class="metric-label">Services Up</div>
-          </div>
-          <div class="metric">
-            <div class="metric-value" id="metric-total">12</div>
-            <div class="metric-label">Total Services</div>
-          </div>
-          <div class="metric">
-            <div class="metric-value" id="metric-health">—</div>
-            <div class="metric-label">Health %</div>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="footer">
+  <!-- TOPOLOGY VIEW -->
+  <div id="view-topology" class="view">
+    <div class="container">
+      <div class="dashboard-grid">
+
+        <!-- Service Topology -->
+        <div class="card span-full">
+          <h2 class="card-title">Live Service Topology</h2>
+          <div id="services" role="list" aria-label="Service health status">
+            <div class="service-row" data-url="http://localhost:8085/health" role="listitem">
+              <div class="service-info">
+                <div class="service-dot unknown" id="dot-ticket" data-label="checking" aria-label="Ticket Masala status: checking" role="status"></div>
+                <div>
+                  <div class="service-name">Ticket Masala</div>
+                  <div class="service-url">localhost:8085</div>
+                </div>
+              </div>
+              <div class="service-status" id="status-ticket">checking</div>
+            </div>
+            <div class="service-row" data-url="http://localhost:8086/health" role="listitem">
+              <div class="service-info">
+                <div class="service-dot unknown" id="dot-gatekeeper" data-label="checking" aria-label="Gatekeeper API status: checking" role="status"></div>
+                <div>
+                  <div class="service-name">Gatekeeper API</div>
+                  <div class="service-url">localhost:8086</div>
+                </div>
+              </div>
+              <div class="service-status" id="status-gatekeeper">checking</div>
+            </div>
+            <div class="service-row" data-url="http://localhost:8087/health" role="listitem">
+              <div class="service-info">
+                <div class="service-dot unknown" id="dot-mailing" data-label="checking" aria-label="Mailing Service status: checking" role="status"></div>
+                <div>
+                  <div class="service-name">Mailing Service</div>
+                  <div class="service-url">localhost:8087</div>
+                </div>
+              </div>
+              <div class="service-status" id="status-mailing">checking</div>
+            </div>
+            <div class="service-row" data-url="http://localhost:3001/sse" role="listitem">
+              <div class="service-info">
+                <div class="service-dot unknown" id="dot-agentic" data-label="checking" aria-label="Agentic Service status: checking" role="status"></div>
+                <div>
+                  <div class="service-name">Agentic Service</div>
+                  <div class="service-url">localhost:3001</div>
+                </div>
+              </div>
+              <div class="service-status" id="status-agentic">checking</div>
+            </div>
+            <div class="service-row" data-url="http://localhost:8089/health" role="listitem">
+              <div class="service-info">
+                <div class="service-dot unknown" id="dot-odoo" data-label="checking" aria-label="Odoo Bridge status: checking" role="status"></div>
+                <div>
+                  <div class="service-name">Odoo Bridge</div>
+                  <div class="service-url">localhost:8089</div>
+                </div>
+              </div>
+              <div class="service-status" id="status-odoo">checking</div>
+            </div>
+            <div class="service-row" data-url="http://localhost:15672" role="listitem">
+              <div class="service-info">
+                <div class="service-dot unknown" id="dot-rabbit" data-label="checking" aria-label="RabbitMQ status: checking" role="status"></div>
+                <div>
+                  <div class="service-name">RabbitMQ</div>
+                  <div class="service-url">localhost:15672</div>
+                </div>
+              </div>
+              <div class="service-status" id="status-rabbit">checking</div>
+            </div>
+            <div class="service-row" data-url="http://localhost:8090" role="listitem">
+              <div class="service-info">
+                <div class="service-dot unknown" id="dot-web" data-label="checking" aria-label="Garamatic Web status: checking" role="status"></div>
+                <div>
+                  <div class="service-name">Garamatic Web</div>
+                  <div class="service-url">localhost:8090</div>
+                </div>
+              </div>
+              <div class="service-status" id="status-web">checking</div>
+            </div>
+            <div class="service-row" data-url="http://localhost:8091" role="listitem">
+              <div class="service-info">
+                <div class="service-dot unknown" id="dot-masala" data-label="checking" aria-label="Masala Web status: checking" role="status"></div>
+                <div>
+                  <div class="service-name">Masala Web</div>
+                  <div class="service-url">localhost:8091</div>
+                </div>
+              </div>
+              <div class="service-status" id="status-masala">checking</div>
+            </div>
+            <div class="service-row" data-url="http://localhost:8093" role="listitem">
+              <div class="service-info">
+                <div class="service-dot unknown" id="dot-portal" data-label="checking" aria-label="Portal status: checking" role="status"></div>
+                <div>
+                  <div class="service-name">Portal (Desgoffe)</div>
+                  <div class="service-url">localhost:8093</div>
+                </div>
+              </div>
+              <div class="service-status" id="status-portal">checking</div>
+            </div>
+            <div class="service-row" data-url="http://localhost:8069" role="listitem">
+              <div class="service-info">
+                <div class="service-dot unknown" id="dot-odooerp" data-label="checking" aria-label="Odoo ERP status: checking" role="status"></div>
+                <div>
+                  <div class="service-name">Odoo ERP</div>
+                  <div class="service-url">localhost:8069</div>
+                </div>
+              </div>
+              <div class="service-status" id="status-odooerp">checking</div>
+            </div>
+            <div class="service-row" data-url="http://localhost:11434" role="listitem">
+              <div class="service-info">
+                <div class="service-dot unknown" id="dot-ollama" data-label="checking" aria-label="Ollama LLM status: checking" role="status"></div>
+                <div>
+                  <div class="service-name">Ollama LLM</div>
+                  <div class="service-url">localhost:11434</div>
+                </div>
+              </div>
+              <div class="service-status" id="status-ollama">checking</div>
+            </div>
+            <div class="service-row" data-url="http://localhost:8025" role="listitem">
+              <div class="service-info">
+                <div class="service-dot unknown" id="dot-mailhog" data-label="checking" aria-label="Mailhog status: checking" role="status"></div>
+                <div>
+                  <div class="service-name">Mailhog</div>
+                  <div class="service-url">localhost:8025</div>
+                </div>
+              </div>
+              <div class="service-status" id="status-mailhog">checking</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Status Summary -->
+        <div class="card">
+          <div class="status-summary" id="status-summary" style="display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3);background:var(--surface-hover);border-radius:var(--radius-lg);border:1px solid var(--border-subtle);">
+            <div class="service-dot unknown" id="summary-dot" aria-hidden="true"></div>
+            <span id="summary-text" style="font-size:var(--text-sm);color:var(--text-secondary);">Checking services...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
     Garamatic Demo Environment — All services polled every 5 seconds · Built by Juan Benjumea, Wito De Schrijver, Maarten Görtz, Charlotte Schröer
-  </div>
+  </footer>
 
   <script>
     const services = [
@@ -1014,14 +1627,31 @@
     ];
 
     function switchView(view) {
-      document.getElementById('view-demo').classList.toggle('hidden', view !== 'demo');
-      document.getElementById('view-topology').classList.toggle('hidden', view !== 'topology');
-      document.getElementById('btn-demo').classList.toggle('active', view === 'demo');
-      document.getElementById('btn-topology').classList.toggle('active', view === 'topology');
+      var demo = document.getElementById('view-demo');
+      var topology = document.getElementById('view-topology');
+      var btnDemo = document.getElementById('btn-demo');
+      var btnTopology = document.getElementById('btn-topology');
+
+      if (view === 'demo') {
+        demo.classList.add('active');
+        topology.classList.remove('active');
+        btnDemo.classList.add('active');
+        btnTopology.classList.remove('active');
+      } else {
+        demo.classList.remove('active');
+        topology.classList.add('active');
+        btnDemo.classList.remove('active');
+        btnTopology.classList.add('active');
+      }
+
+      btnDemo.setAttribute('aria-pressed', view === 'demo');
+      btnTopology.setAttribute('aria-pressed', view === 'topology');
+      window.scrollTo(0, 0);
     }
 
     async function checkHealth() {
       let up = 0;
+      let down = 0;
       for (const svc of services) {
         const dot = document.getElementById('dot-' + svc.id);
         const status = document.getElementById('status-' + svc.id);
@@ -1032,6 +1662,8 @@
           const res = await fetch(svc.url, { method: 'GET', signal: controller.signal, mode: 'no-cors' });
           clearTimeout(timeout);
           dot.className = 'service-dot healthy';
+          dot.setAttribute('data-label', 'up');
+          dot.setAttribute('aria-label', svc.name + ' status: up');
           status.textContent = 'up';
           status.className = 'service-status';
           up++;
@@ -1047,25 +1679,47 @@
               });
               await p;
               dot.className = 'service-dot healthy';
+              dot.setAttribute('data-label', 'up');
+              dot.setAttribute('aria-label', svc.name + ' status: up');
               status.textContent = 'up';
               status.className = 'service-status';
               up++;
             } catch {
               dot.className = 'service-dot unhealthy';
+              dot.setAttribute('data-label', 'down');
+              dot.setAttribute('aria-label', svc.name + ' status: down');
               status.textContent = 'down';
               status.className = 'service-status down';
+              down++;
             }
           } else {
             dot.className = 'service-dot unhealthy';
+            dot.setAttribute('data-label', 'down');
+            dot.setAttribute('aria-label', svc.name + ' status: down');
             status.textContent = 'down';
             status.className = 'service-status down';
+            down++;
           }
         }
       }
-      const metricUp = document.getElementById('metric-up');
-      const metricHealth = document.getElementById('metric-health');
-      if (metricUp) metricUp.textContent = up;
-      if (metricHealth) metricHealth.textContent = Math.round((up / services.length) * 100) + '%';
+    const summaryDot = document.getElementById('summary-dot');
+      const summaryText = document.getElementById('summary-text');
+      if (summaryDot && summaryText) {
+        const health = Math.round((up / services.length) * 100);
+        if (health === 100) {
+          summaryDot.className = 'service-dot healthy';
+          summaryText.textContent = 'All ' + services.length + ' services up';
+          summaryText.style.color = 'var(--accent-green)';
+        } else if (up === 0) {
+          summaryDot.className = 'service-dot unhealthy';
+          summaryText.textContent = 'All services down';
+          summaryText.style.color = 'var(--accent-red)';
+        } else {
+          summaryDot.className = 'service-dot unknown';
+          summaryText.textContent = up + ' of ' + services.length + ' services up (' + health + '%)';
+          summaryText.style.color = 'var(--accent-yellow)';
+        }
+      }
     }
 
     function copy(btn) {
@@ -1073,7 +1727,12 @@
       navigator.clipboard.writeText(pre.textContent).then(() => {
         btn.textContent = 'Copied!';
         btn.classList.add('copied');
-        setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1500);
+        btn.setAttribute('aria-label', 'Copied to clipboard');
+        setTimeout(() => {
+          btn.textContent = 'Copy';
+          btn.classList.remove('copied');
+          btn.setAttribute('aria-label', 'Copy curl command');
+        }, 1500);
       });
     }
 
