@@ -138,6 +138,18 @@ ingress:
     originRequest:
       noTLSVerify: true
 
+  # ─── LLM / Ollama ────────────────────────────────────────
+  - hostname: ollama.${CLOUDFLARE_DOMAIN}
+    service: http://llama:8080
+    originRequest:
+      noTLSVerify: true
+
+  # ─── MCP Server ───────────────────────────────────────────
+  - hostname: mcp.${CLOUDFLARE_DOMAIN}
+    service: http://agentic-mcp:3001
+    originRequest:
+      noTLSVerify: true
+
   # ─── Catch-all ─────────────────────────────────────────────
   - service: http_status:404
 EOF

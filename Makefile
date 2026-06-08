@@ -52,7 +52,7 @@ up:
 	@echo "   • Masala Web      → http://localhost:8091"
 	@echo "   • Portal (Desgoffe) → http://localhost:8093"
 	@echo "   • Odoo ERP        → http://localhost:8069  (admin/admin)"
-	@echo "   • Ollama LLM      → http://localhost:11434"
+	@echo "   • LLama.cpp LLM   → http://localhost:11434"
 	@echo "   • RabbitMQ Mgmt   → http://localhost:15672  (guest/guest)"
 	@echo "   • Mailhog UI      → http://localhost:8025"
 	@echo ""
@@ -63,9 +63,9 @@ down:
 	docker compose -f $(COMPOSE_FILE) down -v
 
 pull-model:
-	@echo "📥 Pulling Ollama model (qwen3.5:2b) — first download may take a while..."
-	@docker compose -f $(COMPOSE_FILE) exec ollama ollama pull qwen3.5:2b
-	@echo "✅ Local LLM ready. Agentic chat uses http://ollama:11434"
+	@echo "📥 Models are bundled locally in ./models/"
+	@echo "   Current model: qwen3.5-2b-q4_k_m.gguf (1.9GB)"
+	@echo "✅ LLama.cpp server loads the model at startup. No manual pull needed."
 
 dev:
 	@echo "🚀 Starting Garamatic demo stack (attached, tenant: $(TENANT))..."
@@ -245,7 +245,7 @@ help:
 	@echo "  make up           Start the demo stack (detached)"
 	@echo "  make up TENANT=default   Start with generic config"
 	@echo "  make dev          Start the demo stack (attached)"
-	@echo "  make pull-model   Download the local LLM (qwen3.5:2b) for Ollama"
+	@echo "  make pull-model   Show current bundled model info"
 	@echo "  make down         Stop and remove the demo stack"
 	@echo "  make logs         Tail Docker logs"
 	@echo "  make test         Run integration tests in Docker"

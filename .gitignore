@@ -58,3 +58,4 @@ integration-tests/test-reports/
 integration-tests/test-results/
 integration-tests/docker/test-results/
 integration-tests/docker/test-logs/
+models/
