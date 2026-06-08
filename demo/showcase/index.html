@@ -1700,6 +1700,24 @@
       window.scrollTo(0, 0);
     }
 
+    function checkImage(url) {
+      return new Promise((resolve) => {
+        const img = new Image();
+        let resolved = false;
+        function done(result) {
+          if (!resolved) {
+            resolved = true;
+            resolve(result);
+          }
+        }
+        img.onload = () => done(true);
+        img.onerror = () => done(true);
+        setTimeout(() => done(false), 3000);
+        const separator = url.includes('?') ? '&' : '?';
+        img.src = url + separator + '_t=' + Date.now();
+      });
+    }
+
     async function checkHealth() {
       let up = 0;
       let down = 0;
@@ -1708,41 +1726,14 @@
         const status = document.getElementById('status-' + svc.id);
         if (!dot || !status) continue;
         try {
-          const controller = new AbortController();
-          const timeout = setTimeout(() => controller.abort(), 3000);
-          const res = await fetch(svc.url, { method: 'GET', signal: controller.signal, mode: 'no-cors' });
-          clearTimeout(timeout);
-          dot.className = 'service-dot healthy';
-          dot.setAttribute('data-label', 'up');
-          dot.setAttribute('aria-label', svc.name + ' status: up');
-          status.textContent = 'up';
-          status.className = 'service-status';
-          up++;
-        } catch (e) {
-          if (svc.id === 'rabbit') {
-            try {
-              const img = new Image();
-              const p = new Promise((resolve) => {
-                img.onload = resolve;
-                img.onerror = resolve;
-                img.src = svc.url + '/favicon.ico?' + Date.now();
-                setTimeout(resolve, 3000);
-              });
-              await p;
-              dot.className = 'service-dot healthy';
-              dot.setAttribute('data-label', 'up');
-              dot.setAttribute('aria-label', svc.name + ' status: up');
-              status.textContent = 'up';
-              status.className = 'service-status';
-              up++;
-            } catch {
-              dot.className = 'service-dot unhealthy';
-              dot.setAttribute('data-label', 'down');
-              dot.setAttribute('aria-label', svc.name + ' status: down');
-              status.textContent = 'down';
-              status.className = 'service-status down';
-              down++;
-            }
+          const isUp = await checkImage(svc.url);
+          if (isUp) {
+            dot.className = 'service-dot healthy';
+            dot.setAttribute('data-label', 'up');
+            dot.setAttribute('aria-label', svc.name + ' status: up');
+            status.textContent = 'up';
+            status.className = 'service-status';
+            up++;
           } else {
             dot.className = 'service-dot unhealthy';
             dot.setAttribute('data-label', 'down');
@@ -1751,6 +1742,12 @@
             status.className = 'service-status down';
             down++;
           }
+        } catch (e) {
+          dot.className = 'service-dot unhealthy';
+          dot.setAttribute('data-label', 'down');
+          dot.setAttribute('aria-label', svc.name + ' status: down');
+          status.textContent = 'down';
+          status.className = 'service-status down';
         }
       }
     const summaryDot = document.getElementById('summary-dot');
