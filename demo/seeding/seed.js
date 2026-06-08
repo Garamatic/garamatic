@@ -16,7 +16,7 @@ const SERVICES = {
   ticketMasala: { url: process.env.TICKET_MASALA_URL || 'http://ticket-masala:8080', path: '/health' },
   gatekeeper: { url: process.env.GATEKEEPER_URL || 'http://gatekeeper-api:8080', path: '/health' },
   mailing: { url: process.env.MAILING_URL || 'http://mailing-service:8080', path: '/health' },
-  agentic: { url: process.env.AGENTIC_URL || 'http://agentic-service:3001', path: '/health' },
+  agentic: { url: process.env.AGENTIC_URL || 'http://agentic-service:3001', path: '/sse', sse: true },
   odoo: { url: process.env.ODOO_URL || 'http://odoo-integration:8080', path: '/health' },
   mailhog: { url: process.env.MAILHOG_URL || 'http://mailhog:8025', path: '/api/v2/messages' },
   rabbitmq: { url: process.env.RABBITMQ_URL || 'http://rabbitmq:15672', path: '/api/overview', auth: 'guest:guest' }
@@ -42,7 +42,12 @@ async function waitForService(name, service, maxAttempts = 60, interval = 3000) 
 
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
-      execSync(`curl -sf ${auth} "${url}" > /dev/null 2>&1`, { timeout: 5000 });
+      if (service.sse) {
+        // SSE endpoints stay open, so use --max-time and check HTTP code
+        execSync(`curl -s --max-time 2 -w "%{http_code}" -o /dev/null ${auth} "${url}" 2>/dev/null | grep -q 200`, { timeout: 10000 });
+      } else {
+        execSync(`curl -sf ${auth} "${url}" > /dev/null 2>&1`, { timeout: 10000 });
+      }
       log('success', `${name} is ready (${url})`);
       return true;
     } catch {
