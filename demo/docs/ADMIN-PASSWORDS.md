@@ -114,4 +114,3 @@ URL:    http://localhost:8025
 | Grafana | Default admin | `demo/docker-compose.monitoring.yml` (environment) |
 | Gatekeeper | API key | `demo/docker-compose.yml` (environment) |
 | Agentic | API key (optional) | `agentic-service/docker-compose.yml` (environment) |
-

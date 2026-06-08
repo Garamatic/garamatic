@@ -29,7 +29,7 @@ async function main() {
     await runner.it('should load the showcase index page', async () => {
       const response = await fetchWithTimeout(SHOWCASE_URL, {}, 10000);
       runner.assertResponseOk(response, 'Showcase index should load');
-      
+
       const html = await response.text();
       runner.assertTrue(html.includes('Ticket Masala Showcase'), 'Should contain showcase title');
       runner.assertTrue(html.includes('Static form sites'), 'Should contain description');
@@ -38,9 +38,9 @@ async function main() {
     await runner.it('should list all tenant demos', async () => {
       const response = await fetchWithTimeout(SHOWCASE_URL, {}, 10000);
       runner.assertResponseOk(response);
-      
+
       const html = await response.text();
-      
+
       for (const tenant of TENANTS) {
         runner.assertTrue(
           html.includes(`tenants/${tenant.id}/client/index.html`),
@@ -52,7 +52,7 @@ async function main() {
     await runner.it('should have correct API endpoint reference', async () => {
       const response = await fetchWithTimeout(SHOWCASE_URL, {}, 10000);
       runner.assertResponseOk(response);
-      
+
       const html = await response.text();
       runner.assertTrue(
         html.includes('localhost:8085'),
@@ -75,9 +75,9 @@ async function main() {
           runner.skip(`${tenant.name} demo site not accessible`);
           return;
         }
-        
+
         runner.assertResponseOk(response, `${tenant.name} index should load`);
-        
+
         const html = await response.text();
         runner.assertTrue(html.includes('<form'), 'Should contain a form');
         for (const field of tenant.fields) {
@@ -93,7 +93,7 @@ async function main() {
           runner.skip(`${tenant.name} not accessible`);
           return;
         }
-        
+
         const html = await response.text();
         runner.assertTrue(
           html.includes(`data-theme="${tenant.id}"`) || html.includes(`"${tenant.id}"`),
@@ -109,7 +109,7 @@ async function main() {
           runner.skip(`${tenant.name} not accessible`);
           return;
         }
-        
+
         const html = await response.text();
         runner.assertTrue(
           html.includes('<link') && html.includes('.css'),
@@ -125,7 +125,7 @@ async function main() {
           runner.skip(`${tenant.name} not accessible`);
           return;
         }
-        
+
         const html = await response.text();
         runner.assertTrue(
           html.includes('<script') && html.includes('script.js'),
@@ -141,7 +141,7 @@ async function main() {
           runner.skip(`${tenant.name} success page not accessible`);
           return;
         }
-        
+
         // Success page should exist (200) or redirect (3xx)
         runner.assertTrue(
           response.status === 200 || response.status === 301 || response.status === 302,
@@ -158,9 +158,9 @@ async function main() {
           runner.skip(`${tenant.name} manifest not accessible`);
           return;
         }
-        
+
         runner.assertResponseOk(response, 'Manifest should load');
-        
+
         const manifest = await response.json();
         runner.assertNotNull(manifest.name, 'Manifest should have name');
         runner.assertNotNull(manifest.short_name, 'Manifest should have short_name');
@@ -174,7 +174,7 @@ async function main() {
       const configViewerUrl = `${SHOWCASE_URL}/config-viewer.html`;
       const response = await fetchWithTimeout(configViewerUrl, {}, 10000);
       runner.assertResponseOk(response, 'Config viewer should load');
-      
+
       const html = await response.text();
       runner.assertTrue(html.includes('Config') || html.includes('config'), 'Should contain config viewer');
     });
@@ -189,7 +189,7 @@ async function main() {
           runner.skip(`Config viewer for ${tenant.name} not accessible`);
           return;
         }
-        
+
         // Config viewer should load (may return 200 or redirect)
         runner.assertTrue(
           response.status < 500,
@@ -210,7 +210,7 @@ async function main() {
           runner.skip(`${tenant.name} logo not accessible`);
           return;
         }
-        
+
         // Logo should exist (may be served as image)
         runner.assertTrue(
           response.status === 200 || response.status === 304,
@@ -222,7 +222,7 @@ async function main() {
     await runner.it('should have shared assets directory', async () => {
       const assetsUrl = `${SHOWCASE_URL}/tenants/assets/`;
       const response = await fetchWithTimeout(assetsUrl, {}, 5000);
-      
+
       // Assets directory may or may not be indexable
       runner.assertTrue(
         response.status < 500,

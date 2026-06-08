@@ -1,6 +1,6 @@
 # RabbitMQ Integration — Ticket Masala (Desgoffe)
 
-> **Handover document** for the teammate with Fly.io access.  
+> **Handover document** for the teammate with Fly.io access.
 > Complete all steps in order. Do not skip ahead.
 
 ---
@@ -30,7 +30,7 @@ Browser Form (masala-web)
 
 ## The Required Message Contract
 
-All messages published to RabbitMQ must match this exact schema (`ticket.created`).  
+All messages published to RabbitMQ must match this exact schema (`ticket.created`).
 `additionalProperties: false` — no extra fields allowed.
 
 ```json
@@ -88,7 +88,7 @@ formData.append('Priority', this.priorityToString(rawPriority));
 
 ---
 
-## Fix 2 — `ticket-masala` · Maarten or Juan · `TicketCreatedEvent.cs` 
+## Fix 2 — `ticket-masala` · Maarten or Juan · `TicketCreatedEvent.cs`
 
 > **This fix is in the `ticket-masala` C# repo, not in `masala-web`.**
 

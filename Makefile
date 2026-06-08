@@ -118,9 +118,19 @@ bump:
 	git commit -m "bump: update all submodules to latest" || echo "No changes to commit"
 
 # ─── Development ───────────────────────────────────────────────────────────
+pre-commit-install:
+	@echo "🔧 Installing pre-commit..."
+	@uv tool install pre-commit 2>/dev/null || true
+	@pre-commit install
+	@echo "✅ Pre-commit hooks installed. Run 'pre-commit run --all-files' to test."
+
 lint:
 	@echo "🔍 Running code quality checks across services..."
-	@echo "   (Add per-service lint commands here as needed)"
+	@echo "   Python (agentic-service)..."
+	@uv run --directory agentic-service ruff check .
+	@echo "   Node.js (masala-web)..."
+	@cd masala-web && npm run lint
+	@echo "✅ Lint checks complete."
 
 # ─── Monitoring ────────────────────────────────────────────────────────────
 monitor-up:

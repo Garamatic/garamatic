@@ -25,9 +25,9 @@ cd "${ROOT_DIR}"
 # ─── Docker Mode ─────────────────────────────────────────────────────────
 if [ "$MODE" = "docker" ]; then
     echo "🐳 Running integration tests in Docker..."
-    
+
     COMPOSE_FILE="integration-tests/docker/docker-compose.test.yml"
-    
+
     if [ -n "$SUITE" ]; then
         echo "   Suite: $SUITE"
         docker compose -f "$COMPOSE_FILE" run --rm \
@@ -39,7 +39,7 @@ if [ "$MODE" = "docker" ]; then
     fi
 
     EXIT_CODE=$?
-    
+
     if [ $EXIT_CODE -eq 0 ]; then
         echo ""
         echo "✅ All tests passed!"
@@ -48,23 +48,23 @@ if [ "$MODE" = "docker" ]; then
         echo "❌ Tests failed. Check logs:"
         echo "   docker compose -f $COMPOSE_FILE logs"
     fi
-    
+
     exit $EXIT_CODE
 fi
 
 # ─── Local Mode ──────────────────────────────────────────────────────────
 if [ "$MODE" = "local" ]; then
     echo "🖥️  Running integration tests against local services..."
-    
+
     cd integration-tests
-    
+
     if [ -n "$SUITE" ]; then
         echo "   Suite: $SUITE"
         node "tests/${SUITE}.test.js"
     else
         npm test
     fi
-    
+
     exit $?
 fi
 

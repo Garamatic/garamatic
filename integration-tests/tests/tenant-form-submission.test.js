@@ -27,7 +27,7 @@ const TENANTS = [
  */
 function buildFormData(tenant, overrides = {}) {
   const formData = new FormData();
-  
+
   formData.append('CustomerName', overrides.customerName || 'Test User');
   formData.append('CustomerEmail', overrides.customerEmail || `test-${Date.now()}@example.com`);
   formData.append('CustomerPhone', overrides.customerPhone || '555-1234');
@@ -35,13 +35,13 @@ function buildFormData(tenant, overrides = {}) {
   formData.append('WorkItemType', overrides.workItemType || 'general');
   formData.append('PriorityScore', String(overrides.priorityScore || 10));
   formData.append('Priority', overrides.priority || 'medium');
-  
+
   // Add tenant-specific custom field
   if (tenant.customField) {
     const customValue = overrides.customFieldValue || 'test-value';
     formData.append('Tags', `${tenant.customField}:${customValue}`);
   }
-  
+
   return formData;
 }
 
@@ -52,7 +52,7 @@ async function submitToPortal(formData, tenantId, timeout = 10000) {
   const headers = {
     'X-Tenant': tenantId
   };
-  
+
   // Use fetch with FormData
   const response = await fetchWithTimeout(
     `${SERVICES.ticketMasala}/api/portal/submit`,
@@ -63,7 +63,7 @@ async function submitToPortal(formData, tenantId, timeout = 10000) {
     },
     timeout
   );
-  
+
   return response;
 }
 
@@ -75,7 +75,7 @@ async function main() {
         { method: 'OPTIONS' },
         5000
       );
-      
+
       // OPTIONS may not be supported, but endpoint should exist
       runner.assertTrue(
         response.status !== 404,
@@ -89,7 +89,7 @@ async function main() {
         { method: 'GET' },
         5000
       );
-      
+
       // GET should not be allowed for form submission
       runner.assertTrue(
         response.status === 405 || response.status === 404 || response.status === 400,
@@ -109,12 +109,12 @@ async function main() {
         });
 
         const response = await submitToPortal(formData, tenant.id);
-        
+
         if (response.status === 401 || response.status === 403) {
           runner.skip(`${tenant.name} form submission (auth required)`);
           return;
         }
-        
+
         // Should accept form submission (may be 200 or 201)
         runner.assertTrue(
           response.status === 200 || response.status === 201,
@@ -128,12 +128,12 @@ async function main() {
         });
 
         const response = await submitToPortal(formData, tenant.id);
-        
+
         if (response.status === 401 || response.status === 403) {
           runner.skip(`${tenant.name} custom field (auth required)`);
           return;
         }
-        
+
         runner.assertTrue(
           response.status === 200 || response.status === 201,
           `Form with custom field should be accepted, got ${response.status}`
@@ -166,7 +166,7 @@ async function main() {
 
         const successCount = results.filter(r => r.ok).length;
         console.log(`    ${tenant.name}: ${successCount}/${priorities.length} priorities accepted`);
-        
+
         runner.assertTrue(
           successCount > 0,
           `Should accept at least some priorities for ${tenant.name}`
@@ -178,9 +178,9 @@ async function main() {
         formData.append('CustomerName', '');
         formData.append('CustomerEmail', '');
         formData.append('Description', '');
-        
+
         const response = await submitToPortal(formData, tenant.id);
-        
+
         // Empty required fields should be rejected
         runner.assertTrue(
           response.status === 400 || response.status === 422 || response.status === 500,
@@ -196,12 +196,12 @@ async function main() {
         });
 
         const response = await submitToPortal(formData, tenant.id);
-        
+
         if (response.status === 401 || response.status === 403) {
           runner.skip(`${tenant.name} special chars (auth required)`);
           return;
         }
-        
+
         // Should handle special characters (either accept or sanitize)
         runner.assertTrue(
           response.status < 500,
@@ -218,12 +218,12 @@ async function main() {
       });
 
       const response = await submitToPortal(formData, TENANTS[0].id);
-      
+
       if (response.status === 401 || response.status === 403) {
         runner.skip('Tenant routing (auth required)');
         return;
       }
-      
+
       runner.assertTrue(
         response.status === 200 || response.status === 201,
         `Tenant routing should work, got ${response.status}`
@@ -232,7 +232,7 @@ async function main() {
 
     await runner.it('should handle tenant header correctly', async () => {
       const formData = buildFormData(TENANTS[0]);
-      
+
       const response = await fetchWithTimeout(
         `${SERVICES.ticketMasala}/api/portal/submit`,
         {
@@ -242,7 +242,7 @@ async function main() {
         },
         10000
       );
-      
+
       runner.assertTrue(
         response.status < 500,
         `Tenant header should be handled, got ${response.status}`
@@ -254,9 +254,9 @@ async function main() {
     await runner.it('should reject missing required fields', async () => {
       const formData = new FormData();
       formData.append('CustomerName', 'Only Name');
-      
+
       const response = await submitToPortal(formData, TENANTS[0].id);
-      
+
       runner.assertTrue(
         response.status === 400 || response.status === 422 || response.status === 500,
         `Missing required fields should be rejected, got ${response.status}`
@@ -267,9 +267,9 @@ async function main() {
       const formData = buildFormData(TENANTS[0], {
         customerEmail: 'not-an-email'
       });
-      
+
       const response = await submitToPortal(formData, TENANTS[0].id);
-      
+
       // May accept or reject, but should not crash
       runner.assertTrue(
         response.status < 500,
@@ -281,14 +281,14 @@ async function main() {
       const formData = buildFormData(TENANTS[0], {
         description: 'A'.repeat(5000)
       });
-      
+
       const response = await submitToPortal(formData, TENANTS[0].id);
-      
+
       if (response.status === 401 || response.status === 403) {
         runner.skip('Long description (auth required)');
         return;
       }
-      
+
       runner.assertTrue(
         response.status < 500,
         `Long description should not crash, got ${response.status}`
@@ -305,12 +305,12 @@ async function main() {
       });
 
       const response = await submitToPortal(formData, TENANTS[0].id);
-      
+
       if (response.status === 401 || response.status === 403) {
         runner.skip('Form API integration (auth required)');
         return;
       }
-      
+
       if (response.status >= 200 && response.status < 300) {
         const result = await response.json();
         runner.assertTrue(
@@ -324,19 +324,19 @@ async function main() {
   await runner.describe('Form Submission Under Load', async () => {
     await runner.it('should handle multiple rapid submissions', async () => {
       const submissions = [];
-      
+
       for (let i = 0; i < 5; i++) {
         const formData = buildFormData(TENANTS[0], {
           customerEmail: `load-${i}-${Date.now()}@example.com`,
           description: `Load test submission ${i}`
         });
-        
+
         submissions.push(submitToPortal(formData, TENANTS[0].id));
       }
-      
+
       const results = await Promise.all(submissions);
       const successCount = results.filter(r => r.status >= 200 && r.status < 300).length;
-      
+
       console.log(`    ${successCount}/5 rapid submissions accepted`);
       runner.assertTrue(
         successCount > 0,
@@ -359,7 +359,7 @@ async function main() {
         },
         5000
       );
-      
+
       runner.assertTrue(
         response.status === 400 || response.status === 415 || response.status === 500,
         `Malformed data should be rejected, got ${response.status}`
@@ -368,7 +368,7 @@ async function main() {
 
     await runner.it('should handle missing tenant header', async () => {
       const formData = buildFormData(TENANTS[0]);
-      
+
       const response = await fetchWithTimeout(
         `${SERVICES.ticketMasala}/api/portal/submit`,
         {
@@ -377,7 +377,7 @@ async function main() {
         },
         5000
       );
-      
+
       // May accept or reject, but should not crash
       runner.assertTrue(
         response.status < 500,

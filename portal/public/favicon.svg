@@ -12,14 +12,14 @@
 
   <!-- Scale up the shield to better fill the space -->
   <g transform="translate(256 256) scale(1.6) translate(-256 -256)">
-    
+
     <g clip-path="url(#shield-clip)">
       <!-- Gold Base -->
       <rect x="0" y="0" width="512" height="512" fill="#D4A574" />
-      
+
       <!-- Green Top -->
       <rect x="0" y="0" width="512" height="235" fill="#2D5A3D" />
-      
+
       <!-- Blue River (Wavy) -->
       <path d="M0 235 C 100 210, 160 260, 256 250 C 352 240, 412 210, 512 235 V 285 C 412 260, 352 290, 256 300 C 160 310, 100 260, 0 285 Z" fill="#2F6F8F" />
 
@@ -34,7 +34,7 @@
       </g>
       <!-- Base step (gold) -->
       <rect x="221" y="220" width="70" height="15" fill="#D4A574" />
-      
+
       <!-- Door -->
       <path d="M246 235 V 205 C 246 195, 266 195, 266 205 V 235 Z" fill="#5D3A5D" />
       <!-- Windows -->

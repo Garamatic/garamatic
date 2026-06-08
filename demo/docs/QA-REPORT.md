@@ -1,6 +1,6 @@
 # QA & E2E Testing Report — Demo Preparation
 
-**Date:** 2026-06-08  
+**Date:** 2026-06-08
 **Environment:** Local Docker Compose (`make up`)
 
 ---

@@ -287,7 +287,7 @@ async function main() {
       runner.assertResponseOk(response);
     });
   });
-  
+
   runner.printSummary();
   runner.exit();
 }

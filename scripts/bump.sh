@@ -50,7 +50,7 @@ else
         git submodule status | awk '{print "  " $2}'
         exit 1
     fi
-    
+
     if [ "$DRY_RUN" = true ]; then
         echo "   (dry-run mode — preview only)"
         cd "$TARGET"
@@ -75,7 +75,7 @@ fi
 if [ -n "$(git status --porcelain)" ]; then
     echo ""
     echo "📝 Committing submodule updates..."
-    
+
     if [ "$TARGET" = "all" ]; then
         git add -A
         git commit -m "bump: update all submodules to latest
@@ -87,7 +87,7 @@ $(git submodule status | awk '{print "- " $2 ": " $1}')"
 
 $(git submodule status | grep "$TARGET" | awk '{print "- " $2 ": " $1}')"
     fi
-    
+
     echo ""
     echo "✅ Committed. Push with:"
     echo "   git push origin $(git branch --show-current)"

@@ -306,4 +306,3 @@ src/agentic_service/tools/
 1. Invoke `writing-plans` skill to create a detailed implementation plan
 2. Implement Phase 1
 3. After Phase 1 ships, design Phase 2 (MCP prompts & streaming)
-

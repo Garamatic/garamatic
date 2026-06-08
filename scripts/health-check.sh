@@ -36,7 +36,7 @@ echo ""
 for check in "${CHECKS[@]}"; do
   PORT="${check%%:*}"
   NAME="${check#*:}"
-  
+
   # TCP port check
   if timeout 2 bash -c "exec 3<>/dev/tcp/localhost/${PORT}" 2>/dev/null; then
     echo -e "  ${GREEN}✓${NC} ${NAME}  (port ${PORT})"
