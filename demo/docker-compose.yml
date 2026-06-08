@@ -50,6 +50,10 @@ services:
       - OPENAI_BASE_URL=${OLLAMA_BASE_URL:-http://ollama:11434/v1}
       - OPENAI_API_KEY=${OLLAMA_API_KEY:-ollama}
       - OpenAI__Provider=ollama
+      - Agentic__ApiKey=${AGENTIC_API_KEY:-garamatic-agentic-secret-key}
+      - Agentic__ApiUrl=https://agentic.garamatic.tech
+      - Gerda__OpenAiModelFast=hadad/LFM2.5-1.2B:Q4_K_M
+      - Gerda__OpenAiModel=hadad/LFM2.5-1.2B:Q4_K_M
       - TENANT=${TENANT:-desgoffe}
     volumes:
       # Demo tenant config (single source of truth for demo)
@@ -146,9 +150,10 @@ services:
     environment:
       - CORS_ORIGINS=*
       - ticket_api_url=http://ticket-masala:8080
+      - ticket_api_key=${AGENTIC_API_KEY:-garamatic-agentic-secret-key}
       - rabbitmq_host=rabbitmq
       - LLM_PROVIDER=ollama
-      - LLM_MODEL=qwen3.5:2b
+      - LLM_MODEL=hadad/LFM2.5-1.2B:Q4_K_M
       - LLM_BASE_URL=http://ollama:11434
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}
     volumes:
