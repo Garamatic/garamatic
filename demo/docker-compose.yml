@@ -57,11 +57,9 @@ services:
       # Tenant theme and logo mounted into wwwroot (overrides baked-in assets)
       - ./tenants/desgoffe/theme/style.css:/app/wwwroot/tenants/desgoffe/style.css:ro
       - ./tenants/desgoffe/logo.png:/app/wwwroot/tenants/desgoffe/logo.png:ro
-      - ./tenants/desgoffe/logo.svg:/app/wwwroot/tenants/desgoffe/logo.svg:ro
       # Fallback tenant-theme path for _Layout.cshtml
       - ./tenants/desgoffe/theme/style.css:/app/wwwroot/tenant-theme/style.css:ro
       - ./tenants/desgoffe/logo.png:/app/wwwroot/tenant-theme/logo.png:ro
-      - ./tenants/desgoffe/logo.svg:/app/wwwroot/tenant-theme/logo.svg:ro
       - ticket_masala_demo_data:/app/data
     networks:
       - garamatic_demo_net
