@@ -237,7 +237,7 @@
                 {
                     "Description": "Étude architecturale et plans de rénovation",
                     "Status": "InProgress",
-                    "Type": "Task",
+                    "WorkItemTypeCode": "PERMIS",
                     "ResponsibleEmail": "maria.garcia@desgoffe.gov",
                     "CompletionTargetDays": 21,
                     "EstimatedEffortPoints": 13,
@@ -264,7 +264,7 @@
                 {
                     "Description": "Isolation thermique des murs extérieurs",
                     "Status": "InProgress",
-                    "Type": "Task",
+                    "WorkItemTypeCode": "DEMANDE",
                     "ResponsibleEmail": "maria.garcia@desgoffe.gov",
                     "CompletionTargetDays": 30,
                     "EstimatedEffortPoints": 8,
@@ -274,7 +274,7 @@
                 {
                     "Description": "Installation de la nouvelle toiture et gouttières",
                     "Status": "Pending",
-                    "Type": "Task",
+                    "WorkItemTypeCode": "DEMANDE",
                     "ResponsibleEmail": "james.roux@desgoffe.gov",
                     "CompletionTargetDays": 45,
                     "EstimatedEffortPoints": 13,
@@ -284,7 +284,7 @@
                 {
                     "Description": "Mise aux normes d'accessibilité — rampe et ascenseur",
                     "Status": "Pending",
-                    "Type": "Task",
+                    "WorkItemTypeCode": "PERMIS",
                     "ResponsibleEmail": "maria.garcia@desgoffe.gov",
                     "CompletionTargetDays": 60,
                     "EstimatedEffortPoints": 8,
@@ -304,7 +304,7 @@
                 {
                     "Description": "Installation de l'éclairage solaire LED dans le parc",
                     "Status": "Completed",
-                    "Type": "Task",
+                    "WorkItemTypeCode": "DEMANDE",
                     "ResponsibleEmail": "alex.leroy@desgoffe.gov",
                     "CompletionTargetDays": 14,
                     "EstimatedEffortPoints": 5,
@@ -321,7 +321,7 @@
                 {
                     "Description": "Pose de la piste cyclable et signalisation",
                     "Status": "InProgress",
-                    "Type": "Task",
+                    "WorkItemTypeCode": "DEMANDE",
                     "ResponsibleEmail": "alex.leroy@desgoffe.gov",
                     "CompletionTargetDays": 30,
                     "EstimatedEffortPoints": 8,
@@ -331,7 +331,7 @@
                 {
                     "Description": "Installation de l'aire de jeux pour enfants",
                     "Status": "Pending",
-                    "Type": "Task",
+                    "WorkItemTypeCode": "PERMIS",
                     "ResponsibleEmail": "alex.leroy@desgoffe.gov",
                     "CompletionTargetDays": 21,
                     "EstimatedEffortPoints": 5,
@@ -351,7 +351,7 @@
                 {
                     "Description": "Remplacement des panneaux de signalisation obsolètes",
                     "Status": "InProgress",
-                    "Type": "Task",
+                    "WorkItemTypeCode": "DEMANDE",
                     "ResponsibleEmail": "alex.leroy@desgoffe.gov",
                     "CompletionTargetDays": 21,
                     "EstimatedEffortPoints": 13,
@@ -361,7 +361,7 @@
                 {
                     "Description": "Marquage au sol des passages piétons",
                     "Status": "InProgress",
-                    "Type": "Task",
+                    "WorkItemTypeCode": "DEMANDE",
                     "ResponsibleEmail": "alex.leroy@desgoffe.gov",
                     "CompletionTargetDays": 14,
                     "EstimatedEffortPoints": 8,
@@ -371,7 +371,7 @@
                 {
                     "Description": "Installation de panneaux d'information numériques",
                     "Status": "Pending",
-                    "Type": "Task",
+                    "WorkItemTypeCode": "PERMIS",
                     "ResponsibleEmail": "james.roux@desgoffe.gov",
                     "CompletionTargetDays": 21,
                     "EstimatedEffortPoints": 8,
@@ -381,208 +381,7 @@
             ]
         }
     ],
-    "UnassignedWorkItems": [
-        {
-            "Description": "URGENT : Nuisance sonore — Chantier rue de la Loi, dépassement horaire 6h-22h",
-            "Status": "Pending",
-            "Type": "Incident",
-            "CustomerEmail": "jean.dupont@citoyen.be",
-            "CompletionTargetDays": 1,
-            "EstimatedEffortPoints": 34,
-            "PriorityScore": 95,
-            "GerdaTags": "Sentiment: critique, Nuisance, Urgent, P0",
-            "Comments": [
-                {
-                    "Body": "C'est critique ! Les riverains ne peuvent plus dormir. Le bruit dépasse les limites autorisées. Intervention urgente demandée !",
-                    "AuthorEmail": "jean.dupont@citoyen.be",
-                    "CreatedDaysAgo": 0
-                },
-                {
-                    "Body": "🤖 **Autopilot GERDA** : Alerte Nuisance Critique. Analyse de sentiment : 99% Urgent. Nombreux riverains affectés. Auto-escalade vers l'équipe Environnement. SLA : 1 heure de réponse.",
-                    "AuthorEmail": "gerda@desgoffe.gov",
-                    "CreatedDaysAgo": 0
-                }
-            ]
-        },
-        {
-            "Description": "Dégradation de la qualité de l'air — Zone Industrielle, émissions excessives",
-            "Status": "Pending",
-            "Type": "Incident",
-            "CustomerEmail": "sophie.bernard@ecole.be",
-            "CompletionTargetDays": 2,
-            "EstimatedEffortPoints": 28,
-            "PriorityScore": 85,
-            "GerdaTags": "Environnement, Pollution, Qualité de l'air, P1",
-            "Comments": [
-                {
-                    "Body": "Les émissions de l'usine de recyclage sont 5 fois plus élevées que la normale entre 14h et 16h. Les élèves de l'école voisine sont incommodés.",
-                    "AuthorEmail": "sophie.bernard@ecole.be",
-                    "CreatedDaysAgo": 1
-                },
-                {
-                    "Body": "🤖 **Analyse GERDA** : Problème environnemental détecté (Confiance : 87%). Pattern : Quotidien. Recommandé : Inspection des filtres et revue des autorisations.",
-                    "AuthorEmail": "gerda@desgoffe.gov",
-                    "CreatedDaysAgo": 1
-                }
-            ]
-        },
-        {
-            "Description": "Infraction au code de l'urbanisme — Construction sans permis rue des Lilas",
-            "Status": "Pending",
-            "Type": "Incident",
-            "CustomerEmail": "emma.roux@associations.be",
-            "CompletionTargetDays": 1,
-            "EstimatedEffortPoints": 40,
-            "PriorityScore": 98,
-            "GerdaTags": "Urbanisme, Infraction, Critique, P0",
-            "Comments": [
-                {
-                    "Body": "Notre association a constaté une construction sans permis visible. Cela doit être traité immédiatement !",
-                    "AuthorEmail": "emma.roux@associations.be",
-                    "CreatedDaysAgo": 0
-                },
-                {
-                    "Body": "🤖 **Autopilot GERDA** : ALERTE URBANISME — Infraction critique détectée. Auto-assignée au responsable Urbanisme. Réponse immédiate requise. Risque juridique : ÉLEVÉ.",
-                    "AuthorEmail": "gerda@desgoffe.gov",
-                    "CreatedDaysAgo": 0
-                }
-            ]
-        },
-        {
-            "Description": "Demande d'information — Modalités d'inscription à la crèche municipale",
-            "Status": "Pending",
-            "Type": "ServiceRequest",
-            "CustomerEmail": "marie.curie@science.be",
-            "CompletionTargetDays": 30,
-            "EstimatedEffortPoints": 21,
-            "PriorityScore": 12,
-            "GerdaTags": "Information, Crèche, Basse Priorité",
-            "Comments": [
-                {
-                    "Body": "Quelles sont les modalités d'inscription pour la crèche municipale ? Les documents requis et les délais ?",
-                    "AuthorEmail": "marie.curie@science.be",
-                    "CreatedDaysAgo": 5
-                }
-            ]
-        },
-        {
-            "Description": "Demande d'intervention — Lampadaire défectueux rue des Fleurs",
-            "Status": "Pending",
-            "Type": "ServiceRequest",
-            "CustomerEmail": "pierre.martin@entreprise.be",
-            "CompletionTargetDays": 21,
-            "EstimatedEffortPoints": 18,
-            "PriorityScore": 25,
-            "GerdaTags": "Éclairage, Voirie, Intervention",
-            "Comments": [
-                {
-                    "Body": "Le lampadaire au coin de la rue des Fleurs et de la rue de la Paix clignote depuis une semaine. Cela devient dangereux la nuit.",
-                    "AuthorEmail": "pierre.martin@entreprise.be",
-                    "CreatedDaysAgo": 3
-                },
-                {
-                    "Body": "🤖 **Analyse GERDA** : Demande d'intervention (Confiance : 95%). Impact : Sécurité. Recommandé : Ajouter au planning d'intervention prioritaire.",
-                    "AuthorEmail": "gerda@desgoffe.gov",
-                    "CreatedDaysAgo": 2
-                }
-            ]
-        },
-        {
-            "Description": "Demande d'autorisation — Fête de quartier au Faubourg Nord, 200 participants",
-            "Status": "Pending",
-            "Type": "ServiceRequest",
-            "CustomerEmail": "antoine.moreau@retraite.be",
-            "CompletionTargetDays": 7,
-            "EstimatedEffortPoints": 15,
-            "PriorityScore": 35,
-            "GerdaTags": "Événement, Autorisation, Fête de quartier",
-            "Comments": [
-                {
-                    "Body": "Nous organisons une fête de quartier au Faubourg Nord avec 200 participants. Nous avons besoin de l'autorisation et d'une dérogation pour le stationnement.",
-                    "AuthorEmail": "antoine.moreau@retraite.be",
-                    "CreatedDaysAgo": 2
-                }
-            ]
-        },
-        {
-            "Description": "Question : Comment obtenir un permis de construction pour une extension ?",
-            "Status": "Pending",
-            "Type": "ServiceRequest",
-            "CustomerEmail": "jean.dupont@citoyen.be",
-            "CompletionTargetDays": 3,
-            "EstimatedEffortPoints": 8,
-            "PriorityScore": 15,
-            "GerdaTags": "Permis, Urbanisme, Documentation",
-            "Comments": [
-                {
-                    "Body": "Je souhaite construire une extension de 20m². Quelle est la procédure ? Quels documents sont nécessaires ?",
-                    "AuthorEmail": "jean.dupont@citoyen.be",
-                    "CreatedDaysAgo": 1
-                }
-            ]
-        },
-        {
-            "Description": "Erreur de facturation — Taxe foncière surévaluée pour l'année 2025",
-            "Status": "Pending",
-            "Type": "Incident",
-            "CustomerEmail": "marie.curie@science.be",
-            "CompletionTargetDays": 3,
-            "EstimatedEffortPoints": 12,
-            "PriorityScore": 45,
-            "GerdaTags": "Facturation, Finances, Urgent",
-            "Comments": [
-                {
-                    "Body": "Ma taxe foncière a été calculée sur une surface de 150m² alors que ma maison fait 120m². Veuillez corriger et rembourser le trop-perçu.",
-                    "AuthorEmail": "marie.curie@science.be",
-                    "CreatedDaysAgo": 1
-                },
-                {
-                    "Body": "🤖 **Analyse GERDA** : Problème de facturation (Confiance : 91%). Sentiment : Négatif. Auto-routé vers le service Finances. SLA : 48 heures pour résolution.",
-                    "AuthorEmail": "gerda@desgoffe.gov",
-                    "CreatedDaysAgo": 1
-                }
-            ]
-        },
-        {
-            "Description": "Demande de formation — Utilisation du portail citoyen pour les seniors",
-            "Status": "Pending",
-            "Type": "ServiceRequest",
-            "CustomerEmail": "antoine.moreau@retraite.be",
-            "CompletionTargetDays": 14,
-            "EstimatedEffortPoints": 25,
-            "PriorityScore": 20,
-            "GerdaTags": "Formation, Seniors, Numérique",
-            "Comments": [
-                {
-                    "Body": "Je souhaite une session de formation pour les seniors sur l'utilisation du portail citoyen. Nous sommes un groupe de 15 personnes.",
-                    "AuthorEmail": "antoine.moreau@retraite.be",
-                    "CreatedDaysAgo": 4
-                }
-            ]
-        },
-        {
-            "Description": "Accident de la route — Trou dans la chaussée avenue du Boulevard, risque pour les cyclistes",
-            "Status": "Pending",
-            "Type": "Incident",
-            "CustomerEmail": "pierre.martin@entreprise.be",
-            "CompletionTargetDays": 5,
-            "EstimatedEffortPoints": 22,
-            "PriorityScore": 65,
-            "GerdaTags": "Voirie, Accident, Cyclistes, Urgent",
-            "Comments": [
-                {
-                    "Body": "Un trou important dans la chaussée de l'avenue du Boulevard a causé une chute d'un cycliste ce matin. Intervention urgente demandée.",
-                    "AuthorEmail": "pierre.martin@entreprise.be",
-                    "CreatedDaysAgo": 0
-                },
-                {
-                    "Body": "🤖 **Autopilot GERDA** : Danger de sécurité détecté (Confiance : 94%). Impact : Risque d'accident. Auto-escalade vers l'équipe Voirie. Priorité : P1.",
-                    "AuthorEmail": "gerda@desgoffe.gov",
-                    "CreatedDaysAgo": 0
-                }
-            ]
-        }
-    ],
+    "UnassignedWorkItems": [],
     "KnowledgeBaseArticles": [
         {
             "Title": "Comment demander un permis de construction",
