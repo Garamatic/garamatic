@@ -223,6 +223,30 @@
             "LastName": "Moreau",
             "Phone": "+32 477 89 01 23",
             "Code": "CIT-006"
+        },
+        {
+            "UserName": "customer.george",
+            "Email": "lucas.garcia@artisan.be",
+            "FirstName": "Lucas",
+            "LastName": "Garcia",
+            "Phone": "+32 475 67 89 01",
+            "Code": "CIT-007"
+        },
+        {
+            "UserName": "customer.hannah",
+            "Email": "camille.dubois@medecin.be",
+            "FirstName": "Camille",
+            "LastName": "Dubois",
+            "Phone": "+32 478 90 12 34",
+            "Code": "CIT-008"
+        },
+        {
+            "UserName": "customer.ian",
+            "Email": "thomas.leroy@avocat.be",
+            "FirstName": "Thomas",
+            "LastName": "Leroy",
+            "Phone": "+32 479 01 23 45",
+            "Code": "CIT-009"
         }
     ],
     "WorkContainers": [
