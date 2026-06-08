@@ -4,9 +4,6 @@
 [submodule "mailing-service"]
 	path = mailing-service
 	url = git@github.com:Garamatic/mailing-service.git
-[submodule "event-planner"]
-	path = event-planner
-	url = git@github.com:Garamatic/event-planner.git
 [submodule "garamatic-web"]
 	path = garamatic-web
 	url = git@github.com:Garamatic/garamatic-web.git
