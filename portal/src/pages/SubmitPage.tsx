@@ -173,7 +173,8 @@ export function SubmitPage() {
         throw new Error(`Server error: ${response.status}`)
       }
 
-      const result = await response.json()
+      const text = await response.text()
+      const result = text ? JSON.parse(text) : { success: true }
 
       if (result.success) {
         const ticketId = result.ticketId || crypto.randomUUID().slice(0, 8).toUpperCase()
