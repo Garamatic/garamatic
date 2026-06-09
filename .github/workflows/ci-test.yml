@@ -62,7 +62,7 @@ jobs:
       - name: Run integration tests
         run: |
           docker compose -f integration-tests/docker/docker-compose.test.yml \
-            up --build --abort-on-container-exit
+            up --build --wait --remove-orphans
 
       - name: Upload test results
         if: always()
