@@ -80,6 +80,9 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Set lowercase image prefix
+        run: echo "IMAGE_PREFIX_LC=$(echo '${{ env.IMAGE_PREFIX }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
       - name: Build and push images
         run: |
           cd demo
@@ -91,12 +94,12 @@ jobs:
           # Tag and push core services
           SERVICES=(ticket-masala gatekeeper-api agentic-service agentic-mcp odoo-integration mailing-service portal garamatic-web masala-web)
           for svc in "${SERVICES[@]}"; do
-            IMAGE_TAG="${{ env.IMAGE_PREFIX }}/garamatic-${svc}:${{ github.sha }}"
-            LATEST_TAG="${{ env.IMAGE_PREFIX }}/garamatic-${svc}:latest"
-            
+            IMAGE_TAG="${{ env.IMAGE_PREFIX_LC }}/garamatic-${svc}:${{ github.sha }}"
+            LATEST_TAG="${{ env.IMAGE_PREFIX_LC }}/garamatic-${svc}:latest"
+
             docker tag "demo-${svc}" "$IMAGE_TAG"
             docker tag "demo-${svc}" "$LATEST_TAG"
-            
+
             docker push "$IMAGE_TAG"
             docker push "$LATEST_TAG"
             echo "✅ Pushed ${svc} → ${IMAGE_TAG}"
@@ -113,7 +116,7 @@ jobs:
           echo "|---------|-------|" >> image-manifest.md
           SERVICES=(ticket-masala gatekeeper-api agentic-service agentic-mcp odoo-integration mailing-service portal garamatic-web masala-web)
           for svc in "${SERVICES[@]}"; do
-            echo "| ${svc} | ${{ env.IMAGE_PREFIX }}/garamatic-${svc}:${{ github.sha }} |" >> image-manifest.md
+            echo "| ${svc} | ${{ env.IMAGE_PREFIX_LC }}/garamatic-${svc}:${{ github.sha }} |" >> image-manifest.md
           done
 
       - name: Upload image manifest
