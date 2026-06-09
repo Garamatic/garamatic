@@ -1097,76 +1097,138 @@
     <div class="container">
       <div class="dashboard-grid">
 
+        <!-- Live Service Status — Heartbeat -->
+        <div class="card span-full">
+          <h2 class="card-title">🔥 Live Service Status — Heartbeat (1s)</h2>
+          <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1rem;">
+            <div class="live-badge">
+              <span class="pulse-dot" aria-hidden="true"></span>
+              <span id="hb-status-text">Connecting...</span>
+            </div>
+            <div style="font-size:0.75rem; color:var(--text-muted);">
+              <span id="hb-count-up">0</span> up • <span id="hb-count-down">0</span> down • <span id="hb-count-total">0</span> total
+            </div>
+          </div>
+          <div id="hb-services" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap:0.5rem;">
+            <div style="color:var(--text-muted); font-size:0.875rem;">Loading heartbeat data...</div>
+          </div>
+          <div style="margin-top:0.75rem; font-size:0.75rem; color:var(--text-muted);">
+            Source: <a href="https://heartbeat.garamatic.tech" target="_blank" rel="noopener">heartbeat.garamatic.tech</a>
+          </div>
+        </div>
+
+        <script>
+        (function() {
+          const HB_API = window.location.hostname.includes('garamatic.tech')
+            ? 'https://heartbeat.garamatic.tech'
+            : 'http://localhost:8084';
+
+          async function updateHeartbeat() {
+            try {
+              const res = await fetch(HB_API + '/status');
+              const data = await res.json();
+              const services = data.services || {};
+              const total = Object.keys(services).length;
+              const up = Object.values(services).filter(s => s.status === 'up').length;
+              const down = total - up;
+
+              document.getElementById('hb-status-text').textContent = 'Live';
+              document.getElementById('hb-count-up').textContent = up;
+              document.getElementById('hb-count-down').textContent = down;
+              document.getElementById('hb-count-total').textContent = total;
+
+              const grid = document.getElementById('hb-services');
+              grid.innerHTML = Object.entries(services).map(([name, info]) => {
+                const isUp = info.status === 'up';
+                const age = info.age_seconds !== undefined ? info.age_seconds.toFixed(1) : '?';
+                const color = isUp ? '#22c55e' : '#ef4444';
+                return `<div style="display:flex; align-items:center; gap:0.5rem; padding:0.35rem 0.5rem; background:var(--surface); border-radius:6px; border:1px solid var(--border-subtle);">
+                  <span style="width:8px; height:8px; border-radius:50%; background:${color}; box-shadow: 0 0 6px ${color};"></span>
+                  <span style="font-size:0.8rem; color:var(--text);">${name}</span>
+                  <span style="font-size:0.7rem; color:var(--text-muted); margin-left:auto;">${age}s</span>
+                </div>`;
+              }).join('');
+            } catch (e) {
+              document.getElementById('hb-status-text').textContent = 'Offline';
+              document.getElementById('hb-services').innerHTML = '<div style="color:#ef4444; font-size:0.875rem;">❌ Cannot connect to heartbeat API</div>';
+            }
+          }
+
+          updateHeartbeat();
+          setInterval(updateHeartbeat, 1000);
+        })();
+        </script>
+
         <!-- Demo Flow Steps -->
         <div class="card span-full">
           <h2 class="card-title">Demo Flow (~9 min)</h2>
           <div class="steps-list">
-            <div class="step" role="button" tabindex="0" onclick="window.open('http://localhost:8092','_blank')" onkeydown="if(event.key==='Enter'||event.key===' ')window.open('http://localhost:8092','_blank')">
+            <div class="step" role="button" tabindex="0" onclick="window.open('https://showcase.garamatic.tech','_blank')" onkeydown="if(event.key==='Enter'||event.key===' ')window.open('https://showcase.garamatic.tech','_blank')">
               <div class="step-num">0</div>
               <div class="step-content">
                 <div class="step-title">Intro — Architecture Overview <span class="step-time">0:00 — 0:30</span></div>
                 <div class="step-desc">Show the Architecture Dashboard with all services running. Introduce the team (Juan Benjumea, Wito De Schrijver, Maarten Görtz, Charlotte Schröer), the project, and the multi-tenant containerized microservices ecosystem.</div>
                 <div class="step-actions">
-                  <a href="http://localhost:8092" target="_blank" rel="noopener" onclick="event.stopPropagation()">Open Dashboard</a>
+                  <a href="https://showcase.garamatic.tech" target="_blank" rel="noopener" onclick="event.stopPropagation()">Open Dashboard</a>
                 </div>
               </div>
             </div>
-            <div class="step" role="button" tabindex="0" onclick="window.open('http://localhost:8093','_blank')" onkeydown="if(event.key==='Enter'||event.key===' ')window.open('http://localhost:8093','_blank')">
+            <div class="step" role="button" tabindex="0" onclick="window.open('https://portal.garamatic.tech','_blank')" onkeydown="if(event.key==='Enter'||event.key===' ')window.open('https://portal.garamatic.tech','_blank')">
               <div class="step-num">1</div>
               <div class="step-content">
                 <div class="step-title">Multi-tenant Portal — Burger Melding <span class="step-time">0:30 — 2:00</span></div>
                 <div class="step-desc">Citizen submits a ticket via the Desgoffe portal. The form adapts to the tenant's branding and language. Behind the scenes, a <code>ticket.created</code> event is published via the Outbox Pattern.</div>
                 <div class="step-actions">
-                  <a href="http://localhost:8093" target="_blank" rel="noopener" onclick="event.stopPropagation()">Open Portal</a>
-                  <a href="http://localhost:8085" target="_blank" rel="noopener" onclick="event.stopPropagation()">Open Ticket Masala</a>
-                  <a href="http://localhost:15672" target="_blank" rel="noopener" onclick="event.stopPropagation()">RabbitMQ</a>
+                  <a href="https://portal.garamatic.tech" target="_blank" rel="noopener" onclick="event.stopPropagation()">Open Portal</a>
+                  <a href="https://tickets.garamatic.tech" target="_blank" rel="noopener" onclick="event.stopPropagation()">Open Ticket Masala</a>
+                  <a href="https://rabbitmq.garamatic.tech" target="_blank" rel="noopener" onclick="event.stopPropagation()">RabbitMQ</a>
                 </div>
               </div>
             </div>
-            <div class="step" role="button" tabindex="0" onclick="window.open('http://localhost:8085','_blank')" onkeydown="if(event.key==='Enter'||event.key===' ')window.open('http://localhost:8085','_blank')">
+            <div class="step" role="button" tabindex="0" onclick="window.open('https://tickets.garamatic.tech','_blank')" onkeydown="if(event.key==='Enter'||event.key===' ')window.open('https://tickets.garamatic.tech','_blank')">
               <div class="step-num">2</div>
               <div class="step-content">
                 <div class="step-title">Ticket Lifecycle + GERDA AI <span class="step-time">2:00 — 4:00</span></div>
                 <div class="step-desc">Login as manager. GERDA AI sidebar auto-analyses each ticket: complexity, priority, tags, and recommended agent. Assignment triggers a <code>ticket.assigned</code> event.</div>
                 <div class="step-actions">
-                  <a href="http://localhost:8085" target="_blank" rel="noopener" onclick="event.stopPropagation()">Ticket Masala</a>
+                  <a href="https://tickets.garamatic.tech" target="_blank" rel="noopener" onclick="event.stopPropagation()">Ticket Masala</a>
                 </div>
               </div>
             </div>
-            <div class="step" role="button" tabindex="0" onclick="window.open('http://localhost:8085','_blank')" onkeydown="if(event.key==='Enter'||event.key===' ')window.open('http://localhost:8085','_blank')">
+            <div class="step" role="button" tabindex="0" onclick="window.open('https://tickets.garamatic.tech','_blank')" onkeydown="if(event.key==='Enter'||event.key===' ')window.open('https://tickets.garamatic.tech','_blank')">
               <div class="step-num">3</div>
               <div class="step-content">
                 <div class="step-title">MCP AI Chat — Tool-Calling Agent <span class="step-time">4:00 — 6:00</span></div>
                 <div class="step-desc">Open the AI chat inside any ticket. The agent already knows the ticket context. Ask it to create a €200 invoice and it will call your business APIs directly through MCP tools — no wrapper, no abstraction layer.</div>
                 <div class="step-actions">
-                  <a href="http://localhost:8085" target="_blank" rel="noopener" onclick="event.stopPropagation()">Open Ticket Masala</a>
-                  <a href="http://localhost:3001" target="_blank" rel="noopener" onclick="event.stopPropagation()">Agentic Service</a>
+                  <a href="https://tickets.garamatic.tech" target="_blank" rel="noopener" onclick="event.stopPropagation()">Open Ticket Masala</a>
+                  <a href="https://agentic.garamatic.tech" target="_blank" rel="noopener" onclick="event.stopPropagation()">Agentic Service</a>
                 </div>
               </div>
             </div>
-            <div class="step" role="button" tabindex="0" onclick="window.open('http://localhost:8069','_blank')" onkeydown="if(event.key==='Enter'||event.key===' ')window.open('http://localhost:8069','_blank')">
+            <div class="step" role="button" tabindex="0" onclick="window.open('https://odoo.garamatic.tech','_blank')" onkeydown="if(event.key==='Enter'||event.key===' ')window.open('https://odoo.garamatic.tech','_blank')">
               <div class="step-num">4</div>
               <div class="step-content">
                 <div class="step-title">Invoicing + Odoo ERP <span class="step-time">6:00 — 8:00</span></div>
                 <div class="step-desc">Resolve a ticket with a billable amount. The Odoo Bridge receives <code>ticket.resolved</code>, creates a customer and invoice via JSON-RPC, and publishes <code>invoice.created</code>. Zero manual work. <strong>Tip:</strong> Use the pre-seeded ticket <em>Demande de permis — Extension terrasse</em> (Marie Curie), set status to <strong>Completed</strong>, add resolution notes and billable amount <strong>€150</strong>. You must be logged in to resolve a ticket.</div>
                 <div class="step-actions">
-                  <a href="http://localhost:8069" target="_blank" rel="noopener" onclick="event.stopPropagation()">Odoo ERP</a>
-                  <a href="http://localhost:8089" target="_blank" rel="noopener" onclick="event.stopPropagation()">Odoo Bridge</a>
+                  <a href="https://odoo.garamatic.tech" target="_blank" rel="noopener" onclick="event.stopPropagation()">Odoo ERP</a>
+                  <a href="https://odoo-bridge.garamatic.tech" target="_blank" rel="noopener" onclick="event.stopPropagation()">Odoo Bridge</a>
                 </div>
               </div>
             </div>
-            <div class="step" role="button" tabindex="0" onclick="window.open('http://localhost:15672','_blank')" onkeydown="if(event.key==='Enter'||event.key===' ')window.open('http://localhost:15672','_blank')">
+            <div class="step" role="button" tabindex="0" onclick="window.open('https://rabbitmq.garamatic.tech','_blank')" onkeydown="if(event.key==='Enter'||event.key===' ')window.open('https://rabbitmq.garamatic.tech','_blank')">
               <div class="step-num">5</div>
               <div class="step-content">
                 <div class="step-title">Event Bus & Email — Closing the Loop <span class="step-time">8:00 — 9:00</span></div>
                 <div class="step-desc">One event fans out to three queues. RabbitMQ shows the bindings. Mailhog captures every email: ticket created, assigned, resolved, invoice created. No service calls another directly.</div>
                 <div class="step-actions">
-                  <a href="http://localhost:15672" target="_blank" rel="noopener" onclick="event.stopPropagation()">RabbitMQ</a>
-                  <a href="http://localhost:8025" target="_blank" rel="noopener" onclick="event.stopPropagation()">Mailhog</a>
+                  <a href="https://rabbitmq.garamatic.tech" target="_blank" rel="noopener" onclick="event.stopPropagation()">RabbitMQ</a>
+                  <a href="https://mailhog.garamatic.tech" target="_blank" rel="noopener" onclick="event.stopPropagation()">Mailhog</a>
                 </div>
               </div>
             </div>
-            <div class="step" role="button" tabindex="0" onclick="window.open('http://localhost:8092','_blank')" onkeydown="if(event.key==='Enter'||event.key===' ')window.open('http://localhost:8092','_blank')">
+            <div class="step" role="button" tabindex="0" onclick="window.open('https://showcase.garamatic.tech','_blank')" onkeydown="if(event.key==='Enter'||event.key===' ')window.open('https://showcase.garamatic.tech','_blank')">
               <div class="step-num">6</div>
               <div class="step-content">
                 <div class="step-title">Outro — Summary & Links <span class="step-time">9:00 — 9:30</span></div>
@@ -1269,18 +1331,18 @@
         <div class="card">
           <h2 class="card-title">Quick Links</h2>
           <div class="links-grid">
-            <a class="link-btn" href="http://localhost:8085" target="_blank" rel="noopener"><span class="link-text">Ticket Masala</span></a>
-            <a class="link-btn" href="http://localhost:8086" target="_blank" rel="noopener"><span class="link-text">Gatekeeper</span></a>
+            <a class="link-btn" href="https://tickets.garamatic.tech" target="_blank" rel="noopener"><span class="link-text">Ticket Masala</span></a>
+            <a class="link-btn" href="https://api.garamatic.tech" target="_blank" rel="noopener"><span class="link-text">Gatekeeper</span></a>
             <a class="link-btn" href="http://localhost:8087" target="_blank" rel="noopener"><span class="link-text">Mailing Service</span></a>
-            <a class="link-btn" href="http://localhost:3001" target="_blank" rel="noopener"><span class="link-text">Agentic Service</span></a>
-            <a class="link-btn" href="http://localhost:8089" target="_blank" rel="noopener"><span class="link-text">Odoo Bridge</span></a>
-            <a class="link-btn" href="http://localhost:8090" target="_blank" rel="noopener"><span class="link-text">Garamatic Web</span></a>
-            <a class="link-btn" href="http://localhost:8091" target="_blank" rel="noopener"><span class="link-text">Masala Web</span></a>
-            <a class="link-btn" href="http://localhost:8093" target="_blank" rel="noopener"><span class="link-text">Portal</span></a>
-            <a class="link-btn" href="http://localhost:15672" target="_blank" rel="noopener"><span class="link-text">RabbitMQ</span></a>
-            <a class="link-btn" href="http://localhost:8025" target="_blank" rel="noopener"><span class="link-text">Mailhog</span></a>
-            <a class="link-btn" href="http://localhost:8069" target="_blank" rel="noopener"><span class="link-text">Odoo ERP</span></a>
-            <a class="link-btn" href="http://localhost:11434" target="_blank" rel="noopener"><span class="link-text">Ollama LLM</span></a>
+            <a class="link-btn" href="https://agentic.garamatic.tech" target="_blank" rel="noopener"><span class="link-text">Agentic Service</span></a>
+            <a class="link-btn" href="https://odoo-bridge.garamatic.tech" target="_blank" rel="noopener"><span class="link-text">Odoo Bridge</span></a>
+            <a class="link-btn" href="https://web.garamatic.tech" target="_blank" rel="noopener"><span class="link-text">Garamatic Web</span></a>
+            <a class="link-btn" href="https://masala.garamatic.tech" target="_blank" rel="noopener"><span class="link-text">Masala Web</span></a>
+            <a class="link-btn" href="https://portal.garamatic.tech" target="_blank" rel="noopener"><span class="link-text">Portal</span></a>
+            <a class="link-btn" href="https://rabbitmq.garamatic.tech" target="_blank" rel="noopener"><span class="link-text">RabbitMQ</span></a>
+            <a class="link-btn" href="https://mailhog.garamatic.tech" target="_blank" rel="noopener"><span class="link-text">Mailhog</span></a>
+            <a class="link-btn" href="https://odoo.garamatic.tech" target="_blank" rel="noopener"><span class="link-text">Odoo ERP</span></a>
+            <a class="link-btn" href="https://ollama.garamatic.tech" target="_blank" rel="noopener"><span class="link-text">Ollama LLM</span></a>
           </div>
           <div class="card-section">
             <div class="card-section-label">External</div>
@@ -1299,17 +1361,17 @@
           <div class="endpoint-list">
             <div class="endpoint">
               <span class="method get">GET</span>
-              <span class="path">http://localhost:8085/health</span>
+              <span class="path">https://tickets.garamatic.tech/health</span>
               <span class="desc">Ticket Masala health check</span>
             </div>
             <div class="endpoint">
               <span class="method get">GET</span>
-              <span class="path">http://localhost:8085/swagger</span>
+              <span class="path">https://tickets.garamatic.tech/swagger</span>
               <span class="desc">OpenAPI / Swagger UI</span>
             </div>
             <div class="endpoint">
               <span class="method get">GET</span>
-              <span class="path">http://localhost:8086/health</span>
+              <span class="path">https://api.garamatic.tech/health</span>
               <span class="desc">Gatekeeper health check</span>
             </div>
             <div class="endpoint">
@@ -1319,22 +1381,22 @@
             </div>
             <div class="endpoint">
               <span class="method get">GET</span>
-              <span class="path">http://localhost:8089/health</span>
+              <span class="path">https://odoo-bridge.garamatic.tech/health</span>
               <span class="desc">Odoo Bridge health check</span>
             </div>
             <div class="endpoint">
               <span class="method get">GET</span>
-              <span class="path">http://localhost:3001/sse</span>
+              <span class="path">https://agentic.garamatic.tech/sse</span>
               <span class="desc">Agentic Service SSE endpoint</span>
             </div>
             <div class="endpoint">
               <span class="method get">GET</span>
-              <span class="path">http://localhost:15672/api/overview</span>
+              <span class="path">https://rabbitmq.garamatic.tech/api/overview</span>
               <span class="desc">RabbitMQ management API</span>
             </div>
             <div class="endpoint">
               <span class="method post">POST</span>
-              <span class="path">http://localhost:8086/api/events/publish</span>
+              <span class="path">https://api.garamatic.tech/api/events/publish</span>
               <span class="desc">Publish event to RabbitMQ via Gatekeeper</span>
             </div>
             <div class="endpoint">
@@ -1344,7 +1406,7 @@
             </div>
             <div class="endpoint">
               <span class="method post">POST</span>
-              <span class="path">http://localhost:8085/api/portal/submit</span>
+              <span class="path">https://tickets.garamatic.tech/api/portal/submit</span>
               <span class="desc">Portal ticket submission</span>
             </div>
           </div>
@@ -1446,7 +1508,7 @@
           </div>
           <div class="curl-block mt-3">
             <button class="copy-btn" onclick="copy(this)" aria-label="Copy curl command">Copy</button>
-            <pre>curl -X POST http://localhost:8093/api/ingest \
+            <pre>curl -X POST https://portal.garamatic.tech/api/ingest \
   -H "Content-Type: application/json" \
   -d '{"event_type":"ticket.created","ticket_id":"$(uuidgen)","customer_email":"marie.curie@science.be","customer_name":"Marie Curie","description":"Bouwhoerrie zonder vergunning","priority":"10","source":"desgoffe-portal","tags":"Quartier:Centre-Ville,Type:NUISANCE"}'</pre>
           </div>
@@ -1475,28 +1537,28 @@
           <h2 class="card-title">Curl Quickies</h2>
           <div class="curl-block">
             <button class="copy-btn" onclick="copy(this)" aria-label="Copy curl command">Copy</button>
-            <pre>curl http://localhost:8085/health</pre>
+            <pre>curl https://tickets.garamatic.tech/health</pre>
           </div>
           <div class="curl-block">
             <button class="copy-btn" onclick="copy(this)" aria-label="Copy curl command">Copy</button>
-            <pre>curl http://localhost:8086/health \
+            <pre>curl https://api.garamatic.tech/health \
   -H "X-Api-Key: demo-api-key"</pre>
           </div>
           <div class="curl-block">
             <button class="copy-btn" onclick="copy(this)" aria-label="Copy curl command">Copy</button>
-            <pre>curl http://localhost:15672/api/overview \
+            <pre>curl https://rabbitmq.garamatic.tech/api/overview \
   -u guest:guest</pre>
           </div>
           <div class="curl-block">
             <button class="copy-btn" onclick="copy(this)" aria-label="Copy curl command">Copy</button>
-            <pre>curl -X POST http://localhost:8086/api/events/publish \
+            <pre>curl -X POST https://api.garamatic.tech/api/events/publish \
   -H "Content-Type: application/json" \
   -H "X-Api-Key: demo-api-key" \
   -d '{"type":"ticket.created","payload":{}}'</pre>
           </div>
           <div class="curl-block">
             <button class="copy-btn" onclick="copy(this)" aria-label="Copy curl command">Copy</button>
-            <pre>curl -X POST http://localhost:8085/api/portal/submit \
+            <pre>curl -X POST https://tickets.garamatic.tech/api/portal/submit \
   -F "CustomerName=Marie Curie" \
   -F "CustomerEmail=marie.curie@science.be" \
   -F "Description=Bouwhoerrie zonder vergunning" \
@@ -1518,7 +1580,7 @@
         <div class="card span-full">
           <h2 class="card-title">Live Service Topology</h2>
           <div id="services" role="list" aria-label="Service health status">
-            <div class="service-row" data-url="http://localhost:8085/health" role="listitem">
+            <div class="service-row" data-url="https://tickets.garamatic.tech/health" role="listitem">
               <div class="service-info">
                 <div class="service-dot unknown" id="dot-ticket" data-label="checking" aria-label="Ticket Masala status: checking" role="status"></div>
                 <div>
@@ -1528,7 +1590,7 @@
               </div>
               <div class="service-status" id="status-ticket">checking</div>
             </div>
-            <div class="service-row" data-url="http://localhost:8086/health" role="listitem">
+            <div class="service-row" data-url="https://api.garamatic.tech/health" role="listitem">
               <div class="service-info">
                 <div class="service-dot unknown" id="dot-gatekeeper" data-label="checking" aria-label="Gatekeeper API status: checking" role="status"></div>
                 <div>
@@ -1548,7 +1610,7 @@
               </div>
               <div class="service-status" id="status-mailing">checking</div>
             </div>
-            <div class="service-row" data-url="http://localhost:3001/sse" role="listitem">
+            <div class="service-row" data-url="https://agentic.garamatic.tech/sse" role="listitem">
               <div class="service-info">
                 <div class="service-dot unknown" id="dot-agentic" data-label="checking" aria-label="Agentic Service status: checking" role="status"></div>
                 <div>
@@ -1558,7 +1620,7 @@
               </div>
               <div class="service-status" id="status-agentic">checking</div>
             </div>
-            <div class="service-row" data-url="http://localhost:8089/health" role="listitem">
+            <div class="service-row" data-url="https://odoo-bridge.garamatic.tech/health" role="listitem">
               <div class="service-info">
                 <div class="service-dot unknown" id="dot-odoo" data-label="checking" aria-label="Odoo Bridge status: checking" role="status"></div>
                 <div>
@@ -1568,7 +1630,7 @@
               </div>
               <div class="service-status" id="status-odoo">checking</div>
             </div>
-            <div class="service-row" data-url="http://localhost:15672" role="listitem">
+            <div class="service-row" data-url="https://rabbitmq.garamatic.tech" role="listitem">
               <div class="service-info">
                 <div class="service-dot unknown" id="dot-rabbit" data-label="checking" aria-label="RabbitMQ status: checking" role="status"></div>
                 <div>
@@ -1578,7 +1640,7 @@
               </div>
               <div class="service-status" id="status-rabbit">checking</div>
             </div>
-            <div class="service-row" data-url="http://localhost:8090" role="listitem">
+            <div class="service-row" data-url="https://web.garamatic.tech" role="listitem">
               <div class="service-info">
                 <div class="service-dot unknown" id="dot-web" data-label="checking" aria-label="Garamatic Web status: checking" role="status"></div>
                 <div>
@@ -1588,7 +1650,7 @@
               </div>
               <div class="service-status" id="status-web">checking</div>
             </div>
-            <div class="service-row" data-url="http://localhost:8091" role="listitem">
+            <div class="service-row" data-url="https://masala.garamatic.tech" role="listitem">
               <div class="service-info">
                 <div class="service-dot unknown" id="dot-masala" data-label="checking" aria-label="Masala Web status: checking" role="status"></div>
                 <div>
@@ -1598,7 +1660,7 @@
               </div>
               <div class="service-status" id="status-masala">checking</div>
             </div>
-            <div class="service-row" data-url="http://localhost:8093" role="listitem">
+            <div class="service-row" data-url="https://portal.garamatic.tech" role="listitem">
               <div class="service-info">
                 <div class="service-dot unknown" id="dot-portal" data-label="checking" aria-label="Portal status: checking" role="status"></div>
                 <div>
@@ -1608,7 +1670,7 @@
               </div>
               <div class="service-status" id="status-portal">checking</div>
             </div>
-            <div class="service-row" data-url="http://localhost:8069" role="listitem">
+            <div class="service-row" data-url="https://odoo.garamatic.tech" role="listitem">
               <div class="service-info">
                 <div class="service-dot unknown" id="dot-odooerp" data-label="checking" aria-label="Odoo ERP status: checking" role="status"></div>
                 <div>
@@ -1618,7 +1680,7 @@
               </div>
               <div class="service-status" id="status-odooerp">checking</div>
             </div>
-            <div class="service-row" data-url="http://localhost:11434" role="listitem">
+            <div class="service-row" data-url="https://ollama.garamatic.tech" role="listitem">
               <div class="service-info">
                 <div class="service-dot unknown" id="dot-ollama" data-label="checking" aria-label="Ollama LLM status: checking" role="status"></div>
                 <div>
@@ -1628,7 +1690,7 @@
               </div>
               <div class="service-status" id="status-ollama">checking</div>
             </div>
-            <div class="service-row" data-url="http://localhost:8025" role="listitem">
+            <div class="service-row" data-url="https://mailhog.garamatic.tech" role="listitem">
               <div class="service-info">
                 <div class="service-dot unknown" id="dot-mailhog" data-label="checking" aria-label="Mailhog status: checking" role="status"></div>
                 <div>
@@ -1659,18 +1721,18 @@
 
   <script>
     const services = [
-      { id: 'ticket', url: 'http://localhost:8085/health', name: 'Ticket Masala' },
-      { id: 'gatekeeper', url: 'http://localhost:8086/health', name: 'Gatekeeper' },
+      { id: 'ticket', url: 'https://tickets.garamatic.tech/health', name: 'Ticket Masala' },
+      { id: 'gatekeeper', url: 'https://api.garamatic.tech/health', name: 'Gatekeeper' },
       { id: 'mailing', url: 'http://localhost:8087/health', name: 'Mailing' },
-      { id: 'agentic', url: 'http://localhost:3001/sse', name: 'Agentic' },
-      { id: 'odoo', url: 'http://localhost:8089/health', name: 'Odoo Bridge' },
-      { id: 'rabbit', url: 'http://localhost:15672', name: 'RabbitMQ' },
-      { id: 'web', url: 'http://localhost:8090', name: 'Garamatic Web' },
-      { id: 'masala', url: 'http://localhost:8091', name: 'Masala Web' },
-      { id: 'portal', url: 'http://localhost:8093', name: 'Portal' },
-      { id: 'odooerp', url: 'http://localhost:8069', name: 'Odoo ERP' },
-      { id: 'ollama', url: 'http://localhost:11434', name: 'Ollama LLM' },
-      { id: 'mailhog', url: 'http://localhost:8025', name: 'Mailhog' },
+      { id: 'agentic', url: 'https://agentic.garamatic.tech/sse', name: 'Agentic' },
+      { id: 'odoo', url: 'https://odoo-bridge.garamatic.tech/health', name: 'Odoo Bridge' },
+      { id: 'rabbit', url: 'https://rabbitmq.garamatic.tech', name: 'RabbitMQ' },
+      { id: 'web', url: 'https://web.garamatic.tech', name: 'Garamatic Web' },
+      { id: 'masala', url: 'https://masala.garamatic.tech', name: 'Masala Web' },
+      { id: 'portal', url: 'https://portal.garamatic.tech', name: 'Portal' },
+      { id: 'odooerp', url: 'https://odoo.garamatic.tech', name: 'Odoo ERP' },
+      { id: 'ollama', url: 'https://ollama.garamatic.tech', name: 'Ollama LLM' },
+      { id: 'mailhog', url: 'https://mailhog.garamatic.tech', name: 'Mailhog' },
     ];
 
     function rewriteUrls() {
