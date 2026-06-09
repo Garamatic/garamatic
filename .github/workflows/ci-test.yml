@@ -105,7 +105,7 @@ jobs:
           echo "SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY || 'SG.test-key' }}" >> .env
 
       - name: Start services
-        run: docker compose up --build -d
+        run: docker compose -f demo/docker-compose.yml up --build -d
 
       - name: Wait for services to be healthy
         run: |
@@ -122,7 +122,7 @@ jobs:
 
       - name: Tear down
         if: always()
-        run: docker compose down -v
+        run: docker compose -f demo/docker-compose.yml down -v
 
   # ─── Contract Compliance ────────────────────────────────────────────────
   contract-compliance:
@@ -151,7 +151,7 @@ jobs:
           echo "SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY || 'SG.test-key' }}" >> .env
 
       - name: Start services
-        run: docker compose up --build -d
+        run: docker compose -f demo/docker-compose.yml up --build -d
 
       - name: Wait for services to be healthy
         run: |
@@ -173,4 +173,4 @@ jobs:
 
       - name: Tear down
         if: always()
-        run: docker compose down -v
+        run: docker compose -f demo/docker-compose.yml down -v

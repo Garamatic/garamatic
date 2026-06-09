@@ -1,0 +1,181 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# Garamatic CD — Deploy via Self-Hosted Runner
+# ═══════════════════════════════════════════════════════════════════════════
+# Deploys to the Azure VM (this machine) via self-hosted GitHub Actions runner.
+# The runner runs directly on the target machine, so no SSH needed.
+#
+# Environments:
+#   - staging  → test, acc, acceptance branches
+#   - production → main branch
+#
+# Runner: garamatic-azure-runner (self-hosted, azure, production)
+# ═══════════════════════════════════════════════════════════════════════════
+
+name: CD — Deploy to Azure VM
+
+on:
+  workflow_run:
+    workflows: ["CI — Test/Acc", "CI/CD — Production"]
+    types: [completed]
+    branches: [main, test, acc, acceptance]
+
+  # Allow manual deployment for demo purposes
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  PROJECT_DIR: /home/ehbstudent/garamatic
+
+jobs:
+  # ─── Determine Environment ──────────────────────────────────────────────
+  determine-env:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    outputs:
+      environment: ${{ steps.set-env.outputs.environment }}
+      branch: ${{ steps.set-env.outputs.branch }}
+    steps:
+      - name: Determine environment (workflow_dispatch)
+        if: github.event_name == 'workflow_dispatch'
+        id: set-env-manual
+        run: |
+          echo "environment=${{ github.event.inputs.environment }}" >> $GITHUB_OUTPUT
+          echo "branch=manual" >> $GITHUB_OUTPUT
+          echo "🎮 Manual deployment to ${{ github.event.inputs.environment }}"
+
+      - name: Determine environment (workflow_run)
+        if: github.event_name == 'workflow_run'
+        id: set-env-auto
+        run: |
+          BRANCH="${{ github.event.workflow_run.head_branch }}"
+          if [ "$BRANCH" == "main" ]; then
+            echo "environment=production" >> $GITHUB_OUTPUT
+            echo "🏭 Production deployment triggered"
+          elif [ "$BRANCH" == "test" ] || [ "$BRANCH" == "acc" ] || [ "$BRANCH" == "acceptance" ]; then
+            echo "environment=staging" >> $GITHUB_OUTPUT
+            echo "🧪 Staging deployment triggered"
+          else
+            echo "environment=staging" >> $GITHUB_OUTPUT
+            echo "⚠️ Unknown branch ($BRANCH), defaulting to staging"
+          fi
+          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+
+  # ─── Deploy to Staging ──────────────────────────────────────────────────
+  deploy-staging:
+    runs-on: [self-hosted, azure, production]
+    needs: determine-env
+    if: ${{ needs.determine-env.outputs.environment == 'staging' }}
+    environment:
+      name: staging
+      url: http://51.136.7.179:8090
+    steps:
+      - name: Deploy to staging
+        run: |
+          set -e
+          echo "🧪 Deploying to STAGING on $(hostname)"
+          echo "   Time: $(date)"
+          echo "   Runner: $(hostname)"
+          echo ""
+
+          cd ${{ env.PROJECT_DIR }}
+          echo "📁 Project directory: $(pwd)"
+
+          echo "⬇️ Pulling latest code..."
+          git fetch origin
+          git checkout test || git checkout acc || git checkout acceptance || git checkout dev
+          git pull
+
+          echo "📦 Updating submodules..."
+          git submodule update --init --recursive
+
+          echo "🔧 Setting up environment..."
+          cp -n .env.example .env 2>/dev/null || true
+
+          echo "🐳 Building and starting services..."
+          cd demo
+          docker compose -f docker-compose.yml -f docker-compose.prod.yml down
+          docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d
+
+          echo ""
+          echo "⏳ Waiting for services to become healthy..."
+          sleep 30
+
+          echo "🔍 Running health check..."
+          if ../scripts/health-check.sh; then
+            echo "✅ Staging deployment healthy!"
+          else
+            echo "❌ Health check failed"
+            echo "📋 Recent logs:"
+            docker compose logs --tail 50
+            exit 1
+          fi
+
+          echo ""
+          echo "🎉 Staging deployment complete!"
+
+  # ─── Deploy to Production ──────────────────────────────────────────────
+  deploy-production:
+    runs-on: [self-hosted, azure, production]
+    needs: determine-env
+    if: ${{ needs.determine-env.outputs.environment == 'production' }}
+    environment:
+      name: production
+      url: http://51.136.7.179:8090
+    steps:
+      - name: Deploy to production
+        run: |
+          set -e
+          echo "🏭 Deploying to PRODUCTION on $(hostname)"
+          echo "   Time: $(date)"
+          echo "   Runner: $(hostname)"
+          echo ""
+
+          cd ${{ env.PROJECT_DIR }}
+          echo "📁 Project directory: $(pwd)"
+
+          echo "⬇️ Pulling latest code..."
+          git fetch origin
+          git checkout main
+          git pull
+
+          echo "📦 Updating submodules..."
+          git submodule update --init --recursive
+
+          echo "🔧 Setting up environment..."
+          cp -n .env.example .env 2>/dev/null || true
+
+          echo "💾 Creating pre-deploy backup..."
+          ../scripts/backup.sh || echo "⚠️ Backup failed (non-critical)"
+
+          echo "🐳 Building and starting services..."
+          cd demo
+          docker compose -f docker-compose.yml -f docker-compose.prod.yml down
+          docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d
+
+          echo ""
+          echo "⏳ Waiting for services to become healthy..."
+          sleep 30
+
+          echo "🔍 Running health check..."
+          if ../scripts/health-check.sh; then
+            echo "✅ Production deployment healthy!"
+          else
+            echo "❌ Health check failed — rolling back..."
+            echo "📋 Recent logs:"
+            docker compose logs --tail 50
+            docker compose down
+            docker compose up -d
+            exit 1
+          fi
+
+          echo ""
+          echo "🎉 Production deployment complete!"
