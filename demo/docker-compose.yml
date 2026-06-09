@@ -73,6 +73,7 @@ services:
       - /app/data
     networks:
       - garamatic_demo_net
+    restart: unless-stopped
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -365,6 +366,7 @@ services:
   odoo:
     image: odoo:17.0
     container_name: garamatic_demo_odoo
+    user: root
     ports:
       - "8069:8069"
     environment:
@@ -454,6 +456,7 @@ services:
   prometheus:
     image: prom/prometheus:latest
     container_name: garamatic_prometheus
+    user: root
     ports:
       - "9090:9090"
     command:
