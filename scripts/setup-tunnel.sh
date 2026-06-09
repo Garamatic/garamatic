@@ -150,6 +150,27 @@ ingress:
     originRequest:
       noTLSVerify: true
 
+  # ─── Monitoring / Observability ───────────────────────────
+  - hostname: monitor.${CLOUDFLARE_DOMAIN}
+    service: http://grafana:3000
+    originRequest:
+      noTLSVerify: true
+
+  - hostname: prometheus.${CLOUDFLARE_DOMAIN}
+    service: http://prometheus:9090
+    originRequest:
+      noTLSVerify: true
+
+  - hostname: loki.${CLOUDFLARE_DOMAIN}
+    service: http://loki:3100
+    originRequest:
+      noTLSVerify: true
+
+  - hostname: tempo.${CLOUDFLARE_DOMAIN}
+    service: http://tempo:3200
+    originRequest:
+      noTLSVerify: true
+
   # ─── Catch-all ─────────────────────────────────────────────
   - service: http_status:404
 EOF

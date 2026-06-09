@@ -12,20 +12,43 @@
       }
     ]
   },
-  "description": "Garamatic Microservices Health Dashboard",
+  "description": "Garamatic Microservices Observability Dashboard",
   "editable": true,
-  "gnetId": null,
   "graphTooltip": 0,
   "id": null,
-  "links": [],
+  "links": [
+    {
+      "icon": "external link",
+      "tags": [],
+      "targetBlank": true,
+      "title": "Health Dashboard",
+      "type": "link",
+      "url": "http://localhost:3002"
+    },
+    {
+      "icon": "external link",
+      "tags": [],
+      "targetBlank": true,
+      "title": "Prometheus",
+      "type": "link",
+      "url": "http://localhost:9090"
+    },
+    {
+      "icon": "external link",
+      "tags": [],
+      "targetBlank": true,
+      "title": "Tempo",
+      "type": "link",
+      "url": "http://localhost:3200"
+    }
+  ],
   "panels": [
     {
       "collapsed": false,
-      "datasource": null,
       "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
       "id": 1,
       "panels": [],
-      "title": "Service Overview",
+      "title": "Service Health",
       "type": "row"
     },
     {
@@ -84,7 +107,8 @@
               { "color": "red", "value": 0 },
               { "color": "green", "value": 1 }
             ]
-          }
+          },
+          "unit": "none"
         },
         "overrides": []
       },
@@ -96,6 +120,7 @@
         "justifyMode": "center",
         "orientation": "auto",
         "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "text": { "titleSize": 12, "valueSize": 24 },
         "textMode": "auto"
       },
       "pluginVersion": "11.0.0",
@@ -123,7 +148,8 @@
               { "color": "red", "value": 0 },
               { "color": "green", "value": 1 }
             ]
-          }
+          },
+          "unit": "none"
         },
         "overrides": []
       },
@@ -135,6 +161,7 @@
         "justifyMode": "center",
         "orientation": "auto",
         "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "text": { "titleSize": 12, "valueSize": 24 },
         "textMode": "auto"
       },
       "pluginVersion": "11.0.0",
@@ -162,7 +189,8 @@
               { "color": "red", "value": 0 },
               { "color": "green", "value": 1 }
             ]
-          }
+          },
+          "unit": "none"
         },
         "overrides": []
       },
@@ -174,6 +202,7 @@
         "justifyMode": "center",
         "orientation": "auto",
         "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "text": { "titleSize": 12, "valueSize": 24 },
         "textMode": "auto"
       },
       "pluginVersion": "11.0.0",
@@ -201,7 +230,8 @@
               { "color": "red", "value": 0 },
               { "color": "green", "value": 1 }
             ]
-          }
+          },
+          "unit": "none"
         },
         "overrides": []
       },
@@ -213,6 +243,7 @@
         "justifyMode": "center",
         "orientation": "auto",
         "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "text": { "titleSize": 12, "valueSize": 24 },
         "textMode": "auto"
       },
       "pluginVersion": "11.0.0",
@@ -240,7 +271,8 @@
               { "color": "red", "value": 0 },
               { "color": "green", "value": 1 }
             ]
-          }
+          },
+          "unit": "none"
         },
         "overrides": []
       },
@@ -252,6 +284,7 @@
         "justifyMode": "center",
         "orientation": "auto",
         "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "text": { "titleSize": 12, "valueSize": 24 },
         "textMode": "auto"
       },
       "pluginVersion": "11.0.0",
@@ -266,11 +299,10 @@
     },
     {
       "collapsed": false,
-      "datasource": null,
       "gridPos": { "h": 1, "w": 24, "x": 0, "y": 5 },
       "id": 8,
       "panels": [],
-      "title": "Resource Usage",
+      "title": "HTTP Metrics",
       "type": "row"
     },
     {
@@ -305,7 +337,7 @@
               { "color": "red", "value": 80 }
             ]
           },
-          "unit": "percent"
+          "unit": "reqps"
         },
         "overrides": []
       },
@@ -318,12 +350,12 @@
       "pluginVersion": "11.0.0",
       "targets": [
         {
-          "expr": "rate(container_cpu_usage_seconds_total[5m]) * 100",
-          "legendFormat": "{{name}}",
+          "expr": "sum(rate(http_requests_total[5m])) by (job)",
+          "legendFormat": "{{job}}",
           "refId": "A"
         }
       ],
-      "title": "CPU Usage",
+      "title": "HTTP Request Rate",
       "type": "timeseries"
     },
     {
@@ -355,10 +387,10 @@
             "mode": "absolute",
             "steps": [
               { "color": "green", "value": null },
-              { "color": "red", "value": 80 }
+              { "color": "red", "value": 5 }
             ]
           },
-          "unit": "percent"
+          "unit": "s"
         },
         "overrides": []
       },
@@ -371,128 +403,46 @@
       "pluginVersion": "11.0.0",
       "targets": [
         {
-          "expr": "(container_memory_usage_bytes / container_memory_limit_bytes) * 100",
-          "legendFormat": "{{name}}",
+          "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le, job))",
+          "legendFormat": "{{job}}",
           "refId": "A"
         }
       ],
-      "title": "Memory Usage",
+      "title": "HTTP P95 Latency",
       "type": "timeseries"
     },
     {
       "collapsed": false,
-      "datasource": null,
       "gridPos": { "h": 1, "w": 24, "x": 0, "y": 14 },
       "id": 11,
       "panels": [],
-      "title": "RabbitMQ",
+      "title": "Logs",
       "type": "row"
     },
     {
-      "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {
-          "color": { "mode": "palette-classic" },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "hideFrom": { "legend": false, "tooltip": false, "viz": false },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": { "type": "linear" },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": { "group": "A", "mode": "none" },
-            "thresholdsStyle": { "mode": "off" }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              { "color": "green", "value": null },
-              { "color": "red", "value": 1000 }
-            ]
-          },
-          "unit": "short"
-        },
-        "overrides": []
-      },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 15 },
+      "datasource": "Loki",
+      "gridPos": { "h": 12, "w": 24, "x": 0, "y": 15 },
       "id": 12,
       "options": {
-        "legend": { "calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true },
-        "tooltip": { "mode": "multi", "sort": "none" }
+        "showTime": true,
+        "sortOrder": "Descending",
+        "wrapLogMessage": true
       },
       "pluginVersion": "11.0.0",
       "targets": [
         {
-          "expr": "rabbitmq_queue_messages",
-          "legendFormat": "{{queue}}",
+          "expr": "{service=~\".+\"} |= ``",
           "refId": "A"
         }
       ],
-      "title": "Queue Depth",
-      "type": "timeseries"
-    },
-    {
-      "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {
-          "color": { "mode": "palette-classic" },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "hideFrom": { "legend": false, "tooltip": false, "viz": false },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": { "type": "linear" },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": { "group": "A", "mode": "none" },
-            "thresholdsStyle": { "mode": "off" }
-          },
-          "mappings": [],
-          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] },
-          "unit": "short"
-        },
-        "overrides": []
-      },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 15 },
-      "id": 13,
-      "options": {
-        "legend": { "calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true },
-        "tooltip": { "mode": "multi", "sort": "none" }
-      },
-      "pluginVersion": "11.0.0",
-      "targets": [
-        {
-          "expr": "rate(rabbitmq_queue_messages_published_total[5m])",
-          "legendFormat": "{{queue}}",
-          "refId": "A"
-        }
-      ],
-      "title": "Message Rate",
-      "type": "timeseries"
+      "title": "Service Logs",
+      "type": "logs"
     }
   ],
   "refresh": "30s",
   "schemaVersion": 40,
   "style": "dark",
-  "tags": ["garamatic", "monitoring", "microservices"],
+  "tags": ["garamatic", "observability", "microservices"],
   "templating": {
     "list": []
   },
@@ -504,8 +454,8 @@
     "refresh_intervals": ["5s", "10s", "30s", "1m", "5m", "15m", "30m", "1h", "2h", "1d"]
   },
   "timezone": "",
-  "title": "Garamatic — Service Health",
-  "uid": "garamatic-health",
+  "title": "Garamatic — Observability",
+  "uid": "garamatic-observability",
   "version": 1,
   "weekStart": ""
 }

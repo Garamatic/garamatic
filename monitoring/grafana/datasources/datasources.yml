@@ -1,15 +1,23 @@
-# ═══════════════════════════════════════════════════════════════════════════
-# Grafana Datasources — Provisioning
-# ═══════════════════════════════════════════════════════════════════════════
-# Minimal: JSON API datasource for health checks (no Prometheus needed).
-# ═══════════════════════════════════════════════════════════════════════════
-
 apiVersion: 1
 
 datasources:
-  - name: JSON API
-    type: marcusolsson-json-datasource
+  - name: Prometheus
+    type: prometheus
     access: proxy
-    url: http://health-dashboard:80
-    isDefault: true
+    url: http://prometheus:9090
+    isDefault: false
+    editable: false
+
+  - name: Loki
+    type: loki
+    access: proxy
+    url: http://loki:3100
+    isDefault: false
+    editable: false
+
+  - name: Tempo
+    type: tempo
+    access: proxy
+    url: http://tempo:3200
+    isDefault: false
     editable: false

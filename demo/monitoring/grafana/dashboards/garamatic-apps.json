@@ -1,0 +1,193 @@
+{
+  "dashboard": {
+    "title": "Garamatic — Demo Apps",
+    "tags": ["garamatic", "apps"],
+    "timezone": "browser",
+    "refresh": "10s",
+    "schemaVersion": 36,
+    "time": { "from": "now-1h", "to": "now" },
+    "panels": [
+      {
+        "id": 1,
+        "title": "Services Up",
+        "type": "stat",
+        "gridPos": { "h": 4, "w": 4, "x": 0, "y": 0 },
+        "targets": [
+          {
+            "expr": "sum(up{job=~\"ticket-masala|gatekeeper|mailing-service|odoo-integration|agentic-service|agentic-mcp\"})",
+            "refId": "A",
+            "legendFormat": "Up"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": { "mode": "thresholds" },
+            "thresholds": {
+              "steps": [
+                { "color": "red", "value": null },
+                { "color": "yellow", "value": 1 },
+                { "color": "green", "value": 6 }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 2,
+        "title": "Services Down",
+        "type": "stat",
+        "gridPos": { "h": 4, "w": 4, "x": 4, "y": 0 },
+        "targets": [
+          {
+            "expr": "sum(up{job=~\"ticket-masala|gatekeeper|mailing-service|odoo-integration|agentic-service|agentic-mcp\"} == 0)",
+            "refId": "A",
+            "legendFormat": "Down"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": { "mode": "thresholds" },
+            "thresholds": {
+              "steps": [
+                { "color": "green", "value": null },
+                { "color": "red", "value": 1 }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 3,
+        "title": "Container Count",
+        "type": "stat",
+        "gridPos": { "h": 4, "w": 4, "x": 8, "y": 0 },
+        "targets": [
+          {
+            "expr": "count(container_last_seen)",
+            "refId": "A",
+            "legendFormat": "Containers"
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Service Status",
+        "type": "table",
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+        "targets": [
+          {
+            "expr": "up{job=~\"ticket-masala|gatekeeper|mailing-service|odoo-integration|agentic-service|agentic-mcp\"}",
+            "format": "table",
+            "refId": "A",
+            "instant": true
+          }
+        ],
+        "transformations": [
+          {
+            "id": "organize",
+            "options": {
+              "excludeByName": { "Time": true, "__name__": true, "instance": true },
+              "renameByName": { "job": "Service", "Value": "Status" }
+            }
+          }
+        ],
+        "fieldConfig": {
+          "overrides": [
+            {
+              "matcher": { "id": "byName", "options": "Status" },
+              "properties": [
+                {
+                  "id": "mappings",
+                  "value": [
+                    { "options": { "0": { "color": "red", "text": "Down" } }, "type": "value" },
+                    { "options": { "1": { "color": "green", "text": "Up" } }, "type": "value" }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": 5,
+        "title": "Container CPU Usage",
+        "type": "timeseries",
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
+        "targets": [
+          {
+            "expr": "rate(container_cpu_usage_seconds_total{container_label_com_docker_compose_project=~\"garamatic\"}[1m])",
+            "refId": "A",
+            "legendFormat": "{{name}}"
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Container Memory Usage",
+        "type": "timeseries",
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 12 },
+        "targets": [
+          {
+            "expr": "container_memory_usage_bytes{container_label_com_docker_compose_project=~\"garamatic\"} / 1024 / 1024",
+            "refId": "A",
+            "legendFormat": "{{name}} MB"
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": ".NET Memory (Working Set)",
+        "type": "timeseries",
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 12 },
+        "targets": [
+          {
+            "expr": "process_working_set_bytes{job=~\"ticket-masala|gatekeeper|mailing-service|odoo-integration\"} / 1024 / 1024",
+            "refId": "A",
+            "legendFormat": "{{job}}"
+          }
+        ]
+      },
+      {
+        "id": 8,
+        "title": ".NET GC Collections",
+        "type": "timeseries",
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 20 },
+        "targets": [
+          {
+            "expr": "rate(dotnet_collection_count_total{job=~\"ticket-masala|gatekeeper|mailing-service|odoo-integration\"}[1m])",
+            "refId": "A",
+            "legendFormat": "{{job}} gen-{{generation}}"
+          }
+        ]
+      },
+      {
+        "id": 9,
+        "title": "Logs — All Demo Containers",
+        "type": "logs",
+        "gridPos": { "h": 12, "w": 24, "x": 0, "y": 28 },
+        "targets": [
+          {
+            "expr": "{container=~\"garamatic_demo_.+\"}",
+            "refId": "A",
+            "datasource": { "type": "loki", "uid": "loki" }
+          }
+        ],
+        "options": { "showTime": true, "wrapLogMessage": true }
+      }
+    ],
+    "templating": {
+      "list": [
+        {
+          "name": "service",
+          "type": "query",
+          "query": "label_values(up, job)",
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "multi": true,
+          "includeAll": true,
+          "current": { "text": "All", "value": "$__all" }
+        }
+      ]
+    }
+  },
+  "overwrite": true
+}

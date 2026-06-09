@@ -1,0 +1,58 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# Prometheus — Scraping Configuration
+# ═══════════════════════════════════════════════════════════════════════════
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
+
+  - job_name: 'loki'
+    static_configs:
+      - targets: ['loki:3100']
+
+  - job_name: 'tempo'
+    static_configs:
+      - targets: ['tempo:3200']
+
+  - job_name: 'promtail'
+    static_configs:
+      - targets: ['promtail:9080']
+
+  # ════════════════════════════════════════════════════════════
+  # DEMO APPLICATIONS — .NET services
+  # ════════════════════════════════════════════════════════════
+  - job_name: 'ticket-masala'
+    static_configs:
+      - targets: ['ticket-masala:8080']
+
+  - job_name: 'gatekeeper'
+    static_configs:
+      - targets: ['gatekeeper-api:8080']
+
+  - job_name: 'mailing-service'
+    static_configs:
+      - targets: ['mailing-service:8080']
+
+  - job_name: 'odoo-integration'
+    static_configs:
+      - targets: ['odoo-integration:8080']
+
+  # ════════════════════════════════════════════════════════════
+  # DEMO APPLICATIONS — Python MCP services
+  # ════════════════════════════════════════════════════════════
+  - job_name: 'agentic-service'
+    static_configs:
+      - targets: ['agentic-service:3001']
+
+  - job_name: 'agentic-mcp'
+    static_configs:
+      - targets: ['agentic-mcp:3001']

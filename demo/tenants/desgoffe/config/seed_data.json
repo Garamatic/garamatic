@@ -1,6 +1,15 @@
 {
     "Admins": [
         {
+            "Id": "system",
+            "UserName": "system",
+            "Email": "system@garamatic.tech",
+            "FirstName": "System",
+            "LastName": "Service",
+            "Phone": "+32 2 555 00 00",
+            "Code": "SYS-001"
+        },
+        {
             "UserName": "bourgmestre.gustave",
             "Email": "gustave@desgoffe.gov",
             "FirstName": "Gustave",

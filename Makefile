@@ -34,12 +34,13 @@ setup:
 COMPOSE_FILE := demo/docker-compose.yml
 COMPOSE_MONITOR := demo/docker-compose.monitoring.yml
 COMPOSE_TUNNEL := docker-compose.tunnel.yml
+MONITOR_SERVICES := prometheus loki promtail tempo cadvisor grafana health-dashboard
 TENANT ?= desgoffe
 export TENANT_CONFIG = $(CURDIR)/demo/config
 
 up:
-	@echo "🚀 Starting Garamatic demo stack (tenant: $(TENANT))..."
-	TENANT=$(TENANT) TENANT_CONFIG=$(TENANT_CONFIG) docker compose -f $(COMPOSE_FILE) --env-file .env up --build -d
+	@echo "🚀 Starting Garamatic stack (tenant: $(TENANT))..."
+	TENANT=$(TENANT) TENANT_CONFIG=$(TENANT_CONFIG) docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_MONITOR) --env-file .env up --build -d
 	@echo ""
 	@echo "   Services:"
 	@echo "   • Showcase        → http://localhost:8092"
@@ -56,11 +57,19 @@ up:
 	@echo "   • RabbitMQ Mgmt   → http://localhost:15672  (guest/guest)"
 	@echo "   • Mailhog UI      → http://localhost:8025"
 	@echo ""
+	@echo "   Observability:"
+	@echo "   • Grafana Dashboard    → http://localhost:3000  (admin/${GRAFANA_ADMIN_PASSWORD:-admin})"
+	@echo "   • Prometheus Metrics   → http://localhost:9090"
+	@echo "   • Loki Logs            → http://localhost:3100"
+	@echo "   • Tempo Traces         → http://localhost:3200"
+	@echo "   • cAdvisor Containers  → http://localhost:8094"
+	@echo "   • Health Dashboard     → http://localhost:3003"
+	@echo ""
 	@echo "   💡 Run 'make pull-model' to download the local LLM"
 
 down:
-	@echo "🛑 Stopping Garamatic demo stack..."
-	docker compose -f $(COMPOSE_FILE) down -v
+	@echo "🛑 Stopping Garamatic stack..."
+	docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_MONITOR) down -v
 
 pull-model:
 	@echo "📥 Models are bundled locally in ./models/"
@@ -68,16 +77,16 @@ pull-model:
 	@echo "✅ LLama.cpp server loads the model at startup. No manual pull needed."
 
 dev:
-	@echo "🚀 Starting Garamatic demo stack (attached, tenant: $(TENANT))..."
-	TENANT=$(TENANT) TENANT_CONFIG=$(TENANT_CONFIG) docker compose -f $(COMPOSE_FILE) up --build
+	@echo "🚀 Starting Garamatic stack (attached, tenant: $(TENANT))..."
+	TENANT=$(TENANT) TENANT_CONFIG=$(TENANT_CONFIG) docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_MONITOR) up --build
 
 rebuild:
 	@echo "🔨 Rebuilding ticket-masala image (no cache)..."
-	TENANT=$(TENANT) TENANT_CONFIG=$(TENANT_CONFIG) docker compose -f $(COMPOSE_FILE) build --no-cache ticket-masala
+	TENANT=$(TENANT) TENANT_CONFIG=$(TENANT_CONFIG) docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_MONITOR) build --no-cache ticket-masala
 	@echo "✅ Rebuild complete. Run 'make up' to start."
 
 logs:
-	docker compose -f $(COMPOSE_FILE) logs -f
+	docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_MONITOR) logs -f
 
 # ─── Testing ───────────────────────────────────────────────────────────────
 test:
@@ -134,24 +143,27 @@ lint:
 
 # ─── Monitoring ────────────────────────────────────────────────────────────
 monitor-up:
-	@echo "📊 Starting monitoring stack (Grafana + Health Dashboard)..."
-	docker compose -f $(COMPOSE_MONITOR) up -d
+	@echo "📊 Starting observability stack (Prometheus + Loki + Tempo + Grafana)..."
+	docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_MONITOR) up -d $(MONITOR_SERVICES)
 	@echo ""
-	@echo "   Monitoring Services:"
-	@echo "   • Grafana Dashboard → http://localhost:3000  (admin/${GRAFANA_ADMIN_PASSWORD:-admin})"
-	@echo "   • Prometheus       → http://localhost:9090"
-	@echo "   • Loki Logs        → http://localhost:3100"
-	@echo "   • Alertmanager     → http://localhost:9093"
+	@echo "   Observability Services:"
+	@echo "   • Grafana Dashboard    → http://localhost:3000  (admin/${GRAFANA_ADMIN_PASSWORD:-admin})"
+	@echo "   • Prometheus Metrics   → http://localhost:9090"
+	@echo "   • Loki Logs            → http://localhost:3100"
+	@echo "   • Tempo Traces         → http://localhost:3200"
+	@echo "   • cAdvisor Containers  → http://localhost:8094"
+	@echo "   • Health Dashboard     → http://localhost:3003"
 	@echo ""
-	@echo "   💡 Dashboard: Garamatic — Service Health"
+	@echo "   💡 Dashboards: Garamatic — Observability, Logs, Traces"
 	@echo "   💡 Default login: admin / ${GRAFANA_ADMIN_PASSWORD:-admin}"
 
 monitor-down:
 	@echo "🛑 Stopping monitoring stack..."
-	docker compose -f $(COMPOSE_MONITOR) down -v
+	docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_MONITOR) stop $(MONITOR_SERVICES)
+	docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_MONITOR) rm -f $(MONITOR_SERVICES)
 
 monitor-logs:
-	docker compose -f $(COMPOSE_MONITOR) logs -f
+	docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_MONITOR) logs -f $(MONITOR_SERVICES)
 
 # ─── Cloudflare Tunnel ───────────────────────────────────────────────────
 # Exposes the demo stack via a locally managed Cloudflare Tunnel.
@@ -207,6 +219,11 @@ tunnel-up:
 	@echo "   • Mailhog       → mailhog.$(CLOUDFLARE_DOMAIN)         → http://mailhog:8025"
 	@echo "   • RabbitMQ      → rabbitmq.$(CLOUDFLARE_DOMAIN)        → http://rabbitmq:15672"
 	@echo "   • Odoo ERP      → odoo.$(CLOUDFLARE_DOMAIN)            → http://odoo:8069"
+	@echo "   • MCP           → mcp.$(CLOUDFLARE_DOMAIN)              → http://agentic-mcp:3001"
+	@echo "   • Monitor       → monitor.$(CLOUDFLARE_DOMAIN)          → http://grafana:3000"
+	@echo "   • Prometheus    → prometheus.$(CLOUDFLARE_DOMAIN)       → http://prometheus:9090"
+	@echo "   • Loki          → loki.$(CLOUDFLARE_DOMAIN)            → http://loki:3100"
+	@echo "   • Tempo         → tempo.$(CLOUDFLARE_DOMAIN)           → http://tempo:3200"
 	@echo ""
 	@echo "✅ Tunnel container started."
 	@echo "   💡 Check status: make tunnel-status"
@@ -225,15 +242,9 @@ tunnel-status:
 	@docker compose -f $(COMPOSE_TUNNEL) ps
 
 # ─── Full Stack (App + Monitoring) ─────────────────────────────────────────
-stack-up:
-	@echo "🚀 Starting full stack (services + monitoring)..."
-	make up
-	make monitor-up
-
-stack-down:
-	@echo "🛑 Stopping full stack..."
-	make down
-	make monitor-down
+# stack-up and stack-down are aliases — make up / make down now handle everything
+stack-up: up
+stack-down: down
 
 # ─── Backup & Restore ──────────────────────────────────────────────────────
 backup:

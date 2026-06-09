@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Garamatic — Health Dashboard</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #0d1117;
+            color: #c9d1d9;
+        }
+        header {
+            background: #161b22;
+            border-bottom: 1px solid #30363d;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        h1 { margin: 0; font-size: 1.4rem; color: #58a6ff; }
+        .last-update { color: #8b949e; font-size: 0.85rem; }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+            padding: 1.5rem 2rem;
+        }
+        .card {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 1rem 1.25rem;
+            transition: border-color 0.2s;
+        }
+        .card:hover { border-color: #58a6ff; }
+        .card h2 {
+            margin: 0 0 0.75rem;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .status-up { background: #3fb950; }
+        .status-down { background: #f85149; }
+        .status-unknown { background: #8b949e; }
+        .status-checking { background: #d29922; animation: pulse 1s infinite; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.35rem 0;
+            border-bottom: 1px solid #21262d;
+            font-size: 0.85rem;
+        }
+        .metric:last-child { border-bottom: none; }
+        .metric-label { color: #8b949e; }
+        .metric-value { color: #c9d1d9; font-family: monospace; }
+        .error { color: #f85149; font-size: 0.8rem; margin-top: 0.5rem; }
+        .links {
+            padding: 0 2rem 1.5rem;
+        }
+        .links a {
+            color: #58a6ff;
+            text-decoration: none;
+            margin-right: 1.5rem;
+            font-size: 0.9rem;
+        }
+        .links a:hover { text-decoration: underline; }
+        .section-title {
+            padding: 0.5rem 2rem 0;
+            font-size: 0.9rem;
+            color: #8b949e;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🚀 Garamatic Health Dashboard</h1>
+        <span class="last-update" id="last-update">Checking...</span>
+    </header>
+
+    <div class="links">
+        <a href="http://localhost:3000" target="_blank">Grafana</a>
+        <a href="http://localhost:9090" target="_blank">Prometheus</a>
+        <a href="http://localhost:3100" target="_blank">Loki</a>
+        <a href="http://localhost:3200" target="_blank">Tempo</a>
+    </div>
+
+    <div class="section-title">Observability Stack</div>
+    <div class="grid" id="observability-grid"></div>
+
+    <div class="section-title">Demo Services</div>
+    <div class="grid" id="services-grid"></div>
+
+    <script>
+        const SERVICES = {
+            observability: [
+                { name: 'Grafana', url: 'http://localhost:3000/api/health', type: 'grafana' },
+                { name: 'Prometheus', url: 'http://localhost:9090/-/healthy', type: 'prometheus' },
+                { name: 'Loki', url: 'http://localhost:3100/ready', type: 'loki' },
+                { name: 'Tempo', url: 'http://localhost:3200/ready', type: 'tempo' },
+            ],
+            demo: [
+                { name: 'Ticket Masala', url: 'http://localhost:8085/health', health: 'http://localhost:8085/health', metrics: 'http://localhost:8085/metrics' },
+                { name: 'Gatekeeper', url: 'http://localhost:8086/health', health: 'http://localhost:8086/health', metrics: 'http://localhost:8086/metrics' },
+                { name: 'Mailing Service', url: 'http://localhost:8087/health', health: 'http://localhost:8087/health', metrics: 'http://localhost:8087/metrics' },
+                { name: 'Odoo Bridge', url: 'http://localhost:8089/health', health: 'http://localhost:8089/health', metrics: 'http://localhost:8089/metrics' },
+                { name: 'Agentic Service', url: 'http://localhost:3001/health', health: 'http://localhost:3001/health', metrics: 'http://localhost:3001/metrics' },
+                { name: 'Agentic MCP', url: 'http://localhost:3002/health', health: 'http://localhost:3002/health', metrics: 'http://localhost:3002/metrics' },
+                { name: 'Odoo ERP', url: 'http://localhost:8069/web/health', health: 'http://localhost:8069/web/health' },
+                { name: 'RabbitMQ', url: 'http://localhost:15672/api/health/checks/virtual-hosts', health: 'http://localhost:15672/api/health/checks/virtual-hosts' },
+                { name: 'Llama.cpp', url: 'http://localhost:11434/health', health: 'http://localhost:11434/health' },
+                { name: 'Portal', url: 'http://localhost:8093', health: 'http://localhost:8093' },
+                { name: 'Showcase', url: 'http://localhost:8092', health: 'http://localhost:8092' },
+                { name: 'Masala Web', url: 'http://localhost:8091', health: 'http://localhost:8091' },
+                { name: 'Garamatic Web', url: 'http://localhost:8090', health: 'http://localhost:8090' },
+            ]
+        };
+
+        async function checkHealth(service) {
+            const start = performance.now();
+            try {
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), 5000);
+                const res = await fetch(service.health, { signal: controller.signal, mode: 'no-cors' });
+                clearTimeout(timeout);
+                const latency = Math.round(performance.now() - start);
+                const text = await res.text().catch(() => '');
+                return {
+                    ok: res.ok || res.status === 0, // no-cors returns opaque response with status 0
+                    status: res.status || 200,
+                    latency,
+                    body: text,
+                };
+            } catch (err) {
+                return {
+                    ok: false,
+                    status: 0,
+                    latency: Math.round(performance.now() - start),
+                    error: err.message,
+                };
+            }
+        }
+
+        function createCard(service, result) {
+            const statusClass = result === null ? 'status-checking'
+                : result.ok ? 'status-up'
+                : 'status-down';
+            const statusText = result === null ? 'Checking...'
+                : result.ok ? 'Healthy'
+                : 'Unhealthy';
+
+            const metrics = service.metrics
+                ? `<div class="metric"><span class="metric-label">Metrics</span><a class="metric-value" href="${service.metrics}" target="_blank">View ↗</a></div>`
+                : '';
+
+            const body = result && result.body
+                ? `<div class="metric"><span class="metric-label">Response</span><span class="metric-value" style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${result.body.replace(/"/g, '&quot;')}">${result.body.substring(0, 40)}</span></div>`
+                : '';
+
+            const error = result && result.error
+                ? `<div class="error">${result.error}</div>`
+                : '';
+
+            return `
+                <div class="card">
+                    <h2>
+                        <span class="status-dot ${statusClass}"></span>
+                        ${service.name}
+                    </h2>
+                    <div class="metric"><span class="metric-label">Status</span><span class="metric-value">${statusText}</span></div>
+                    <div class="metric"><span class="metric-label">HTTP</span><span class="metric-value">${result ? result.status : '—'}</span></div>
+                    <div class="metric"><span class="metric-label">Latency</span><span class="metric-value">${result ? result.latency + 'ms' : '—'}</span></div>
+                    ${body}
+                    ${metrics}
+                    ${error}
+                </div>
+            `;
+        }
+
+        async function poll() {
+            const obsGrid = document.getElementById('observability-grid');
+            const svcGrid = document.getElementById('services-grid');
+            const updateEl = document.getElementById('last-update');
+
+            // Reset
+            obsGrid.innerHTML = SERVICES.observability.map(s => createCard(s, null)).join('');
+            svcGrid.innerHTML = SERVICES.demo.map(s => createCard(s, null)).join('');
+
+            // Check observability
+            for (let i = 0; i < SERVICES.observability.length; i++) {
+                const s = SERVICES.observability[i];
+                const result = await checkHealth(s);
+                obsGrid.children[i].outerHTML = createCard(s, result);
+            }
+
+            // Check demo services
+            for (let i = 0; i < SERVICES.demo.length; i++) {
+                const s = SERVICES.demo[i];
+                const result = await checkHealth(s);
+                svcGrid.children[i].outerHTML = createCard(s, result);
+            }
+
+            updateEl.textContent = 'Updated ' + new Date().toLocaleTimeString();
+        }
+
+        // Poll immediately and every 5 seconds
+        poll();
+        setInterval(poll, 5000);
+    </script>
+</body>
+</html>

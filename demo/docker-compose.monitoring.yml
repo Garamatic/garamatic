@@ -1,58 +1,6 @@
-# ═══════════════════════════════════════════════════════════════════════════
-# Garamatic Monitoring — Lightweight Health Dashboard
-# ═══════════════════════════════════════════════════════════════════════════
-# Simple Grafana + health dashboard. No Prometheus/Loki/Alertmanager.
-# Services are monitored via health check polling, not metrics scraping.
-# Usage: docker compose -f docker-compose.monitoring.yml up -d
-# ═══════════════════════════════════════════════════════════════════════════
-
-version: '3.8'
-
-services:
-  # ════════════════════════════════════════════════════════════
-  # GRAFANA — Health Dashboard Only
-  # ════════════════════════════════════════════════════════════
-  grafana:
-    image: grafana/grafana:11.0.0
-    container_name: garamatic_grafana
-    ports:
-      - "3000:3000"
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
-      - GF_USERS_ALLOW_SIGN_UP=false
-      - GF_SERVER_ROOT_URL=http://localhost:3000
-      - GF_AUTH_ANONYMOUS_ENABLED=true
-      - GF_AUTH_ANONYMOUS_ORG_NAME=Garamatic
-    volumes:
-      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
-      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources:ro
-      - grafana_data:/var/lib/grafana
-    networks:
-      - garamatic-network
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
-  # ════════════════════════════════════════════════════════════
-  # HEALTH DASHBOARD — Lightweight JSON API + HTML UI
-  # ════════════════════════════════════════════════════════════
-  health-dashboard:
-    image: nginx:alpine
-    container_name: garamatic_health_dashboard
-    ports:
-      - "3002:80"
-    volumes:
-      - ./monitoring/dashboard:/usr/share/nginx/html:ro
-    networks:
-      - garamatic-network
-    restart: unless-stopped
-
-networks:
-  garamatic-network:
-    driver: bridge
-
-volumes:
-  grafana_data:
+# OBSOLETE — Monitoring services have been merged into docker-compose.yml
+# All services (Prometheus, Loki, Promtail, Tempo, Grafana, cAdvisor, Health Dashboard)
+# are now defined in the main docker-compose.yml.
+#
+# Use: docker compose up -d
+#
