@@ -117,6 +117,10 @@ services:
       - SendGrid__ApiKey=${SENDGRID_API_KEY}
       - SendGrid__FromEmail=${SENDGRID_FROM_EMAIL:-demo@garamatic.io}
       - SendGrid__FromName=${SENDGRID_FROM_NAME:-Garamatic Demo}
+      - Mailhog__Host=mailhog
+      - Mailhog__Port=1025
+      - RateLimit__MaxEmailsPerDay=100
+      - RateLimit__MinIntervalSeconds=5
     networks:
       - garamatic_demo_net
     depends_on:
