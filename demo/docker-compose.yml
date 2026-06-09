@@ -36,11 +36,12 @@ services:
       context: ../ticket-masala
       dockerfile: Dockerfile
     container_name: garamatic_demo_ticket_masala
+    user: root
     ports:
       - "8085:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Data Source=/app/data/masala_demo.db;Cache=Shared;Mode=ReadWriteCreate
+      - ConnectionStrings__DefaultConnection=Data Source=/app/data/masala_demo.db;Mode=ReadWriteCreate
       - MasalaConfig__ConfigPath=/app/config
       - MasalaConfig__SeedDataPath=/app/config/seed_data.json
       - MASALA_CONFIG_PATH=/app/config
@@ -55,6 +56,10 @@ services:
       - Gerda__OpenAiModelFast=lfm2.5:1.2b-thinking-q4_K_M
       - Gerda__OpenAiModel=qwen3.5:2b-q4_K_M
       - TENANT=${TENANT:-desgoffe}
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://tempo:4318
+      - OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
+      - OTEL_SERVICE_NAME=ticket-masala
+      - OTEL_RESOURCE_ATTRIBUTES=service.namespace=garamatic,deployment.environment=local
     volumes:
       # Demo tenant config (single source of truth for demo)
       - ./tenants/desgoffe/config:/app/config:ro
@@ -64,7 +69,8 @@ services:
       # Fallback tenant-theme path for _Layout.cshtml
       - ./tenants/desgoffe/theme/style.css:/app/wwwroot/tenant-theme/style.css:ro
       - ./tenants/desgoffe/logo.png:/app/wwwroot/tenant-theme/logo.png:ro
-      - ticket_masala_demo_data:/app/data
+    tmpfs:
+      - /app/data
     networks:
       - garamatic_demo_net
     depends_on:
@@ -88,6 +94,10 @@ services:
       - TICKET_MASALA_API_URL=http://ticket-masala:8080
       - RabbitMQ__HostName=rabbitmq
       - Gatekeeper__ApiKey=demo-api-key
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://tempo:4318
+      - OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
+      - OTEL_SERVICE_NAME=gatekeeper-api
+      - OTEL_RESOURCE_ATTRIBUTES=service.namespace=garamatic,deployment.environment=local
     networks:
       - garamatic_demo_net
     depends_on:
@@ -121,6 +131,10 @@ services:
       - Mailhog__Port=1025
       - RateLimit__MaxEmailsPerDay=100
       - RateLimit__MinIntervalSeconds=5
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://tempo:4318
+      - OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
+      - OTEL_SERVICE_NAME=mailing-service
+      - OTEL_RESOURCE_ATTRIBUTES=service.namespace=garamatic,deployment.environment=local
     networks:
       - garamatic_demo_net
     depends_on:
@@ -164,13 +178,19 @@ services:
       - CORS_ORIGINS=*
       - ticket_api_url=http://ticket-masala:8080
       - ticket_api_key=${AGENTIC_API_KEY:-garamatic-agentic-secret-key}
+      - odoo_bridge_url=http://odoo-integration:8080
       - rabbitmq_host=rabbitmq
       - LLM_PROVIDER=llamacpp
       - LLM_MODEL=qwen3.5:2b-q4_K_M
       - LLM_BASE_URL=http://llama:8080
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}
-    volumes:
-      - agentic_demo_data:/app/data
+      - API_KEY=${AGENTIC_API_KEY:-garamatic-agentic-secret-key}
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://tempo:4318
+      - OTEL_SERVICE_NAME=agentic-service
+      - OTEL_RESOURCE_ATTRIBUTES=service.namespace=garamatic,deployment.environment=local
+    command: ["garamatic-api"]
+    tmpfs:
+      - /app/data
     networks:
       - garamatic_demo_net
     depends_on:
@@ -204,9 +224,12 @@ services:
       - LLM_BASE_URL=http://llama:8080
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}
       - MCP_TRANSPORT=streamable-http
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://tempo:4318
+      - OTEL_SERVICE_NAME=agentic-mcp
+      - OTEL_RESOURCE_ATTRIBUTES=service.namespace=garamatic,deployment.environment=local
     command: ["garamatic-mcp"]
-    volumes:
-      - agentic_demo_data:/app/data
+    tmpfs:
+      - /app/data
     networks:
       - garamatic_demo_net
     depends_on:
@@ -228,6 +251,7 @@ services:
       context: ../odoo-integration
       dockerfile: Dockerfile
     container_name: garamatic_demo_odoo_bridge
+    user: root
     ports:
       - "8089:8080"
     environment:
@@ -246,8 +270,12 @@ services:
       # If the account module creates a different number of accounts,
       # update this ID to match the actual ID of the 'Verkoop' account.
       - Odoo__DefaultIncomeAccountId=48
-    volumes:
-      - odoo_demo_data:/app/data
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://tempo:4318
+      - OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
+      - OTEL_SERVICE_NAME=odoo-integration
+      - OTEL_RESOURCE_ATTRIBUTES=service.namespace=garamatic,deployment.environment=local
+    tmpfs:
+      - /app/data
     networks:
       - garamatic_demo_net
     depends_on:
@@ -345,10 +373,11 @@ services:
       - PASSWORD=odoo
       - DATABASE=odoo
     volumes:
-      - odoo_demo_app_data:/var/lib/odoo
       - ../odoo-integration/addons:/mnt/extra-addons:ro
       - ../scripts/odoo-init.sh:/odoo-init.sh:ro
       - ../scripts/odoo-seed.py:/odoo-seed.py:ro
+    tmpfs:
+      - /var/lib/odoo
     command: ["/bin/bash", "/odoo-init.sh"]
     networks:
       - garamatic_demo_net
@@ -369,8 +398,8 @@ services:
       - POSTGRES_DB=odoo
       - POSTGRES_USER=odoo
       - POSTGRES_PASSWORD=odoo
-    volumes:
-      - odoo_demo_db_data:/var/lib/postgresql/data
+    tmpfs:
+      - /var/lib/postgresql/data
     networks:
       - garamatic_demo_net
     healthcheck:
@@ -398,7 +427,8 @@ services:
     volumes:
       # Demo tenant config for seeding
       - ./tenants/desgoffe/config:/seed-data/ticket-masala:ro
-      - odoo_demo_data:/seed-data/odoo
+    tmpfs:
+      - /seed-data/odoo
     networks:
       - garamatic_demo_net
     depends_on:
@@ -418,15 +448,155 @@ services:
         condition: service_healthy
     restart: "no"
 
+  # ════════════════════════════════════════════════════════════
+  # PROMETHEUS — Metrics collection
+  # ════════════════════════════════════════════════════════════
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: garamatic_prometheus
+    ports:
+      - "9090:9090"
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    volumes:
+      - ../monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    tmpfs:
+      - /prometheus
+    networks:
+      - garamatic_demo_net
+    restart: unless-stopped
+
+  # ════════════════════════════════════════════════════════════
+  # LOKI — Log aggregation
+  # ════════════════════════════════════════════════════════════
+  loki:
+    image: grafana/loki:3.0.0
+    container_name: garamatic_loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    user: root
+    volumes:
+      - ../monitoring/loki/loki.yml:/etc/loki/local-config.yaml:ro
+    tmpfs:
+      - /tmp/loki
+    networks:
+      - garamatic_demo_net
+    restart: unless-stopped
+
+  # ════════════════════════════════════════════════════════════
+  # PROMTAIL — Log shipping to Loki
+  # ════════════════════════════════════════════════════════════
+  promtail:
+    image: grafana/promtail:3.0.0
+    container_name: garamatic_promtail
+    volumes:
+      - ../monitoring/promtail/config.yml:/etc/promtail/config.yml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    tmpfs:
+      - /tmp
+    command: -config.file=/etc/promtail/config.yml
+    networks:
+      - garamatic_demo_net
+    restart: unless-stopped
+    depends_on:
+      - loki
+
+  # ════════════════════════════════════════════════════════════
+  # TEMPO — Distributed tracing
+  # ════════════════════════════════════════════════════════════
+  tempo:
+    image: grafana/tempo:latest
+    container_name: garamatic_tempo
+    user: root
+    ports:
+      - "3200:3200"
+      - "4317:4317"
+      - "4318:4318"
+    volumes:
+      - ../monitoring/tempo:/etc/tempo:ro
+    tmpfs:
+      - /tmp/tempo
+    networks:
+      - garamatic_demo_net
+    restart: unless-stopped
+    command: ["-config.file=/etc/tempo/tempo.yml"]
+
+  # ════════════════════════════════════════════════════════════
+  # CADVISOR — Container metrics
+  # ════════════════════════════════════════════════════════════
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.49.1
+    container_name: garamatic_cadvisor
+    privileged: true
+    ports:
+      - "8094:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    networks:
+      - garamatic_demo_net
+    restart: unless-stopped
+
+  # ════════════════════════════════════════════════════════════
+  # GRAFANA — Unified observability UI
+  # ════════════════════════════════════════════════════════════
+  grafana:
+    image: grafana/grafana:11.0.0
+    container_name: garamatic_grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_ROOT_URL=http://localhost:3000
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_NAME=Garamatic
+    volumes:
+      - ../monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ../monitoring/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    tmpfs:
+      - /var/lib/grafana
+    networks:
+      - garamatic_demo_net
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+      - loki
+      - tempo
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ════════════════════════════════════════════════════════════
+  # HEALTH DASHBOARD — Lightweight JSON API + HTML UI
+  # ════════════════════════════════════════════════════════════
+  health-dashboard:
+    image: nginx:alpine
+    container_name: garamatic_health_dashboard
+    ports:
+      - "3003:80"
+    volumes:
+      - ../monitoring/dashboard:/usr/share/nginx/html:ro
+    networks:
+      - garamatic_demo_net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:80/"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
 networks:
   garamatic_demo_net:
     name: garamatic_demo_net
     driver: bridge
 
-volumes:
-  ticket_masala_demo_data:
-  odoo_demo_data:
-  odoo_demo_app_data:
-  odoo_demo_db_data:
-
-  agentic_demo_data:
+# Ephemeral demo — all data lives in tmpfs (memory) and is lost on restart
+# No named volumes = no persistent state between demo runs
