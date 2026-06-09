@@ -90,7 +90,22 @@ def consume_heartbeats():
 
 class RequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
-        if self.path == "/health":
+        if self.path == "/" or self.path == "/simple":
+            # Serve the simple UI
+            try:
+                with open("/app/simple.html", "r") as f:
+                    html = f.read()
+                self.send_response(200)
+                self.send_header("Content-Type", "text/html")
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                self.wfile.write(html.encode())
+            except FileNotFoundError:
+                self.send_response(404)
+                self.send_header("Content-Type", "text/plain")
+                self.end_headers()
+                self.wfile.write(b"simple.html not found")
+        elif self.path == "/health":
             status = get_service_status()
             all_up = all(s["status"] == "up" for s in status.values())
             code = 200 if all_up else 503

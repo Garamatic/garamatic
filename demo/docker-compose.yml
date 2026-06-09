@@ -595,6 +595,7 @@ services:
     volumes:
       - ../scripts/heartbeat-monitor.py:/app/heartbeat-monitor.py:ro
       - ../scripts/heartbeat-publisher.py:/app/heartbeat-publisher.py:ro
+      - ../monitoring/dashboard/simple.html:/app/simple.html:ro
     working_dir: /app
     command: ["sh", "-c", "pip install pika --quiet && python heartbeat-monitor.py"]
     networks:

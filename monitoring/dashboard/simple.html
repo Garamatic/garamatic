@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Garamatic Control Room</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0a0a0a;
+      color: #fff;
+      padding: 2rem;
+      min-height: 100vh;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #333;
+    }
+    h1 { font-size: 1.5rem; font-weight: 600; }
+    .pulse {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #22c55e;
+      margin-right: 0.5rem;
+      animation: pulse 1s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.2); }
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .stat {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 1rem;
+      text-align: center;
+    }
+    .stat .num {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #22c55e;
+    }
+    .stat .num.err { color: #ef4444; }
+    .stat .label {
+      font-size: 0.75rem;
+      color: #888;
+      margin-top: 0.25rem;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+    .card {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 1rem;
+      transition: all 0.2s;
+    }
+    .card:hover { border-color: #555; }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+    .name {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #ccc;
+    }
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #444;
+    }
+    .dot.up { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
+    .dot.down { background: #ef4444; box-shadow: 0 0 8px #ef4444; }
+    .age {
+      font-size: 0.75rem;
+      color: #888;
+    }
+    .loading {
+      text-align: center;
+      color: #888;
+      padding: 2rem;
+    }
+    .error {
+      text-align: center;
+      color: #ef4444;
+      padding: 2rem;
+    }
+    .footer {
+      margin-top: 2rem;
+      text-align: center;
+      color: #666;
+      font-size: 0.75rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <span class="pulse"></span>
+      <h1 style="display:inline; font-size:1.25rem;">Garamatic Control Room</h1>
+    </div>
+    <div id="timestamp" style="color:#888; font-size:0.875rem;">Loading...</div>
+  </header>
+
+  <div class="stats" id="stats">
+    <div class="stat">
+      <div class="num" id="count-up">-</div>
+      <div class="label">Online</div>
+    </div>
+    <div class="stat">
+      <div class="num err" id="count-down">-</div>
+      <div class="label">Offline</div>
+    </div>
+    <div class="stat">
+      <div class="num" id="count-total">-</div>
+      <div class="label">Total</div>
+    </div>
+    <div class="stat">
+      <div class="num" id="heartbeat-rate">1s</div>
+      <div class="label">Heartbeat</div>
+    </div>
+  </div>
+
+  <div class="grid" id="grid">
+    <div class="loading">Loading services...</div>
+  </div>
+
+  <div class="footer">
+    Live heartbeat monitoring • Updates every 1 second<br>
+    <span id="api-url" style="color:#444;"></span>
+  </div>
+
+  <script>
+    // Auto-detect API URL
+    const API_URL = window.location.hostname.includes('garamatic.tech')
+      ? 'https://heartbeat.garamatic.tech'
+      : 'http://localhost:8084';
+
+    document.getElementById('api-url').textContent = API_URL;
+
+    async function update() {
+      try {
+        const res = await fetch(`${API_URL}/status`);
+        const data = await res.json();
+        const services = data.services || {};
+        const total = Object.keys(services).length;
+        const up = Object.values(services).filter(s => s.status === 'up').length;
+        const down = total - up;
+
+        document.getElementById('count-up').textContent = up;
+        document.getElementById('count-down').textContent = down;
+        document.getElementById('count-total').textContent = total;
+        document.getElementById('timestamp').textContent = new Date().toLocaleTimeString();
+
+        const grid = document.getElementById('grid');
+        grid.innerHTML = Object.entries(services).map(([name, info]) => {
+          const isUp = info.status === 'up';
+          const age = info.age_seconds !== undefined ? info.age_seconds.toFixed(1) : '?';
+          return `
+            <div class="card">
+              <div class="card-header">
+                <span class="name">${name}</span>
+                <span class="dot ${isUp ? 'up' : 'down'}"></span>
+              </div>
+              <div class="age">
+                ${isUp ? '✓ Online' : '✗ Offline'} • ${age}s ago
+              </div>
+            </div>
+          `;
+        }).join('');
+      } catch (e) {
+        document.getElementById('grid').innerHTML = `
+          <div class="error" style="grid-column: 1 / -1;">
+            ❌ Cannot connect to heartbeat API<br>
+            <span style="font-size:0.75rem; color:#666;">${API_URL}</span>
+          </div>
+        `;
+      }
+    }
+
+    update();
+    setInterval(update, 1000);
+  </script>
+</body>
+</html>
