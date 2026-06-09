@@ -145,6 +145,22 @@ services:
           cpus: '0.5'
           memory: 256M
 
+  heartbeat-monitor:
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 128M
+
+  heartbeat-publisher:
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 128M
+
   health-dashboard:
     restart: always
     deploy:

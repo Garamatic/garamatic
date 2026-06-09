@@ -131,6 +131,12 @@
     <div id="log-entries"></div>
   </div>
 
+  <div class="logs" style="margin-top: 1rem;">
+    <h2>🔥 Heartbeat Monitor (1s)</h2>
+    <div id="heartbeat-summary">Loading heartbeat data...</div>
+    <div id="heartbeat-table" style="margin-top: 0.5rem;"></div>
+  </div>
+
   <script>
     const SERVICES = [
       { name: 'Ticket Masala', url: 'http://localhost:8085/health', fallback: 'http://localhost:8085' },
@@ -213,6 +219,53 @@
 
     checkAll();
     setInterval(checkAll, 30000);
+
+    // ─── Heartbeat Monitor (1 second updates) ───────────────────────────────
+    async function updateHeartbeat() {
+      try {
+        const res = await fetch('http://localhost:8084/status');
+        const data = await res.json();
+        const services = data.services || {};
+        const total = Object.keys(services).length;
+        const up = Object.values(services).filter(s => s.status === 'up').length;
+        const down = total - up;
+
+        document.getElementById('heartbeat-summary').innerHTML = `
+          <div class="summary">
+            <div class="summary-item">
+              <div class="num ok">${up}</div>
+              <div class="label">Heartbeat Up</div>
+            </div>
+            <div class="summary-item">
+              <div class="num ${down > 0 ? 'err' : ''}">${down}</div>
+              <div class="label">Heartbeat Down</div>
+            </div>
+            <div class="summary-item">
+              <div class="num">${total}</div>
+              <div class="label">Total</div>
+            </div>
+          </div>
+        `;
+
+        const rows = Object.entries(services).map(([name, info]) => {
+          const cls = info.status === 'up' ? 'ok' : 'err';
+          const age = info.age_seconds !== undefined ? info.age_seconds.toFixed(1) : '?';
+          return `<div class="log-entry">
+            <span class="log-time ${cls}">●</span>
+            <span class="log-msg">${name}</span>
+            <span style="float:right; color: var(--muted);">last seen: ${age}s ago</span>
+          </div>`;
+        }).join('');
+
+        document.getElementById('heartbeat-table').innerHTML = rows;
+      } catch (e) {
+        document.getElementById('heartbeat-summary').innerHTML =
+          '<div class="log-entry log-err">❌ Heartbeat monitor unreachable (port 8084)</div>';
+      }
+    }
+
+    updateHeartbeat();
+    setInterval(updateHeartbeat, 1000);
   </script>
 </body>
 </html>
