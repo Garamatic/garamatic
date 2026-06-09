@@ -105,6 +105,42 @@ services:
       rabbitmq:
         condition: service_healthy
 
+  odoo:
+    image: odoo:17
+    container_name: garamatic_odoo_test
+    ports:
+      - "8069:8069"
+    environment:
+      - HOST=odoo-db
+      - USER=odoo
+      - PASSWORD=myodoo
+    networks:
+      - garamatic_test_net
+    depends_on:
+      odoo-db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8069/web/login"]
+      interval: 10s
+      timeout: 10s
+      retries: 20
+
+  odoo-db:
+    image: postgres:15
+    container_name: garamatic_odoo_db_test
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=odoo
+      - POSTGRES_PASSWORD=myodoo
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8
+    networks:
+      - garamatic_test_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U odoo -d postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
   odoo-integration:
     build:
       context: ../../odoo-integration
@@ -119,14 +155,16 @@ services:
       - RabbitMQ__UserName=guest
       - RabbitMQ__Password=guest
       - HealthChecks__Port=8080
-      - Odoo__BaseUrl=${ODOO_URL:-http://localhost:8069}
-      - Odoo__Database=${ODOO_DB:-odoo}
-      - Odoo__Username=${ODOO_USER:-admin}
-      - Odoo__Password=${ODOO_PASS:-admin}
+      - Odoo__BaseUrl=http://odoo:8069
+      - Odoo__Database=odoo
+      - Odoo__Username=admin
+      - Odoo__Password=admin
     networks:
       - garamatic_test_net
     depends_on:
       rabbitmq:
+        condition: service_healthy
+      odoo:
         condition: service_healthy
 
   # contract-validator:  # placeholder — validation done by test-runner
@@ -204,6 +242,10 @@ services:
         condition: service_started
       agentic-service:
         condition: service_started
+      odoo-integration:
+        condition: service_started
+      odoo:
+        condition: service_healthy
       showcase:
         condition: service_started
 
