@@ -46,7 +46,7 @@ jobs:
     steps:
       - name: Determine environment (workflow_dispatch)
         if: github.event_name == 'workflow_dispatch'
-        id: set-env-manual
+        id: set-env
         run: |
           echo "environment=${{ github.event.inputs.environment }}" >> $GITHUB_OUTPUT
           echo "branch=manual" >> $GITHUB_OUTPUT
@@ -54,7 +54,7 @@ jobs:
 
       - name: Determine environment (workflow_run)
         if: github.event_name == 'workflow_run'
-        id: set-env-auto
+        id: set-env
         run: |
           BRANCH="${{ github.event.workflow_run.head_branch }}"
           if [ "$BRANCH" == "main" ]; then
