@@ -1,9 +1,5 @@
 # Product
 
-## Register
-
-product
-
 ## Users
 
 - **Demo presenters**: Technical sales engineers or team leads showing the Garamatic platform to stakeholders. They need a clear, linear demo flow with quick access to every service.
@@ -14,11 +10,11 @@ Their context: usually on a laptop, often in a meeting or demo setting, needing 
 
 ## Product Purpose
 
-The Architecture Dashboard & Demo Guide is the single source of truth for the Garamatic multi-tenant platform's local/demo environment. It answers three questions instantly:
+The Architecture Dashboard & Demo Guide is the single source of truth for the Garamatic multi-tenant platform's local/demo environment. It is a three-tab SPA, and each tab answers one question instantly:
 
-1. **What's running?** — Live service topology with health polling.
-2. **How do I demo it?** — A 9-minute scripted walkthrough with direct links to each step.
-3. **How do I access things?** — Credentials, API endpoints, curl snippets, and repository links.
+1. **Demo** — *How do I demo it?* A 9-minute scripted walkthrough with direct links to each step, the live heartbeat pipeline, tenant context, credentials, and a pre-demo checklist.
+2. **Architecture** — *What's running and how is it built?* Live service topology with health polling, event-flow diagrams, project metrics, and repositories.
+3. **Documentation** — *How do I access things?* Quick links, API endpoints, curl snippets, and troubleshooting.
 
 Success looks like: a presenter never loses flow during a demo, and a developer never has to open a README to find a port or password.
 

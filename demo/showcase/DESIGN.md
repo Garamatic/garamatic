@@ -2,37 +2,42 @@
 
 ## Overview
 
-A dark-mode developer dashboard for the Garamatic multi-tenant platform. Single-file HTML with comprehensive inline CSS design tokens. The design language is functional, dense, and unadorned — every element serves a monitoring, navigation, or documentation purpose.
+A dark-mode developer dashboard for the Garamatic multi-tenant platform, organized as a three-tab SPA (Demo / Architecture / Documentation). Single-file HTML with comprehensive inline CSS design tokens. The design language is functional, dense, and unadorned — every element serves a monitoring, navigation, or documentation purpose.
 
 ## Color Palette
+
+The palette is the Slate/indigo "Ticket Masala" dark theme — it intentionally matches the Garamatic Web and Portal UIs, not GitHub's `#0d1117` family.
 
 ### Core
 | Token | Value | Usage |
 |---|---|---|
-| `--bg` | `#0d1117` | Page background |
-| `--bg-elevated` | `#111820` | Header background, elevated surfaces |
-| `--surface` | `#161b22` | Card background |
-| `--surface-hover` | `#1f242c` | Row hover, secondary surfaces |
-| `--surface-raised` | `#252a33` | Active hover, elevated cards |
-| `--border` | `#30363d` | Card borders, structural dividers |
-| `--border-subtle` | `#21262d` | Inner borders, subtle separators |
-| `--border-strong` | `#484f58` | Hover borders, emphasized edges |
-| `--text` | `#c9d1d9` | Primary body text |
-| `--text-secondary` | `#b0b8c4` | Secondary text, descriptions |
-| `--text-muted` | `#8b949e` | Labels, captions, timestamps |
-| `--text-faint` | `#758da0` | URLs, tertiary info |
-| `--text-inverse` | `#ffffff` | Headings, active buttons |
+| `--bg` | `#0F172A` | Page background (slate-900) |
+| `--bg-elevated` | `#1E293B` | Header background, elevated surfaces |
+| `--surface` | `#1E293B` | Card background (slate-800) |
+| `--surface-hover` | `#334155` | Row hover, secondary surfaces (slate-700) |
+| `--surface-raised` | `#334155` | Active hover, elevated cards |
+| `--border` | `#334155` | Card borders, structural dividers |
+| `--border-subtle` | `#1E293B` | Inner borders, subtle separators |
+| `--border-strong` | `#475569` | Hover borders, emphasized edges (slate-600) |
+| `--text` | `#F1F5F9` | Primary body text (slate-100) |
+| `--text-secondary` | `#CBD5E1` | Secondary text, descriptions (slate-300) |
+| `--text-muted` | `#94A3B8` | Labels, captions, timestamps (slate-400) |
+| `--text-faint` | `#64748B` | URLs, tertiary info (slate-500) |
+| `--text-inverse` | `#FFFFFF` | Headings, active buttons |
 
 ### Semantic Accents
 | Token | Value | Usage |
 |---|---|---|
-| `--accent` | `#58a6ff` | Links, active states, primary actions |
-| `--accent-green` | `#3fb950` | Healthy, success, live indicators |
-| `--accent-red` | `#f85149` | Unhealthy, error, down |
-| `--accent-yellow` | `#d29922` | Warning, starting, unknown |
-| `--accent-purple` | `#bc8cff` | SaaS tenant tag |
-| `--accent-indigo` | `#6366f1` | Tech tenant tag, step highlights |
-| `--accent-orange` | `#f97316` | Infra tenant tag |
+| `--accent` | `#6366F1` | Links, active states, primary actions (indigo-500) |
+| `--accent-light` | `#818CF8` | Active button hover (indigo-400) |
+| `--accent-green` | `#10B981` | Healthy, success, live indicators (emerald-500) |
+| `--accent-red` | `#EF4444` | Unhealthy, error, down |
+| `--accent-yellow` | `#F59E0B` | Warning, starting, unknown (amber-500) |
+| `--accent-purple` | `#A855F7` | Purple tag tint |
+| `--accent-indigo` | `#6366F1` | Step highlights, remote badge |
+| `--accent-orange` | `#F97316` | Orange tag tint |
+
+> Note: `--accent` and `--accent-indigo` are the same indigo (`#6366F1`) — links and step highlights share one hue.
 
 ### Alpha Tints (Background badges)
 - `--accent-a10`, `--accent-a15`, `--accent-a20` — Blue tints
@@ -46,8 +51,11 @@ A dark-mode developer dashboard for the Garamatic multi-tenant platform. Single-
 ## Typography
 
 ### Families
-- **Sans**: `-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif`
-- **Mono**: `'SF Mono', ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace`
+- **Heading** (`--font-heading`): `'Saira', system-ui, -apple-system, sans-serif` — page title, card titles, tenant/step titles
+- **Sans** (`--font-sans`): `'Inter', system-ui, -apple-system, sans-serif` — body, descriptions
+- **Mono** (`--font-mono`): `'JetBrains Mono', ui-monospace, 'SF Mono', 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace`
+
+Inter and Saira are loaded from Google Fonts (`fonts.googleapis.com`) with `preconnect`. JetBrains Mono is named first in the stack but not loaded — it falls through to the platform monospace.
 
 ### Scale
 | Token | Size | Usage |
@@ -97,7 +105,7 @@ A dark-mode developer dashboard for the Garamatic multi-tenant platform. Single-
 | `--radius-sm` | 4px | Tags, method badges, copy buttons |
 | `--radius-md` | 6px | Buttons, tabs, endpoints, flow nodes |
 | `--radius-lg` | 8px | Cards, blocks, steps, service rows |
-| `--radius-xl` | 10px | Tenant cards |
+| `--radius-xl` | 8px | Tenant cards, link buttons |
 | `--radius-2xl` | 12px | Main cards |
 | `--radius-full` | 9999px | Dots, badges, pills |
 
@@ -114,8 +122,10 @@ A dark-mode developer dashboard for the Garamatic multi-tenant platform. Single-
 
 | Token | Value | Usage |
 |---|---|---|
-| `--shadow-sm` | `0 1px 2px rgba(0,0,0,0.25)` | Subtle elevation |
-| `--shadow-md` | `0 4px 8px rgba(0,0,0,0.30)` | Cards, dropdowns |
+| `--shadow-sm` | `0 1px 2px 0 rgb(0 0 0 / 0.30)` | Subtle elevation |
+| `--shadow-md` | `0 4px 6px -1px rgb(0 0 0 / 0.30), 0 2px 4px -2px rgb(0 0 0 / 0.30)` | Card/metric/tenant hover |
+
+Plus accent "glow" tokens used for emphasis: `--accent-glow`, `--accent-glow-strong` (indigo text-shadow on metric values and step numbers) and `--green-glow` / `--red-glow` / `--yellow-glow` (status-dot halos).
 
 ## Components
 
@@ -161,9 +171,9 @@ A dark-mode developer dashboard for the Garamatic multi-tenant platform. Single-
 - Centered, background: `var(--surface-hover)`
 - Border-radius: `var(--radius-lg)` (8px)
 - Large value (24px, bold, accent, tabular-nums) + small label
-- Used only in the Project Metrics card on the Demo Guide view — not as a hero template in the topology view.
+- Used only in the Project Metrics card on the Architecture tab — not as a hero template.
 
-### Status Summary (Topology View)
+### Status Summary (Architecture tab)
 - A single compact row showing overall service health
 - Green dot + "All N services up" when healthy
 - Red dot + "All services down" when none up
@@ -184,13 +194,29 @@ A dark-mode developer dashboard for the Garamatic multi-tenant platform. Single-
 
 ## Layout
 
-- **Header**: sticky top, elevated bg with backdrop blur, z-index 100
+- **Header**: sticky top, `--bg-elevated` background, z-index 100 (no backdrop blur)
 - **Container**: max-width 1400px, centered, 24px padding
 - **Grid**: `repeat(auto-fit, minmax(320px, 1fr))`, 20px gap
 - **Full-width cards**: `span-full` class spans all columns
 - **Responsive**: <720px collapses to single column, 16px padding
 - **Flow diagrams**: horizontal scrollable on narrow viewports
 - **Tables**: horizontal scroll wrapper with full-bleed negative margins
+
+## Navigation — Tabs
+
+The dashboard is a single-page app with **three tabs**, selected from the header:
+
+| Tab | Audience | Cards |
+|---|---|---|
+| **Demo** (default) | Presenters running the live walkthrough | Heartbeat pipeline, Demo Flow steps, Tenant, Demo Credentials, Pre-Demo Checklist |
+| **Architecture** | Evaluators understanding how it's built | Live Service Topology, Health Summary, Event Flow, Project Metrics, Repositories |
+| **Documentation** | Developers needing reference | Quick Links, API Explorer, Curl Quickies, Troubleshooting |
+
+All cards live in **one shared `#card-grid`**. The active tab is stored as `data-active-tab` on the grid; each card carries `data-tab="demo|architecture|docs"`, and CSS hides cards whose tab isn't active. `switchView()` just updates the grid attribute and the button states — no DOM reordering, no per-view containers. This keeps the grid reflow clean and avoids a flash of unstyled content on load (the default tab is set in markup).
+
+### Two health surfaces, deliberately separate
+- **Demo tab → Heartbeat Pipeline**: server-authoritative. Each service publishes to the RabbitMQ `heartbeat` fanout exchange; the monitor (`scripts/heartbeat-monitor.py`) reports liveness with `age_seconds`. Polled every 1s from `heartbeat.garamatic.tech`. Proves the **event bus**.
+- **Architecture tab → Live Service Topology**: client-side. The browser probes each service URL (no-cors fetch, then image fallback) every 5s. Proves **browser reachability**. These measure different layers and are intentionally not merged.
 
 ## Accessibility
 
@@ -205,9 +231,9 @@ A dark-mode developer dashboard for the Garamatic multi-tenant platform. Single-
 
 ## Notes
 
-- Single-file HTML with all CSS inline in `<style>`.
+- Single-file HTML with all CSS inline in `<style>` and all JS inline at the bottom.
 - All colors and spacing use CSS custom properties (tokens) for consistency.
-- No external dependencies. No JavaScript framework.
+- One external dependency: Google Fonts (Inter + Saira). No JavaScript framework, no build step.
 - Dark mode is the only mode. No light mode toggle.
 - No print styles.
 - All touch targets are ≥ 44px.
