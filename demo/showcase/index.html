@@ -2027,8 +2027,8 @@ domains:
       { id: 'web', url: 'http://localhost:8090', link: 'http://localhost:8090', name: 'Garamatic Web' },
       { id: 'masala', url: 'http://localhost:8091', link: 'http://localhost:8091', name: 'Masala Web' },
       { id: 'portal', url: 'http://localhost:8093', link: 'http://localhost:8093', name: 'Portal' },
-      { id: 'odooerp', url: 'http://localhost:8069', link: 'http://localhost:8069', name: 'Odoo ERP' },
-      { id: 'ollama', url: 'http://localhost:11434', link: 'http://localhost:11434', name: 'llama.cpp' },
+      { id: 'odooerp', url: 'http://localhost:8069/web/health', link: 'http://localhost:8069', name: 'Odoo ERP' },
+      { id: 'ollama', url: 'http://localhost:11434/health', link: 'http://localhost:11434', name: 'llama.cpp' },
       { id: 'mailhog', url: 'http://localhost:8025', link: 'http://localhost:8025', name: 'Mailhog' },
     ];
 
@@ -2042,7 +2042,7 @@ domains:
       const subdomains = {
         8085: 'tickets', 8086: 'api', 3001: 'agentic', 8087: 'mailing', 8089: 'odoo-bridge',
         8090: 'web', 8091: 'masala', 8092: 'showcase', 8093: 'portal',
-        15672: 'rabbitmq', 8069: 'odoo', 8025: 'mailhog',
+        15672: 'rabbitmq', 8069: 'odoo', 8025: 'mailhog', 11434: 'ollama',
       };
 
       function rewrite(url) {

@@ -65,27 +65,43 @@ def get_service_status():
 
 
 def consume_heartbeats():
-    connection = connect_rabbitmq()
-    channel = connection.channel()
-    channel.exchange_declare(exchange="heartbeat", exchange_type="fanout", durable=True)
-    result = channel.queue_declare(queue="", exclusive=True)
-    queue_name = result.method.queue
-    channel.queue_bind(exchange="heartbeat", queue=queue_name)
+    retry_delay = 1.0
+    max_retry_delay = 30.0
 
-    print("Heartbeat monitor started")
-    print(f"Timeout: {TIMEOUT_SECONDS}s | RabbitMQ: {RABBITMQ_HOST}:{RABBITMQ_PORT}")
-
-    def callback(ch, method, properties, body):
+    while True:
         try:
-            msg = json.loads(body)
-            service_name = msg.get("service", "unknown")
-            timestamp = msg.get("timestamp", time.time())
-            update_status(service_name, timestamp)
-        except Exception as e:
-            print(f"[monitor] Error processing message: {e}")
+            connection = connect_rabbitmq()
+            channel = connection.channel()
+            channel.exchange_declare(exchange="heartbeat", exchange_type="fanout", durable=True)
+            result = channel.queue_declare(queue="", exclusive=True)
+            queue_name = result.method.queue
+            channel.queue_bind(exchange="heartbeat", queue=queue_name)
 
-    channel.basic_consume(queue=queue_name, on_message_callback=callback, auto_ack=True)
-    channel.start_consuming()
+            print("Heartbeat monitor started")
+            print(f"Timeout: {TIMEOUT_SECONDS}s | RabbitMQ: {RABBITMQ_HOST}:{RABBITMQ_PORT}")
+            retry_delay = 1.0  # Reset on successful connection
+
+            def callback(ch, method, properties, body):
+                try:
+                    msg = json.loads(body)
+                    service_name = msg.get("service", "unknown")
+                    timestamp = msg.get("timestamp", time.time())
+                    update_status(service_name, timestamp)
+                except Exception as e:
+                    print(f"[monitor] Error processing message: {e}")
+
+            channel.basic_consume(queue=queue_name, on_message_callback=callback, auto_ack=True)
+            channel.start_consuming()
+        except pika.exceptions.AMQPConnectionError as e:
+            print(f"[monitor] RabbitMQ connection failed: {e}")
+            print(f"[monitor] Retrying in {retry_delay}s...")
+            time.sleep(retry_delay)
+            retry_delay = min(retry_delay * 2, max_retry_delay)
+        except Exception as e:
+            print(f"[monitor] Unexpected error: {e}")
+            print(f"[monitor] Retrying in {retry_delay}s...")
+            time.sleep(retry_delay)
+            retry_delay = min(retry_delay * 2, max_retry_delay)
 
 
 class RequestHandler(BaseHTTPRequestHandler):
