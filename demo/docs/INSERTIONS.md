@@ -260,8 +260,8 @@ In de inleverings-ZIP is een volledige demo-opname meegeleverd waarin de belangr
 
 | Service | Username | Wachtwoord | Opmerking |
 |---------|----------|------------|-----------|
-| **RabbitMQ** | `guest` | `guest` | Gebruikt voor management interface |
-| **Odoo ERP** | `admin` | `admin` | Administrator login |
+| **RabbitMQ** | `guest` | `Guest` | Gebruikt voor management interface |
+| **Odoo ERP** | `admin@example.com` | `Admin` | Administrator login |
 | **Grafana** | `admin` | `admin` | Standaard inloggegevens |
 | **Agentic Service** | — | `garamatic-agentic-secret-key` | API Key gebruikt via Authorization header |
 

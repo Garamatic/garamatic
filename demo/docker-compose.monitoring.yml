@@ -1,6 +1,0 @@
-# OBSOLETE — Monitoring services have been merged into docker-compose.yml
-# All services (Prometheus, Loki, Promtail, Tempo, Grafana, cAdvisor, Health Dashboard)
-# are now defined in the main docker-compose.yml.
-#
-# Use: docker compose up -d
-#
