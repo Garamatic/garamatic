@@ -4,19 +4,21 @@
 
 - **Demo presenters**: Technical sales engineers or team leads showing the Garamatic platform to stakeholders. They need a clear, linear demo flow with quick access to every service.
 - **Developers & ops**: Engineers running the stack locally who need to verify service health, find endpoints, and copy credentials without digging through docs.
-- **Evaluators**: Prospects or technical reviewers who land here to understand the architecture at a glance.
+- **Evaluators**: Prospects, teachers, or technical reviewers who land here to understand the architecture at a glance — often without ever running the stack. The overview hero and Architecture tab are written for them; the page must teach the system even with every live widget offline.
 
 Their context: usually on a laptop, often in a meeting or demo setting, needing to move fast between services without losing their place.
 
 ## Product Purpose
 
-The Architecture Dashboard & Demo Guide is the single source of truth for the Garamatic multi-tenant platform's local/demo environment. It is a three-tab SPA, and each tab answers one question instantly:
+The Architecture Dashboard & Demo Guide is the single source of truth for the Garamatic multi-tenant platform's local/demo environment. An always-visible **project overview hero** sits above the tabs and frames the project for any first-time reader (what Garamatic is, the core patterns, the team, the stack) — so the page makes sense even to an evaluator who never runs the stack. Below it is a three-tab SPA, and each tab answers one question instantly:
 
-1. **Demo** — *How do I demo it?* A 9-minute scripted walkthrough with direct links to each step, the live heartbeat pipeline, tenant context, credentials, and a pre-demo checklist.
-2. **Architecture** — *What's running and how is it built?* Live service topology with health polling, event-flow diagrams, project metrics, and repositories.
+1. **Architecture** (default) — *What is it and how is it built?* Key patterns & decisions (with rationale), the GERDA AI engine, config-driven multi-tenancy with a live YAML excerpt, event-flow diagrams, live service topology with health polling, project metrics, and repositories.
+2. **Demo** — *How do I demo it?* A 9-minute scripted walkthrough with direct links to each step, the live heartbeat pipeline, tenant context, disposable demo credentials, and a pre-demo checklist.
 3. **Documentation** — *How do I access things?* Quick links, API endpoints, curl snippets, and troubleshooting.
 
-Success looks like: a presenter never loses flow during a demo, and a developer never has to open a README to find a port or password.
+The default tab is **Architecture** because the broadest audience (evaluators, teachers, new engineers) lands here to understand the system; presenters switch to Demo when running the walkthrough.
+
+Success looks like: an evaluator understands the architecture without running anything, a presenter never loses flow during a demo, and a developer never has to open a README to find a port or password.
 
 ## Brand Personality
 

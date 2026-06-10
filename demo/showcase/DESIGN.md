@@ -2,7 +2,7 @@
 
 ## Overview
 
-A dark-mode developer dashboard for the Garamatic multi-tenant platform, organized as a three-tab SPA (Demo / Architecture / Documentation). Single-file HTML with comprehensive inline CSS design tokens. The design language is functional, dense, and unadorned — every element serves a monitoring, navigation, or documentation purpose.
+A dark-mode developer dashboard for the Garamatic multi-tenant platform. An always-visible **project overview hero** sits above a three-tab SPA (Architecture / Demo / Documentation), framing the project for first-time readers regardless of the active tab. Single-file HTML with comprehensive inline CSS design tokens. The design language is functional, dense, and unadorned — every element serves an explanatory, monitoring, navigation, or documentation purpose.
 
 ## Color Palette
 
@@ -204,13 +204,15 @@ Plus accent "glow" tokens used for emphasis: `--accent-glow`, `--accent-glow-str
 
 ## Navigation — Tabs
 
-The dashboard is a single-page app with **three tabs**, selected from the header:
+An always-visible **overview hero** (`.overview`) renders above the grid on every tab — a two-column panel (lead prose + meta sidebar) with an accent left-border, collapsing to a single column under 720px. Below it, the dashboard is a single-page app with **three tabs**, selected from the header:
 
 | Tab | Audience | Cards |
 |---|---|---|
-| **Demo** (default) | Presenters running the live walkthrough | Heartbeat pipeline, Demo Flow steps, Tenant, Demo Credentials, Pre-Demo Checklist |
-| **Architecture** | Evaluators understanding how it's built | Live Service Topology, Health Summary, Event Flow, Project Metrics, Repositories |
+| **Architecture** (default) | Evaluators/teachers understanding how it's built | Key Patterns & Decisions, GERDA AI, Multi-Tenancy by Config, Event Flow, Project Metrics, Repositories, Live Service Topology, Health Summary |
+| **Demo** | Presenters running the live walkthrough | Heartbeat pipeline, Demo Flow steps, Tenant, Demo Credentials, Pre-Demo Checklist |
 | **Documentation** | Developers needing reference | Quick Links, API Explorer, Curl Quickies, Troubleshooting |
+
+The default tab is **Architecture** — the broadest audience lands to understand the system, not to operate it.
 
 All cards live in **one shared `#card-grid`**. The active tab is stored as `data-active-tab` on the grid; each card carries `data-tab="demo|architecture|docs"`, and CSS hides cards whose tab isn't active. `switchView()` just updates the grid attribute and the button states — no DOM reordering, no per-view containers. This keeps the grid reflow clean and avoids a flash of unstyled content on load (the default tab is set in markup).
 
