@@ -160,6 +160,9 @@ services:
     command: >
       -hf unsloth/Qwen3.5-2B-GGUF:UD-Q4_K_XL --alias qwen3.5:2b-q4_K_M
       --jinja
+      --reasoning-budget 0
+      --parallel 1
+      --cache-reuse 256
     healthcheck:
       test: ["CMD-SHELL", "curl -sf http://localhost:8080/health || exit 1"]
       interval: 10s
