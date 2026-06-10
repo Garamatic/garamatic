@@ -58,6 +58,9 @@ async function seed() {
           description: ticket.description,
           priority: mapPriority(ticket.priority),
           source: 'demo-seeder',
+          tenant_id: TENANT,
+          created_at: new Date().toISOString(),
+          timestamp: new Date().toISOString(),
           tags: `Quartier:${ticket.quartier},Type:${ticket.work_item_type}`,
           metadata: {
             work_item_type: ticket.work_item_type,
@@ -103,7 +106,7 @@ async function seed() {
           service_description: ticket.resolution_notes || 'Intervention résolue',
           amount: ticket.billable_amount || 0,
           resolved_at: new Date().toISOString(),
-          tenant_id: 'desgoffe'
+          tenant_id: TENANT
         });
 
         if (response.status === 200 || response.status === 202 || response.status === 204) {
