@@ -1,5 +1,12 @@
 [
   {
+    "email": "benjumeamoreno@gmail.com",
+    "name": "Juan Benjumea",
+    "company": "Garamatic",
+    "phone": "+32 494 88 88 88",
+    "tier": "Enterprise"
+  },
+  {
     "email": "alice.johnson@techcorp.io",
     "name": "Alice Johnson",
     "company": "TechCorp",

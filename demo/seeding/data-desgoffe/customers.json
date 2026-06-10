@@ -1,5 +1,12 @@
 [
   {
+    "email": "benjumeamoreno@gmail.com",
+    "name": "Juan Benjumea",
+    "phone": "+32 494 88 88 88",
+    "quartier": "Centre-Ville",
+    "role": "Citoyen"
+  },
+  {
     "email": "gustave@desgoffe.gov",
     "name": "Gustave Desgoffe",
     "phone": "+32 2 555 01 01",
