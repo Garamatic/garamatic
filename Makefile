@@ -32,7 +32,6 @@ setup:
 
 # ─── Docker Compose (Demo Environment) ─────────────────────────────────────
 COMPOSE_FILE := demo/docker-compose.yml
-COMPOSE_MONITOR := demo/docker-compose.monitoring.yml
 COMPOSE_TUNNEL := docker-compose.tunnel.yml
 MONITOR_SERVICES := prometheus loki promtail tempo cadvisor grafana health-dashboard
 TENANT ?= desgoffe
@@ -40,7 +39,7 @@ export TENANT_CONFIG = $(CURDIR)/demo/config
 
 up:
 	@echo "🚀 Starting Garamatic stack (tenant: $(TENANT))..."
-	TENANT=$(TENANT) TENANT_CONFIG=$(TENANT_CONFIG) docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_MONITOR) --env-file .env up --build -d
+	TENANT=$(TENANT) TENANT_CONFIG=$(TENANT_CONFIG) docker compose -f $(COMPOSE_FILE) --env-file .env up --build -d
 	@echo ""
 	@echo "   Services:"
 	@echo "   • Showcase        → http://localhost:8092"
@@ -69,7 +68,7 @@ up:
 
 down:
 	@echo "🛑 Stopping Garamatic stack..."
-	docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_MONITOR) down -v
+	docker compose -f $(COMPOSE_FILE) down -v
 
 pull-model:
 	@echo "📥 Models are bundled locally in ./models/"
@@ -78,15 +77,15 @@ pull-model:
 
 dev:
 	@echo "🚀 Starting Garamatic stack (attached, tenant: $(TENANT))..."
-	TENANT=$(TENANT) TENANT_CONFIG=$(TENANT_CONFIG) docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_MONITOR) up --build
+	TENANT=$(TENANT) TENANT_CONFIG=$(TENANT_CONFIG) docker compose -f $(COMPOSE_FILE) up --build
 
 rebuild:
 	@echo "🔨 Rebuilding ticket-masala image (no cache)..."
-	TENANT=$(TENANT) TENANT_CONFIG=$(TENANT_CONFIG) docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_MONITOR) build --no-cache ticket-masala
+	TENANT=$(TENANT) TENANT_CONFIG=$(TENANT_CONFIG) docker compose -f $(COMPOSE_FILE) build --no-cache ticket-masala
 	@echo "✅ Rebuild complete. Run 'make up' to start."
 
 logs:
-	docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_MONITOR) logs -f
+	docker compose -f $(COMPOSE_FILE) logs -f
 
 # ─── Testing ───────────────────────────────────────────────────────────────
 test:
@@ -144,7 +143,7 @@ lint:
 # ─── Monitoring ────────────────────────────────────────────────────────────
 monitor-up:
 	@echo "📊 Starting observability stack (Prometheus + Loki + Tempo + Grafana)..."
-	docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_MONITOR) up -d $(MONITOR_SERVICES)
+	docker compose -f $(COMPOSE_FILE) up -d $(MONITOR_SERVICES)
 	@echo ""
 	@echo "   Observability Services:"
 	@echo "   • Grafana Dashboard    → http://localhost:3000  (admin/${GRAFANA_ADMIN_PASSWORD:-admin})"
@@ -159,11 +158,11 @@ monitor-up:
 
 monitor-down:
 	@echo "🛑 Stopping monitoring stack..."
-	docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_MONITOR) stop $(MONITOR_SERVICES)
-	docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_MONITOR) rm -f $(MONITOR_SERVICES)
+	docker compose -f $(COMPOSE_FILE) stop $(MONITOR_SERVICES)
+	docker compose -f $(COMPOSE_FILE) rm -f $(MONITOR_SERVICES)
 
 monitor-logs:
-	docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_MONITOR) logs -f $(MONITOR_SERVICES)
+	docker compose -f $(COMPOSE_FILE) logs -f $(MONITOR_SERVICES)
 
 # ─── Cloudflare Tunnel ───────────────────────────────────────────────────
 # Exposes the demo stack via a locally managed Cloudflare Tunnel.
