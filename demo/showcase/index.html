@@ -1457,7 +1457,7 @@
             <a class="link-btn" href="https://rabbitmq.garamatic.tech" target="_blank" rel="noopener"><span class="link-text">RabbitMQ</span></a>
             <a class="link-btn" href="https://mailhog.garamatic.tech" target="_blank" rel="noopener"><span class="link-text">Mailhog</span></a>
             <a class="link-btn" href="https://odoo.garamatic.tech" target="_blank" rel="noopener"><span class="link-text">Odoo ERP</span></a>
-            <a class="link-btn" href="https://ollama.garamatic.tech" target="_blank" rel="noopener"><span class="link-text">Ollama LLM</span></a>
+            <a class="link-btn" href="https://ollama.garamatic.tech" target="_blank" rel="noopener"><span class="link-text">llama.cpp</span></a>
           </div>
           <div class="card-section">
             <div class="card-section-label">External</div>
@@ -1511,7 +1511,7 @@
             </div>
             <div class="endpoint">
               <span class="method post">POST</span>
-              <span class="path">https://api.garamatic.tech/api/events/publish</span>
+              <span class="path">https://api.garamatic.tech/api/ingest</span>
               <span class="desc">Publish event to RabbitMQ via Gatekeeper</span>
             </div>
             <div class="endpoint">
@@ -1623,9 +1623,9 @@
           </div>
           <div class="curl-block mt-3">
             <button class="copy-btn" onclick="copy(this)" aria-label="Copy curl command">Copy</button>
-            <pre>curl -X POST https://portal.garamatic.tech/api/ingest \
+            <pre>curl -X POST https://api.garamatic.tech/api/ingest \
   -H "Content-Type: application/json" \
-  -d '{"event_type":"ticket.created","ticket_id":"$(uuidgen)","customer_email":"marie.curie@science.be","customer_name":"Marie Curie","description":"Bouwhoerrie zonder vergunning","priority":"10","source":"desgoffe-portal","tags":"Quartier:Centre-Ville,Type:NUISANCE"}'</pre>
+  -d '{"event_type":"ticket.created","ticket_id":"$(uuidgen)","customer_email":"marie.curie@science.be","customer_name":"Marie Curie","description":"Construction sans permis de bâtir","priority":"10","source":"desgoffe-portal","tags":"Quartier:Centre-Ville,Type:NUISANCE"}'</pre>
           </div>
         </div>
 
@@ -1666,7 +1666,7 @@
           </div>
           <div class="curl-block">
             <button class="copy-btn" onclick="copy(this)" aria-label="Copy curl command">Copy</button>
-            <pre>curl -X POST https://api.garamatic.tech/api/events/publish \
+            <pre>curl -X POST https://api.garamatic.tech/api/ingest \
   -H "Content-Type: application/json" \
   -H "X-Api-Key: demo-api-key" \
   -d '{"type":"ticket.created","payload":{}}'</pre>
@@ -1676,7 +1676,7 @@
             <pre>curl -X POST https://tickets.garamatic.tech/api/portal/submit \
   -F "CustomerName=Marie Curie" \
   -F "CustomerEmail=marie.curie@science.be" \
-  -F "Description=Bouwhoerrie zonder vergunning" \
+  -F "Description=Construction sans permis de bâtir" \
   -F "WorkItemType=NUISANCE" \
   -F "PriorityScore=10" \
   -F "Tenant=desgoffe"</pre>
@@ -1797,9 +1797,9 @@
             </div>
             <div class="service-row" data-url="https://ollama.garamatic.tech" role="listitem">
               <div class="service-info">
-                <div class="service-dot unknown" id="dot-ollama" data-label="checking" aria-label="Ollama LLM status: checking" role="status"></div>
+                <div class="service-dot unknown" id="dot-ollama" data-label="checking" aria-label="llama.cpp status: checking" role="status"></div>
                 <div>
-                  <div class="service-name">Ollama LLM</div>
+                  <div class="service-name">llama.cpp</div>
                   <div class="service-url">localhost:11434</div>
                 </div>
               </div>
@@ -1850,7 +1850,7 @@
       { id: 'masala', url: 'http://localhost:8091', link: 'http://localhost:8091', name: 'Masala Web' },
       { id: 'portal', url: 'http://localhost:8093', link: 'http://localhost:8093', name: 'Portal' },
       { id: 'odooerp', url: 'http://localhost:8069', link: 'http://localhost:8069', name: 'Odoo ERP' },
-      { id: 'ollama', url: 'http://localhost:11434', link: 'http://localhost:11434', name: 'Ollama LLM' },
+      { id: 'ollama', url: 'http://localhost:11434', link: 'http://localhost:11434', name: 'llama.cpp' },
       { id: 'mailhog', url: 'http://localhost:8025', link: 'http://localhost:8025', name: 'Mailhog' },
     ];
 
@@ -1862,7 +1862,7 @@
       const parts = hostname.split('.');
       const baseDomain = parts.length > 2 ? parts.slice(1).join('.') : hostname;
       const subdomains = {
-        8085: 'tickets', 8086: 'api', 3001: 'agentic', 8089: 'odoo-bridge',
+        8085: 'tickets', 8086: 'api', 3001: 'agentic', 8087: 'mailing', 8089: 'odoo-bridge',
         8090: 'web', 8091: 'masala', 8092: 'showcase', 8093: 'portal',
         15672: 'rabbitmq', 8069: 'odoo', 8025: 'mailhog',
       };

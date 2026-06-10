@@ -153,6 +153,7 @@ export function SubmitPage() {
       if (formData.customerPhone) {
         formPayload.append('CustomerPhone', sanitize(formData.customerPhone))
       }
+      formPayload.append('WorkItemType', sanitize(formData.requestType ?? ''))
       formPayload.append('PriorityScore', selectedService?.isUrgent ? '10' : '5')
       formPayload.append('Tags', tags)
       if (formData.attachment) {

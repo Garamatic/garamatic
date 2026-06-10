@@ -85,8 +85,12 @@ function createGatekeeperClient(baseUrl, apiKey) {
   return new ApiClient(baseUrl, { 'X-Api-Key': apiKey });
 }
 
-function createAgenticClient(baseUrl) {
-  return new ApiClient(baseUrl);
+function createAgenticClient(baseUrl, options = {}) {
+  const headers = {};
+  if (options.apiKey) {
+    headers['Authorization'] = `Bearer ${options.apiKey}`;
+  }
+  return new ApiClient(baseUrl, headers);
 }
 
 function createOdooClient(baseUrl) {

@@ -9,7 +9,7 @@
 const { createAgenticClient } = require('../lib/api-client');
 
 const BASE_URL = process.env.AGENTIC_URL || 'http://agentic-service:3001';
-const client = createAgenticClient(BASE_URL);
+const client = createAgenticClient(BASE_URL, { apiKey: process.env.AGENTIC_API_KEY });
 
 const COLORS = {
   reset: '\x1b[0m', green: '\x1b[32m', red: '\x1b[31m', yellow: '\x1b[33m'

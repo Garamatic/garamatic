@@ -100,7 +100,10 @@ async function seed() {
           customer_email: ticket.customer_email,
           customer_name: ticket.customer_name,
           resolution_notes: ticket.resolution_notes || 'Résolu par le système de démo.',
-          billable_amount: ticket.billable_amount || 0
+          service_description: ticket.resolution_notes || 'Intervention résolue',
+          amount: ticket.billable_amount || 0,
+          resolved_at: new Date().toISOString(),
+          tenant_id: 'desgoffe'
         });
 
         if (response.status === 200 || response.status === 202 || response.status === 204) {
