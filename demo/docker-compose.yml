@@ -163,6 +163,10 @@ services:
       --reasoning-budget 0
       --parallel 1
       --cache-reuse 256
+    volumes:
+      # Persist the downloaded model (~1.1 GB) so container recreation
+      # doesn't re-download it — first boot still needs network access.
+      - llama_model_cache:/root/.cache/llama.cpp
     healthcheck:
       test: ["CMD-SHELL", "curl -sf http://localhost:8080/health || exit 1"]
       interval: 10s
@@ -218,7 +222,7 @@ services:
       dockerfile: Dockerfile
     container_name: garamatic_demo_agentic_mcp
     ports:
-      - "3002:3001"
+      - "${AGENTIC_MCP_PORT:-3002}:3001"
     environment:
       - CORS_ORIGINS=*
       - ticket_api_url=http://ticket-masala:8080
@@ -643,7 +647,7 @@ services:
     image: nginx:alpine
     container_name: garamatic_health_dashboard
     ports:
-      - "3003:80"
+      - "${HEALTH_DASHBOARD_PORT:-3003}:80"
     volumes:
       - ../monitoring/dashboard:/usr/share/nginx/html:ro
     networks:
@@ -662,6 +666,11 @@ networks:
   garamatic_demo_net:
     name: garamatic_demo_net
     driver: bridge
+
+volumes:
+  # Exception to the ephemeral rule below: caches the llama.cpp model file
+  # (no demo state lives here, only the ~1.1 GB GGUF download).
+  llama_model_cache:
 
 # Ephemeral demo — all data lives in tmpfs (memory) and is lost on restart
 # No named volumes = no persistent state between demo runs

@@ -99,6 +99,8 @@ async function seed() {
       try {
         const response = await gatekeeper.post('/ingest', {
           event_type: 'ticket.resolved',
+          timestamp: new Date().toISOString(),
+          source: 'demo-seeder',
           ticket_id: ticketId,
           customer_email: ticket.customer_email,
           customer_name: ticket.customer_name,
@@ -113,12 +115,12 @@ async function seed() {
           log('pass', `Resolved ticket: ${ticket.title} (${ticketId})`);
           passed++;
         } else {
-          log('pass', `Ticket created but resolution queued: ${ticket.title} (${ticketId})`);
-          passed++;
+          log('fail', `Resolution rejected (HTTP ${response.status}): ${ticket.title} (${ticketId})`);
+          failed++;
         }
       } catch (error) {
-        log('pass', `Ticket created but resolution queued: ${ticket.title} (${ticketId})`);
-        passed++;
+        log('fail', `Resolution failed: ${ticket.title} (${ticketId}) — ${error.message}`);
+        failed++;
       }
     }
 
