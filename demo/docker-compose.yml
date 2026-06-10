@@ -50,7 +50,7 @@ services:
       - OPENAI_API_KEY=${LLAMA_API_KEY:-sk-llama}
       - OpenAI__Provider=llamacpp
       - Agentic__ApiKey=${AGENTIC_API_KEY:-garamatic-agentic-secret-key}
-      - Agentic__ApiUrl=http://localhost:3001
+      - Agentic__ApiUrl=${AGENTIC_PUBLIC_URL:-http://localhost:3001}
       - Masala__Gerda__OpenAiModelFast=qwen3.5:2b-q4_K_M
       - Masala__Gerda__OpenAiModel=qwen3.5:2b-q4_K_M
       - MASALA_TENANT=${TENANT:-desgoffe}
