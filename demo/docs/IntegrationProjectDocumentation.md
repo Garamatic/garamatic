@@ -234,7 +234,7 @@ All backend integrations are event\-driven and loosely coupled: no service calls
 
 __Technology:__ AMQP / Event Bus
 
-__Purpose:__ Decouples all services via async events\. Every integration in this project flows through RabbitMQ — it is the communication backbone of the entire ecosystem\. This ensures all messages are accounted for since RabbitMQ has an acknowledgement flag\. Even when some systems are temporarily down, the message will remain on the exchange until consumed by our services\. Because of this system, all our services are decoupled from one another and manage to continue working without depending on each other\. 
+__Purpose:__ Decouples all services via async events\. Every integration in this project flows through RabbitMQ — it is the communication backbone of the entire ecosystem\. This ensures all messages are accounted for since RabbitMQ has an acknowledgement flag\. Even when some systems are temporarily down, the message will remain on the exchange until consumed by our services\. Because of this system, all our services are decoupled from one another and manage to continue working without depending on each other\.
 
 ### <a id="_Toc232016398"></a>Odoo 17 – ERP / Billing
 
@@ -284,7 +284,7 @@ This document covers:
 
 # <a id="_Toc232016404"></a>Ticket Masala
 
-## <a id="_Toc232016405"></a>Project Concept 
+## <a id="_Toc232016405"></a>Project Concept
 
 ### <a id="_Toc232016406"></a>2\.1\.1	The Problem
 
@@ -1616,7 +1616,7 @@ The workflow file lives at \.github/workflows/ and is version\-controlled alongs
 
 The full Garamatic ecosystem is deployed to Fly\.io\. All services are available at the garamatic\.tech domain over HTTPS with automatic TLS certificates\. The following URLs are live and accessible:
 
-- [https://showcase\.garamatic\.tech](https://showcase.garamatic.tech) 
+- [https://showcase\.garamatic\.tech](https://showcase.garamatic.tech)
 - [https://tickets\.garamatic\.tech](https://tickets.garamatic.tech)
 - [https://odoo\.garamatic\.tech/web/login](https://odoo.garamatic.tech/web/login)
 - [https://rabbitmq\.garamatic\.tech](https://rabbitmq.garamatic.tech)

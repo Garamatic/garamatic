@@ -48,7 +48,7 @@ jobs:
               labels: 'health-alert',
               state: 'open',
             });
-            
+
             // Only create if no open alert exists
             if (issues.length === 0) {
               await github.rest.issues.create({
@@ -74,7 +74,7 @@ jobs:
               labels: 'health-alert',
               state: 'open',
             });
-            
+
             for (const issue of issues) {
               await github.rest.issues.createComment({
                 owner: context.repo.owner,

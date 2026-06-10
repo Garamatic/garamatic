@@ -261,6 +261,34 @@ services:
       retries: 10
     restart: unless-stopped
 
+  agentic-consumer:
+    build:
+      context: ../agentic-service
+      dockerfile: Dockerfile
+    container_name: garamatic_demo_agentic_consumer
+    environment:
+      - rabbitmq_host=rabbitmq
+      - ticket_api_url=http://ticket-masala:8080
+      - ticket_api_key=${AGENTIC_API_KEY:-garamatic-agentic-secret-key}
+      - LLM_PROVIDER=${LLM_PROVIDER:-llamacpp}
+      - LLM_MODEL=${LLM_MODEL:-qwen3.5:2b-q4_K_M}
+      - LLM_BASE_URL=${LLM_BASE_URL:-http://llama:8080/v1}
+      - OPENAI_API_KEY=${OPENROUTER_API_KEY:-}
+      - AGENT_DB_PATH=/app/data/approvals.db
+    command: ["garamatic-consumer"]
+    tmpfs:
+      - /app/data
+    networks:
+      - garamatic_demo_net
+    depends_on:
+      ticket-masala:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      llama:
+        condition: service_healthy
+    restart: unless-stopped
+
   odoo-integration:
     build:
       context: ../odoo-integration

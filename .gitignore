@@ -16,6 +16,9 @@ backups/
 .factory/
 .impeccable/
 
+# ─── Agent Skill Lock ────────────────────────────────────────────────────
+skills-lock.json
+
 # ─── AI-Generated Design Documents ───────────────────────────────────────
 dev-docs/
 
