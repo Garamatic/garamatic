@@ -1920,7 +1920,20 @@
     }
 
     async function checkUrl(url) {
-      // Try fetch with no-cors first (more accurate than image probe)
+      // 1) Try a real CORS fetch so we can read the status code — this lets a
+      //    health endpoint that answers 5xx/4xx correctly report as "down".
+      //    Only works when the service sends CORS headers; otherwise it rejects.
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 3000);
+        const res = await fetch(url, { mode: 'cors', signal: controller.signal });
+        clearTimeout(timeout);
+        return res.ok; // true only for 2xx
+      } catch (e) {
+        // CORS not enabled or network error — fall through to an opaque probe.
+      }
+      // 2) Opaque no-cors fetch — can't read the status, but a resolved promise
+      //    means the host answered. Reachability, not health.
       try {
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 3000);
