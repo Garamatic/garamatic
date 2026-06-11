@@ -54,7 +54,7 @@ Juan Benjumea Moreno \-\- Wito De Schrijver \-\- Maarten Görtz \-\- Charlotte S
 
 [2\.2\.4	High Level Component Diagram	9](#_Toc232016413)
 
-[2\.3Technology Stack – Ticket Masala	9](#_Toc232016414)
+[2\.3	Technology Stack – Ticket Masala	9](#_Toc232016414)
 
 [2\.4	Project Structure	10](#_Toc232016415)
 
@@ -210,11 +210,11 @@ Juan Benjumea Moreno \-\- Wito De Schrijver \-\- Maarten Görtz \-\- Charlotte S
 
 [11	Lessons Learned	38](#_Toc232016491)
 
-[11\.4	What Worked Well	38](#_Toc232016492)
+[11\.1	What Worked Well	38](#_Toc232016492)
 
-[11\.5	Challenges	38](#_Toc232016493)
+[11\.2	Challenges	38](#_Toc232016493)
 
-[11\.3	 Key Takeaways	38](#_Toc232016494)
+[11\.3	Key Takeaways	38](#_Toc232016494)
 
 [11\.4	Future Work	39](#_Toc232016495)
 
@@ -252,7 +252,7 @@ __Purpose:__ Exposes all Garamatic services as AI\-callable tools via Model Cont
 
 __Technology:__ Vite \+ Tailwind \+ Handlebars
 
-__Purpose:__ Standalone marketing website for the Ticket Masala platform\. Supports 3 tenant themes and 3 languages\. 1 tenant is connected with the RabbitMQ\. Deployed on Fly\.io and integrated into the full ecosystem via Docker Compose\.
+__Purpose:__ Standalone marketing website for the Ticket Masala platform\. Supports multiple tenant themes and 3 languages \(EN/NL/FR\)\. The Desgoffe tenant is wired into the live RabbitMQ event flow\. Deployed on Fly\.io and integrated into the full ecosystem via Docker Compose\.
 
 ### <a id="_Toc232016401"></a>SendGrid – Transactional Email
 
@@ -303,7 +303,7 @@ Ticket Masala introduces the concept of a Tenant Personality — a runtime confi
 - Business rules \(who can approve, what constitutes a violation\)
 - UI theme \(visual identity, accessible contrast modes\)
 - RBAC policy \(which roles exist and which fields they can see\)
-- Compliance constraints \(e\.g\., GDPR rules for the Tax domain\)
+- Compliance constraints \(e\.g\., GDPR rules for the government domain\)
 
 Because all of this is externalised into YAML, adding a new 'personality' requires no code changes — only a new configuration file and seed data\.
 
@@ -311,21 +311,9 @@ Because all of this is externalised into YAML, adding a new 'personality' requir
 
 #### 2\.1\.3\.1	Desgoffe
 
-__Domain:__ Goverment
+__Domain:__ Government
 
 __Personality__: Strict hierarchy, formal language, bureaucratic approval steps \(e\.g\., Mayor's Stamp\)\. Citizens can only file complaints; no dashboard access\.
-
-#### *2\.1\.3\.2	Liberty*
-
-__Domain:__ SaaS / Tech
-
-__Personality:__ Agile workflows, git\-style commits, CI/CD pipeline visibility\. Distinct sub\-roles: DevOps Lead vs\. Support Rep\.
-
-#### 2\.1\.3\.3	Whitman
-
-__Domain:__ Infrastructure
-
-__Personality: __High\-contrast UI, large controls, foreman\-oriented view\. Designed for field use\.
 
 ## <a id="_Toc232016409"></a>2\.2	System Architecture
 
@@ -347,7 +335,7 @@ This makes every service tenant\-aware without polluting the domain model with m
 
 ### <a id="_Toc232016412"></a>2\.2\.3	Configuration Driven Behaviour
 
-The file config/masala\_domains\.yaml is the 'brain transplant' configuration\. It drives:
+Each tenant's configuration and seed data together form the 'brain transplant' that reshapes the platform's behaviour\. It drives:
 
 - Allowed ticket statuses and valid state transitions
 - Approval chain definitions \(who must sign off, in what order\)
@@ -375,7 +363,7 @@ __Persistence Layer__
 
 SQLite in WAL mode\. EF Core migrations\. Outbox table for reliable event delivery\.
 
-## <a id="_Toc232016414"></a>2\.3Technology Stack – Ticket Masala
+## <a id="_Toc232016414"></a>2\.3	Technology Stack – Ticket Masala
 
 __Layer__
 
@@ -447,7 +435,7 @@ ticket\-masala/
 
 │       │   ├── Tenants/         \# Tenant resolution strategy
 
-│       │   └── Workflows/       \# State machines \(Gov vs Tech\)
+│       │   └── Workflows/       \# State machines \(per tenant personality\)
 
 │       ├── Controllers/         \# MVC endpoint controllers
 
@@ -455,9 +443,7 @@ ticket\-masala/
 
 ├── config/
 
-│   ├── masala\_domains\.yaml      \# Tenant personality configuration
-
-│   └── seed\_data\.json           \# Demo / development seed data
+│   └── tenants/<tenant>/        \# Per\-tenant configuration, theme tokens & assets
 
 ├── docs/                        \# Additional documentation
 
@@ -498,13 +484,13 @@ GERDA \(the embedded heuristic agent\) is not a large language model and does no
 
 - Ticket Triage: Analyses the ticket title and description against a weighted keyword corpus to assign a Hemisphere \(e\.g\., Support vs\. DevOps vs\. Compliance\)\. The weights are configurable per tenant in YAML\.
 - Effort Estimation: Uses historical ticket resolution times to predict an effort band \(S / M / L / XL\) for incoming tickets of a given category\.
-- Compliance Flagging: Scans field values for tenant\-specific rule violations before a ticket is submitted\. For the Tax domain, this includes GDPR\-relevant field combinations\.
+- Compliance Flagging: Scans field values for tenant\-specific rule violations before a ticket is submitted\. For the Desgoffe government domain, this includes GDPR\-relevant field combinations\.
 
 GERDA deliberately avoids cloud AI dependencies to support air\-gapped deployment scenarios required by some government tenants\.
 
 ## <a id="_Toc232016419"></a>2\.5\.3	Event\-Driven Integration \(RabbitMQ \+ Outbox Pattern\)
 
-Ticket Masala integrates with downstream systems through a reliable event\-driven mechanism\. The integration contract follows a snake\_case naming convention under the exchange garamatic\.events\.
+Ticket Masala integrates with downstream systems through a reliable event\-driven mechanism\. The integration contract follows a snake\_case naming convention under the topic exchange event\_exchange\.
 
 __Event__
 
@@ -545,7 +531,7 @@ Government and infrastructure tenants often operate in environments with strict 
 
 ## <a id="_Toc232016422"></a>Purpose and Context
 
-One of the core integration deliverables is the odoo\-bridge service: a \.NET Worker that connects Ticket Masala's event stream to an Odoo 17 ERP instance for automated billing\. When a ticket is resolved and marked as billable, the bridge automatically creates the corresponding customer record and invoice in Odoo — without any manual intervention\.
+One of the core integration deliverables is the odoo\-bridge service \(repository: odoo\-integration\): a \.NET Worker that connects Ticket Masala's event stream to an Odoo 17 ERP instance for automated billing\. When a ticket is resolved and marked as billable, the bridge automatically creates the corresponding customer record and invoice in Odoo — without any manual intervention\.
 
 This service is an independent \.NET Worker process that runs alongside Ticket Masala and communicates with Odoo exclusively via its JSON\-RPC API\.
 
@@ -803,7 +789,7 @@ On first run, Odoo initialises its PostgreSQL database \(allow 2–3 minutes\)\.
 
 To trigger a test invoice, resolve a ticket in ticket\-masala:
 
-curl \-X POST http://localhost:5000/api/tickets/123/resolve \\
+curl \-X POST http://localhost:8085/api/tickets/123/resolve \\
 
   \-H "Content\-Type: application/json" \\
 
@@ -878,7 +864,7 @@ Event Consumer
 
 AMQP / RabbitMQ
 
-Listens for RabbitMQ events and triggers automated workflows \(e\.g\., invoice\.paid → send thank\-you email\)\.
+Listens for RabbitMQ events and triggers automated workflows \(e\.g\., payment\.received → send thank\-you email\)\.
 
 LangGraph Agent
 
@@ -969,11 +955,11 @@ __Event__
 
 __Automated Action__
 
-invoice\.paid
+payment\.received
 
 Send a thank\-you email to the customer confirming payment receipt\.
 
-invoice\.sent
+invoice\.created
 
 Notify the customer that a new invoice has been issued\.
 
@@ -1025,7 +1011,7 @@ Base URL for the ticket\-masala REST API\.
 
 ODOO\_BRIDGE\_URL
 
-http://localhost:5001
+http://localhost:8089
 
 Base URL for the odoo\-bridge REST API\.
 
@@ -1165,7 +1151,7 @@ Hennessey
 
 Premium / enterprise visual identity\.
 
-Theme selection is driven by the same YAML configuration that powers the application — the website and the platform share the same tenant identity system\.
+The website and the platform share the same tenant identity system\. Note that these are visual themes of the marketing site; the Desgoffe tenant is the personality fully shipped in the platform itself \(see Section 2\.1\.3\)\.
 
 ### <a id="_Toc232016451"></a>5\.4\.2	Internationalisation \(i18n\)
 
@@ -1296,11 +1282,11 @@ By combining RabbitMQ and SendGrid, the platform can automatically notify users 
 
 The Garamatic organisation on GitHub is structured as a meta\-repository: a single root repository \(github\.com/Garamatic/garamatic\) that tracks all individual service repositories as git submodules and provides a unified point of orchestration for local development, integration testing, and deployment\.
 
-This architecture means a developer can clone one repository and immediately spin up the entire ecosystem — all 8 microservices, shared infrastructure, and integration tests — with a single command\.
+This architecture means a developer can clone one repository and immediately spin up the entire ecosystem — all 7 services, shared infrastructure, and integration tests — with a single command\.
 
 ## <a id="_Toc232016465"></a>7\.2	Complete Service Inventory
 
-The Garamatic platform consists of 8 microservices plus shared infrastructure, organised into frontends, backends, and shared components:
+The Garamatic platform consists of 7 services plus shared infrastructure, organised into frontends, backends, and shared components:
 
 __Service / Submodule__
 
@@ -1436,7 +1422,7 @@ garamatic/                         \# Root meta\-repository
 
 ├── mailing\-service/               \# \[submodule\]
 
-├── event\-planner/                 \# \[submodule\]
+├── gatekeeper\-api/                \# \[submodule\]
 
 ├── garamatic\-web/                 \# \[submodule\]
 
@@ -1542,7 +1528,7 @@ This workflow ensures the root repository always pins a specific, tested combina
 
 ## <a id="_Toc232016471"></a>7\.5	Integration Testing
 
-This workflow ensures the root repository always pins a specific, tested combination of service versions\. Checking out any tag of the root repo and running git submodule update \-\-init gives the exact service versions that were validated together\.
+The integration\-tests suite validates the pinned combination of service versions end\-to\-end: it spins up the full stack and exercises the cross\-service event flows \(ticket → email → invoice\) against real RabbitMQ, Odoo, and mailing containers\.
 
 \# Full suite in Docker
 
@@ -1626,7 +1612,7 @@ The full Garamatic ecosystem is deployed to Fly\.io\. All services are available
 During the demo flow, the following URLs should be open in the browser:
 
 - Step 1 — Customer Creates Ticket: https://tickets\.garamatic\.tech — open the ticket creation form here\.
-- Step 2 — RabbitMQ Event Flow: https://rabbitmq\.garamatic\.tech — navigate to Exchanges → garamatic\.events to show the live message rate\.
+- Step 2 — RabbitMQ Event Flow: https://rabbitmq\.garamatic\.tech — navigate to Exchanges → event\_exchange to show the live message rate\.
 - Step 4 & 5 — Ticket Assignment and Resolution: https://tickets\.garamatic\.tech — log in as the Desgoffe Bureaucrat \(gustave@desgoffe\.gov\) to assign and resolve\.
 - Step 6 — Invoice in Odoo: https://odoo\.garamatic\.tech/web/login — log in to show the auto\-created invoice under Invoicing → Customers → Invoices\.
 
@@ -1652,7 +1638,7 @@ Ticket Masala
 
 https://tickets\.garamatic\.tech
 
-jean\.dupont@email\.com
+jean\.dupont@citoyen\.be
 
 Customer123\!
 
@@ -1660,9 +1646,9 @@ Odoo
 
 https://odoo\.garamatic\.tech/web/login
 
-admin@example\.com
+admin
 
-Admin
+admin
 
 RabbitMQ
 
@@ -1670,7 +1656,7 @@ https://rabbitmq\.garamatic\.tech
 
 guest
 
-Guest
+guest
 
 ## <a id="_Toc232016482"></a>9\.4	Environment Variables
 
@@ -1698,7 +1684,7 @@ Admin password for the Grafana observability dashboard\.
 
 # <a id="_Toc232016483"></a>Demo Flow
 
-This chapter describes the end\-to\-end demonstration scenario used to present the integrated system\. The scenario follows a single support ticket from creation to billing, exercising all three integrated services in sequence\.
+This chapter describes the end\-to\-end demonstration scenario used to present the integrated system\. The scenario follows a single support ticket from creation to billing, exercising the integrated services — Ticket Masala, RabbitMQ, the mailing service \(SendGrid\), and the Odoo bridge — in sequence\.
 
 ## <a id="_Toc232016484"></a>Step 1: Customer Creates Ticket
 
@@ -1712,14 +1698,14 @@ __What happens in the background__
 
 - The frontend calls the Ticket Masala REST API \(POST /api/tickets\)\.
 - Ticket Masala persists the ticket to SQLite and writes a ticket\.created message to the Outbox table in the same database transaction\.
-- The OutboxPublisher background service picks up the message and publishes it to the garamatic\.events RabbitMQ exchange\.
+- The OutboxPublisher background service picks up the message and publishes it to the event\_exchange RabbitMQ exchange\.
 
 ## <a id="_Toc232016485"></a>Step 2: RabbitMQ Processes the Event
 
 __What to show__
 
 - Open the RabbitMQ management dashboard \(http://localhost:15672\)\.
-- Navigate to Exchanges → garamatic\.events and show the incoming message rate\.
+- Navigate to Exchanges → event\_exchange and show the incoming message rate\.
 - Navigate to Queues and show the bound queues receiving the event\.
 
 __Key point to explain__
@@ -1788,24 +1774,24 @@ After creating the invoice in Odoo, the odoo\-bridge publishes an invoice\.creat
 
 # <a id="_Toc232016491"></a>Lessons Learned
 
-## <a id="_Toc232016492"></a>What Worked Well
+## <a id="_Toc232016492"></a>11\.1	What Worked Well
 
-- Configuration\-driven design: Externalising workflow logic into YAML proved enormously effective\. Adding the Whitman tenant late in the project required no application code changes, validating the approach\.
+- Configuration\-driven design: Externalising workflow logic, RBAC, and theming into per\-tenant configuration proved enormously effective\. Iterating on the Desgoffe government personality — adding approval steps and tightening field\-level visibility — required only configuration and seed\-data changes rather than application code, validating the approach\.
 - Modular Monolith: The clear internal module boundaries made parallel development straightforward\. Team members could work on GERDA and the workflow engine simultaneously without merge conflicts\.
 - HTMX over a SPA: Choosing HTMX over React or Angular kept the frontend simple and rendered the polymorphic UI model tractable\.
 - Outbox Pattern: Implementing the Outbox early prevented a class of race\-condition bugs that would have been difficult to diagnose in production\.
 - Event\-driven integration: Integrating Odoo and SendGrid via RabbitMQ events rather than direct calls kept all three systems fully decoupled\. The bridge and email worker could be developed in parallel without blocking the core team\.
 
-## <a id="_Toc232016493"></a>Challenges
+## <a id="_Toc232016493"></a>11\.2	Challenges
 
-- Drupal / event\-planner: The event\-planner service — a Drupal CMS integration — was initially planned as part of the ecosystem but was ultimately left out of scope\. Integrating Drupal's PHP\-based architecture with the \.NET event\-driven stack proved too complex within the available timeframe\. The submodule remains in the repository as a placeholder for future work\.
+- Drupal / event\-planner: A Drupal CMS integration \(event\-planner\) was initially explored as part of the ecosystem but was ultimately dropped from scope\. Integrating Drupal's PHP\-based architecture with the \.NET event\-driven stack proved too complex within the available timeframe, and the service was not carried forward into the final meta\-repository\.
 - Odoo's JSON\-RPC API: The absence of a REST API, inconsistent field names, and the need for stateful authentication added significant integration friction compared to modern API\-first services like SendGrid\.
 - Odoo polling for payment status: Without webhook support, the polling approach adds complexity and latency\. A dedicated Odoo module would be the ideal long\-term fix\.
 - SQLite concurrency: WAL mode largely solved read concurrency, but write serialisation under load required careful attention to transaction scope in EF Core\.
 - GERDA calibration: Tuning the heuristic weights per tenant required more iteration than anticipated\.
 - YAML schema evolution: As the configuration schema evolved, ensuring backward compatibility with existing tenant YAML files required discipline\.
 
-## <a id="_Toc232016494"></a>11\.3	 Key Takeaways
+## <a id="_Toc232016494"></a>11\.3	Key Takeaways
 
 - REST APIs are vastly preferable to RPC\-style interfaces for integration work — SendGrid integration took a fraction of the time that Odoo integration required\.
 - Webhooks are preferable to polling — polling adds operational overhead and latency\. The Odoo bridge would be simpler and more responsive with webhook support\.
