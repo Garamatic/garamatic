@@ -44,30 +44,27 @@ jobs:
       environment: ${{ steps.set-env.outputs.environment }}
       branch: ${{ steps.set-env.outputs.branch }}
     steps:
-      - name: Determine environment (workflow_dispatch)
-        if: github.event_name == 'workflow_dispatch'
+      - name: Determine environment
         id: set-env
         run: |
-          echo "environment=${{ github.event.inputs.environment }}" >> $GITHUB_OUTPUT
-          echo "branch=manual" >> $GITHUB_OUTPUT
-          echo "🎮 Manual deployment to ${{ github.event.inputs.environment }}"
-
-      - name: Determine environment (workflow_run)
-        if: github.event_name == 'workflow_run'
-        id: set-env
-        run: |
-          BRANCH="${{ github.event.workflow_run.head_branch }}"
-          if [ "$BRANCH" == "main" ]; then
-            echo "environment=production" >> $GITHUB_OUTPUT
-            echo "🏭 Production deployment triggered"
-          elif [ "$BRANCH" == "test" ] || [ "$BRANCH" == "acc" ] || [ "$BRANCH" == "acceptance" ]; then
-            echo "environment=staging" >> $GITHUB_OUTPUT
-            echo "🧪 Staging deployment triggered"
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "environment=${{ github.event.inputs.environment }}" >> $GITHUB_OUTPUT
+            echo "branch=manual" >> $GITHUB_OUTPUT
+            echo "🎮 Manual deployment to ${{ github.event.inputs.environment }}"
           else
-            echo "environment=staging" >> $GITHUB_OUTPUT
-            echo "⚠️ Unknown branch ($BRANCH), defaulting to staging"
+            BRANCH="${{ github.event.workflow_run.head_branch }}"
+            if [ "$BRANCH" == "main" ]; then
+              echo "environment=production" >> $GITHUB_OUTPUT
+              echo "🏭 Production deployment triggered"
+            elif [ "$BRANCH" == "test" ] || [ "$BRANCH" == "acc" ] || [ "$BRANCH" == "acceptance" ]; then
+              echo "environment=staging" >> $GITHUB_OUTPUT
+              echo "🧪 Staging deployment triggered"
+            else
+              echo "environment=staging" >> $GITHUB_OUTPUT
+              echo "⚠️ Unknown branch ($BRANCH), defaulting to staging"
+            fi
+            echo "branch=$BRANCH" >> $GITHUB_OUTPUT
           fi
-          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
 
   # ─── Deploy to Staging ──────────────────────────────────────────────────
   deploy-staging:
