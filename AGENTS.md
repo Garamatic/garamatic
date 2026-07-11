@@ -107,6 +107,19 @@ docs.
 Treat docs as a first-class deliverable. Doc changes belong in the same PR as
 code changes.
 
+## Coding conventions
+
+### Per-service conventions vary, but all services share:
+- **Formatting:** Prettier (JS/TS), Ruff (Python) — run before commit
+- **Pre-commit:** run `pre-commit run --all-files` before pushing
+- **Tests:** every service has a test runner; add tests with new code
+- **Docker:** every service has a Dockerfile; local dev uses `make up`
+
+### Git
+- **Branching:** `dev` → `test`/`acc` → `main` (see README for pipeline)
+- Conventional commits: `type(scope): description`
+- Always PR — never push directly to `dev`, `test`, or `main`
+
 ## Code review
 
 Before merging any PR, **request a code review**.
